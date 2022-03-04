@@ -11,3 +11,7 @@ target_include_directories(qcustomplot PUBLIC
         $<INSTALL_INTERFACE:include>)
 
 target_compile_definitions(qcustomplot PRIVATE QCUSTOMPLOT_COMPILE_LIBRARY)
+
+set_target_properties(qcustomplot PROPERTIES
+        VERSION ${PROJECT_VERSION}
+        SOVERSION ${PROJECT_VERSION_MAJOR})
