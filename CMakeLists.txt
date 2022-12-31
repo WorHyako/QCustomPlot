@@ -6,7 +6,10 @@ include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
 # Find Qt packages
-find_package(Qt5 COMPONENTS Core Widgets PrintSupport REQUIRED)
+find_package(Qt6 COMPONENTS REQUIRED
+        Core
+        Widgets
+        PrintSupport)
 
 # Qt settings
 set(CMAKE_AUTOUIC ON)
@@ -21,7 +24,7 @@ install(TARGETS qcustomplot
         EXPORT qcustomplotConfig
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
-install(FILES qcustomplot/qcustomplot.h
+install(FILES qcustomplot/customplot.h
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 export(TARGETS qcustomplot
