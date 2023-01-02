@@ -1,23 +1,31 @@
-#ifndef QCUSTOMPLOT_QCPAXISPAINTERPRIVATE_H
-#define QCUSTOMPLOT_QCPAXISPAINTERPRIVATE_H
+#ifndef QCUSTOMPLOT_QCPAXISPAINTERPRIVATE_HPP
+#define QCUSTOMPLOT_QCPAXISPAINTERPRIVATE_HPP
+
+#include "QCPAxis.hpp"
+#include "QCPLineEnding.hpp"
+#include "QCustomPlot.hpp"
+#include "QCPPainter.hpp"
 
 namespace QCP {
 
-    class QCPAxisPainterPrivate
-    {
+    class QCPAxisPainterPrivate {
     public:
         explicit QCPAxisPainterPrivate(QCustomPlot *parentPlot);
+
         virtual ~QCPAxisPainterPrivate();
 
         virtual void draw(QCPPainter *painter);
+
         virtual int size();
+
         void clearCache();
 
         QRect axisSelectionBox() const { return mAxisSelectionBox; }
+
         QRect tickLabelsSelectionBox() const { return mTickLabelsSelectionBox; }
+
         QRect labelSelectionBox() const { return mLabelSelectionBox; }
 
-        // public property members:
         QCPAxis::AxisType type;
         QPen basePen;
         QCPLineEnding lowerEnding, upperEnding; // directly accessed by QCPAxis setters/getters
@@ -44,13 +52,11 @@ namespace QCP {
         QVector<QString> tickLabels;
 
     protected:
-        struct CachedLabel
-        {
+        struct CachedLabel {
             QPointF offset;
             QPixmap pixmap;
         };
-        struct TickLabelData
-        {
+        struct TickLabelData {
             QString basePart, expPart, suffixPart;
             QRect baseBounds, expBounds, suffixBounds, totalBounds, rotatedTotalBounds;
             QFont baseFont, expFont;
@@ -62,14 +68,17 @@ namespace QCP {
 
         virtual QByteArray generateLabelParameterHash() const;
 
-        virtual void placeTickLabel(QCPPainter *painter, double position, int distanceToAxis, const QString &text, QSize *tickLabelsSize);
+        virtual void placeTickLabel(QCPPainter *painter, double position, int distanceToAxis, const QString &text,
+                                    QSize *tickLabelsSize);
+
         virtual void drawTickLabel(QCPPainter *painter, double x, double y, const TickLabelData &labelData) const;
+
         virtual TickLabelData getTickLabelData(const QFont &font, const QString &text) const;
+
         virtual QPointF getTickLabelDrawOffset(const TickLabelData &labelData) const;
+
         virtual void getMaxTickLabelSize(const QFont &font, const QString &text, QSize *tickLabelsSize) const;
     };
+}
 
-
-} // QCP
-
-#endif //QCUSTOMPLOT_QCPAXISPAINTERPRIVATE_H
+#endif

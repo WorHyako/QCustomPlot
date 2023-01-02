@@ -1,6 +1,6 @@
 #include "include/QCPLayerable.hpp"
 
-namespace QCP {
+using namespace QCP;
 
 /*! \class QCPLayerable
   \brief Base class for all drawable objects
@@ -13,8 +13,6 @@ namespace QCP {
 
   For details about the layering mechanism, see the QCPLayer documentation.
 */
-
-/* start documentation of inline functions */
 
 /*! \fn QCPLayerable *QCPLayerable::parentLayerable() const
 
@@ -29,9 +27,6 @@ namespace QCP {
   A parent layerable is set implicitly when placed inside layout elements and doesn't need to be
   set manually by the user.
 */
-
-/* end documentation of inline functions */
-/* start documentation of pure virtual functions */
 
 /*! \fn virtual void QCPLayerable::applyDefaultAntialiasingHint(QCPPainter *painter) const = 0
   \internal
@@ -73,9 +68,6 @@ namespace QCP {
   set to \ref clipRect.
 */
 
-/* end documentation of pure virtual functions */
-/* start documentation of signals */
-
 /*! \fn void QCPLayerable::layerChanged(QCPLayer *newLayer);
 
   This signal is emitted when the layer of this layerable changes, i.e. this layerable is moved to
@@ -83,8 +75,6 @@ namespace QCP {
 
   \see setLayer
 */
-
-/* end documentation of signals */
 
 /*!
   Creates a new QCPLayerable instance.
@@ -106,41 +96,36 @@ namespace QCP {
   plot does. It is not uncommon to set the QObject-parent to something else in the constructors of
   QCPLayerable subclasses, to guarantee a working destruction hierarchy.
 */
-    QCPLayerable::QCPLayerable(QCustomPlot *plot, QString targetLayer, QCPLayerable *parentLayerable) :
-            QObject(plot),
-            mVisible(true),
-            mParentPlot(plot),
-            mParentLayerable(parentLayerable),
-            mLayer(nullptr),
-            mAntialiased(true)
-    {
-        if (mParentPlot)
-        {
-            if (targetLayer.isEmpty())
-                setLayer(mParentPlot->currentLayer());
-            else if (!setLayer(targetLayer))
-                qDebug() << Q_FUNC_INFO << "setting QCPlayerable initial layer to" << targetLayer << "failed.";
-        }
+QCPLayerable::QCPLayerable(QCustomPlot *plot, QString targetLayer, QCPLayerable *parentLayerable) :
+        QObject(plot),
+        mVisible(true),
+        mParentPlot(plot),
+        mParentLayerable(parentLayerable),
+        mLayer(nullptr),
+        mAntialiased(true) {
+    if (mParentPlot) {
+        if (targetLayer.isEmpty())
+            setLayer(mParentPlot->currentLayer());
+        else if (!setLayer(targetLayer))
+            qDebug() << Q_FUNC_INFO << "setting QCPlayerable initial layer to" << targetLayer << "failed.";
     }
+}
 
-    QCPLayerable::~QCPLayerable()
-    {
-        if (mLayer)
-        {
-            mLayer->removeChild(this);
-            mLayer = nullptr;
-        }
+QCPLayerable::~QCPLayerable() {
+    if (mLayer) {
+        mLayer->removeChild(this);
+        mLayer = nullptr;
     }
+}
 
 /*!
   Sets the visibility of this layerable object. If an object is not visible, it will not be drawn
   on the QCustomPlot surface, and user interaction with it (e.g. click and selection) is not
   possible.
 */
-    void QCPLayerable::setVisible(bool on)
-    {
-        mVisible = on;
-    }
+void QCPLayerable::setVisible(bool on) {
+    mVisible = on;
+}
 
 /*!
   Sets the \a layer of this layerable object. The object will be placed on top of the other objects
@@ -151,32 +136,27 @@ namespace QCP {
 
   Returns true if the layer of this layerable was successfully changed to \a layer.
 */
-    bool QCPLayerable::setLayer(QCPLayer *layer)
-    {
-        return moveToLayer(layer, false);
-    }
+bool QCPLayerable::setLayer(QCPLayer * layer) {
+    return moveToLayer(layer, false);
+}
 
 /*! \overload
   Sets the layer of this layerable object by name
 
   Returns true on success, i.e. if \a layerName is a valid layer name.
 */
-    bool QCPLayerable::setLayer(const QString &layerName)
-    {
-        if (!mParentPlot)
-        {
-            qDebug() << Q_FUNC_INFO << "no parent QCustomPlot set";
-            return false;
-        }
-        if (QCPLayer *layer = mParentPlot->layer(layerName))
-        {
-            return setLayer(layer);
-        } else
-        {
-            qDebug() << Q_FUNC_INFO << "there is no layer with name" << layerName;
-            return false;
-        }
+bool QCPLayerable::setLayer(const QString &layerName) {
+    if (!mParentPlot) {
+        qDebug() << Q_FUNC_INFO << "no parent QCustomPlot set";
+        return false;
     }
+    if (QCPLayer * layer = mParentPlot->layer(layerName)) {
+        return setLayer(layer);
+    } else {
+        qDebug() << Q_FUNC_INFO << "there is no layer with name" << layerName;
+        return false;
+    }
+}
 
 /*!
   Sets whether this object will be drawn antialiased or not.
@@ -184,10 +164,9 @@ namespace QCP {
   Note that antialiasing settings may be overridden by QCustomPlot::setAntialiasedElements and
   QCustomPlot::setNotAntialiasedElements.
 */
-    void QCPLayerable::setAntialiased(bool enabled)
-    {
-        mAntialiased = enabled;
-    }
+void QCPLayerable::setAntialiased(bool enabled) {
+    mAntialiased = enabled;
+}
 
 /*!
   Returns whether this layerable is visible, taking the visibility of the layerable parent and the
@@ -199,10 +178,10 @@ namespace QCP {
   layerable has its visibility set to true and the parent layerable's \ref realVisibility returns
   true.
 */
-    bool QCPLayerable::realVisibility() const
-    {
-        return mVisible && (!mLayer || mLayer->visible()) && (!mParentLayerable || mParentLayerable.data()->realVisibility());
-    }
+bool QCPLayerable::realVisibility() const {
+    return mVisible && (!mLayer || mLayer->visible()) &&
+           (!mParentLayerable || mParentLayerable.data()->realVisibility());
+}
 
 /*!
   This function is used to decide whether a click hits a layerable object or not.
@@ -243,13 +222,12 @@ namespace QCP {
   \see selectEvent, deselectEvent, mousePressEvent, wheelEvent, QCustomPlot::setInteractions,
   QCPAbstractPlottable1D::selectTestRect
 */
-    double QCPLayerable::selectTest(const QPointF &pos, bool onlySelectable, QVariant *details) const
-    {
-        Q_UNUSED(pos)
-        Q_UNUSED(onlySelectable)
-        Q_UNUSED(details)
-        return -1.0;
-    }
+double QCPLayerable::selectTest(const QPointF &pos, bool onlySelectable, QVariant *details) const {
+    Q_UNUSED(pos)
+    Q_UNUSED(onlySelectable)
+    Q_UNUSED(details)
+    return -1.0;
+}
 
 /*! \internal
 
@@ -268,20 +246,18 @@ namespace QCP {
   so they can react accordingly (e.g. also initialize the parent plot of child layerables, like
   QCPLayout does).
 */
-    void QCPLayerable::initializeParentPlot(QCustomPlot *parentPlot)
-    {
-        if (mParentPlot)
-        {
-            qDebug() << Q_FUNC_INFO << "called with mParentPlot already initialized";
-            return;
-        }
-
-        if (!parentPlot)
-            qDebug() << Q_FUNC_INFO << "called with parentPlot zero";
-
-        mParentPlot = parentPlot;
-        parentPlotInitialized(mParentPlot);
+void QCPLayerable::initializeParentPlot(QCustomPlot *parentPlot) {
+    if (mParentPlot) {
+        qDebug() << Q_FUNC_INFO << "called with mParentPlot already initialized";
+        return;
     }
+
+    if (!parentPlot)
+        qDebug() << Q_FUNC_INFO << "called with parentPlot zero";
+
+    mParentPlot = parentPlot;
+    parentPlotInitialized(mParentPlot);
+}
 
 /*! \internal
 
@@ -294,10 +270,9 @@ namespace QCP {
 
   \see realVisibility
 */
-    void QCPLayerable::setParentLayerable(QCPLayerable *parentLayerable)
-    {
-        mParentLayerable = parentLayerable;
-    }
+void QCPLayerable::setParentLayerable(QCPLayerable *parentLayerable) {
+    mParentLayerable = parentLayerable;
+}
 
 /*! \internal
 
@@ -307,29 +282,42 @@ namespace QCP {
 
   Returns true on success, i.e. if \a layer is a valid layer.
 */
-    bool QCPLayerable::moveToLayer(QCPLayer *layer, bool prepend)
-    {
-        if (layer && !mParentPlot)
-        {
-            qDebug() << Q_FUNC_INFO << "no parent QCustomPlot set";
-            return false;
-        }
-        if (layer && layer->parentPlot() != mParentPlot)
-        {
-            qDebug() << Q_FUNC_INFO << "layer" << layer->name() << "is not in same QCustomPlot as this layerable";
-            return false;
-        }
 
-        QCPLayer *oldLayer = mLayer;
-        if (mLayer)
-            mLayer->removeChild(this);
-        mLayer = layer;
-        if (mLayer)
-            mLayer->addChild(this, prepend);
-        if (mLayer != oldLayer)
-            emit layerChanged(mLayer);
-        return true;
-    }
+bool QCPLayerable::moveToLayer(QCPLayer * layer, bool
+prepend) {
+if (layer && !mParentPlot) {
+qDebug()
+
+<< Q_FUNC_INFO << "no parent QCustomPlot set";
+return false;
+}
+if (
+layer &&layer
+->
+
+parentPlot()
+
+!= mParentPlot) {
+qDebug()
+
+<< Q_FUNC_INFO << "layer" << layer->
+
+name()
+
+<< "is not in same QCustomPlot as this layerable";
+return false;
+}
+
+QCPLayer *oldLayer = mLayer;
+if (mLayer)
+mLayer->removeChild(this);
+mLayer = layer;
+if (mLayer)
+mLayer->addChild(this, prepend);
+if (mLayer != oldLayer)
+emit layerChanged(mLayer);
+return true;
+}
 
 /*! \internal
 
@@ -338,15 +326,15 @@ namespace QCP {
   QCustomPlot::setNotAntialiasedElements. Which override enum this function takes into account is
   controlled via \a overrideElement.
 */
-    void QCPLayerable::applyAntialiasingHint(QCPPainter *painter, bool localAntialiased, QCP::AntialiasedElement overrideElement) const
-    {
-        if (mParentPlot && mParentPlot->notAntialiasedElements().testFlag(overrideElement))
-            painter->setAntialiasing(false);
-        else if (mParentPlot && mParentPlot->antialiasedElements().testFlag(overrideElement))
-            painter->setAntialiasing(true);
-        else
-            painter->setAntialiasing(localAntialiased);
-    }
+void QCPLayerable::applyAntialiasingHint(QCPPainter *painter, bool localAntialiased,
+                                         AntialiasedElement overrideElement) const {
+    if (mParentPlot && mParentPlot->notAntialiasedElements().testFlag(overrideElement))
+        painter->setAntialiasing(false);
+    else if (mParentPlot && mParentPlot->antialiasedElements().testFlag(overrideElement))
+        painter->setAntialiasing(true);
+    else
+        painter->setAntialiasing(localAntialiased);
+}
 
 /*! \internal
 
@@ -364,10 +352,9 @@ namespace QCP {
 
   \see initializeParentPlot
 */
-    void QCPLayerable::parentPlotInitialized(QCustomPlot *parentPlot)
-    {
-        Q_UNUSED(parentPlot)
-    }
+void QCPLayerable::parentPlotInitialized(QCustomPlot *parentPlot) {
+    Q_UNUSED(parentPlot)
+}
 
 /*! \internal
 
@@ -380,10 +367,9 @@ namespace QCP {
 
   \see QCustomPlot::setInteractions
 */
-    QCP::Interaction QCPLayerable::selectionCategory() const
-    {
-        return QCP::iSelectOther;
-    }
+QCP::Interaction QCPLayerable::selectionCategory() const {
+    return QCP::iSelectOther;
+}
 
 /*! \internal
 
@@ -394,13 +380,12 @@ namespace QCP {
   The returned clipping rect is set on the painter before the draw function of the respective
   object is called.
 */
-    QRect QCPLayerable::clipRect() const
-    {
-        if (mParentPlot)
-            return mParentPlot->viewport();
-        else
-            return {};
-    }
+QRect QCPLayerable::clipRect() const {
+    if (mParentPlot)
+        return mParentPlot->viewport();
+    else
+        return {};
+}
 
 /*! \internal
 
@@ -430,13 +415,13 @@ namespace QCP {
 
   \see selectTest, deselectEvent
 */
-    void QCPLayerable::selectEvent(QMouseEvent *event, bool additive, const QVariant &details, bool *selectionStateChanged)
-    {
-        Q_UNUSED(event)
-        Q_UNUSED(additive)
-        Q_UNUSED(details)
-        Q_UNUSED(selectionStateChanged)
-    }
+void
+QCPLayerable::selectEvent(QMouseEvent *event, bool additive, const QVariant &details, bool *selectionStateChanged) {
+    Q_UNUSED(event)
+    Q_UNUSED(additive)
+    Q_UNUSED(details)
+    Q_UNUSED(selectionStateChanged)
+}
 
 /*! \internal
 
@@ -450,10 +435,9 @@ namespace QCP {
 
   \see selectTest, selectEvent
 */
-    void QCPLayerable::deselectEvent(bool *selectionStateChanged)
-    {
-        Q_UNUSED(selectionStateChanged)
-    }
+void QCPLayerable::deselectEvent(bool *selectionStateChanged) {
+    Q_UNUSED(selectionStateChanged)
+}
 
 /*!
   This event gets called when the user presses a mouse button while the cursor is over the
@@ -480,11 +464,10 @@ namespace QCP {
 
   \see mouseMoveEvent, mouseReleaseEvent, mouseDoubleClickEvent, wheelEvent
 */
-    void QCPLayerable::mousePressEvent(QMouseEvent *event, const QVariant &details)
-    {
-        Q_UNUSED(details)
-        event->ignore();
-    }
+void QCPLayerable::mousePressEvent(QMouseEvent *event, const QVariant &details) {
+    Q_UNUSED(details)
+    event->ignore();
+}
 
 /*!
   This event gets called when the user moves the mouse while holding a mouse button, after this
@@ -498,11 +481,10 @@ namespace QCP {
 
   \see mousePressEvent, mouseReleaseEvent, mouseDoubleClickEvent, wheelEvent
 */
-    void QCPLayerable::mouseMoveEvent(QMouseEvent *event, const QPointF &startPos)
-    {
-        Q_UNUSED(startPos)
-        event->ignore();
-    }
+void QCPLayerable::mouseMoveEvent(QMouseEvent *event, const QPointF &startPos) {
+    Q_UNUSED(startPos)
+    event->ignore();
+}
 
 /*!
   This event gets called when the user releases the mouse button, after this layerable has become
@@ -516,11 +498,10 @@ namespace QCP {
 
   \see mousePressEvent, mouseMoveEvent, mouseDoubleClickEvent, wheelEvent
 */
-    void QCPLayerable::mouseReleaseEvent(QMouseEvent *event, const QPointF &startPos)
-    {
-        Q_UNUSED(startPos)
-        event->ignore();
-    }
+void QCPLayerable::mouseReleaseEvent(QMouseEvent *event, const QPointF &startPos) {
+    Q_UNUSED(startPos)
+    event->ignore();
+}
 
 /*!
   This event gets called when the user presses the mouse button a second time in a double-click,
@@ -548,11 +529,10 @@ namespace QCP {
 
   \see mousePressEvent, mouseMoveEvent, mouseReleaseEvent, wheelEvent
 */
-    void QCPLayerable::mouseDoubleClickEvent(QMouseEvent *event, const QVariant &details)
-    {
-        Q_UNUSED(details)
-        event->ignore();
-    }
+void QCPLayerable::mouseDoubleClickEvent(QMouseEvent *event, const QVariant &details) {
+    Q_UNUSED(details)
+    event->ignore();
+}
 
 /*!
   This event gets called when the user turns the mouse scroll wheel while the cursor is over the
@@ -571,9 +551,6 @@ namespace QCP {
 
   \see mousePressEvent, mouseMoveEvent, mouseReleaseEvent, mouseDoubleClickEvent
 */
-    void QCPLayerable::wheelEvent(QWheelEvent *event)
-    {
-        event->ignore();
-    }
-
-} // QCP
+void QCPLayerable::wheelEvent(QWheelEvent *event) {
+    event->ignore();
+}

@@ -1,6 +1,6 @@
 #include "include/QCPAbstractLegendItem.hpp"
 
-namespace QCP {
+using namespace QCP;
 /*! \class QCPAbstractLegendItem
   \brief The abstract base class for all entries in a QCPLegend.
 
@@ -177,4 +177,3 @@ namespace QCP {
                 *selectionStateChanged = mSelected != selBefore;
         }
     }
-} // QCP

@@ -1,80 +1,100 @@
-#ifndef QCUSTOMPLOT_QCPABSTRACTITEM_H
-#define QCUSTOMPLOT_QCPABSTRACTITEM_H
+#ifndef QCUSTOMPLOT_QCPABSTRACTITEM_HPP
+#define QCUSTOMPLOT_QCPABSTRACTITEM_HPP
+
+#include "defs.hpp"
+#include "QCPLayerable.hpp"
+#include "QCPItemPosition.hpp"
+#include "QCPItemAnchor.hpp"
+#include "QCPPainter.hpp"
+#include "QCPAxisRect.hpp"
+#include "QCustomPlot.hpp"
+
+#include <QMouseEvent>
+#include <QString>
+#include <QList>
+#include <QPointF>
+#include <QVariant>
+#include <QRectF>
 
 namespace QCP {
 
-    class QCP_LIB_DECL QCPAbstractItem : public QCPLayerable
-{
+    class QCP_LIB_DECL QCPAbstractItem
+            : public QCPLayerable {
     Q_OBJECT
-    /// \cond INCLUDE_QPROPERTIES
-    Q_PROPERTY(bool clipToAxisRect READ clipToAxisRect WRITE setClipToAxisRect)
-    Q_PROPERTY(QCPAxisRect* clipAxisRect READ clipAxisRect WRITE setClipAxisRect)
-    Q_PROPERTY(bool selectable READ selectable WRITE setSelectable NOTIFY selectableChanged)
-    Q_PROPERTY(bool selected READ selected WRITE setSelected NOTIFY selectionChanged)
-    /// \endcond
+        /// \cond INCLUDE_QPROPERTIES
+        Q_PROPERTY(bool clipToAxisRect READ clipToAxisRect WRITE setClipToAxisRect)
+        Q_PROPERTY(QCPAxisRect *clipAxisRect READ clipAxisRect WRITE setClipAxisRect)
+        Q_PROPERTY(bool selectable READ selectable WRITE setSelectable NOTIFY selectableChanged)
+        Q_PROPERTY(bool selected READ selected WRITE setSelected NOTIFY selectionChanged)
+        /// \endcond
     public:
-    explicit QCPAbstractItem(QCustomPlot *parentPlot);
-    virtual ~QCPAbstractItem() Q_DECL_OVERRIDE;
+        Q_DISABLE_COPY(QCPAbstractItem)
 
-    // getters:
-    bool clipToAxisRect() const { return mClipToAxisRect; }
-    QCPAxisRect *clipAxisRect() const;
-    bool selectable() const { return mSelectable; }
-    bool selected() const { return mSelected; }
+        explicit QCPAbstractItem(QCustomPlot *parentPlot);
 
-    // setters:
-    void setClipToAxisRect(bool clip);
-    void setClipAxisRect(QCPAxisRect *rect);
-    Q_SLOT void setSelectable(bool selectable);
-    Q_SLOT void setSelected(bool selected);
+        ~QCPAbstractItem() override;
 
-    // reimplemented virtual methods:
-    virtual double selectTest(const QPointF &pos, bool onlySelectable, QVariant *details=nullptr) const Q_DECL_OVERRIDE = 0;
+        bool clipToAxisRect() const { return mClipToAxisRect; }
 
-    // non-virtual methods:
-    QList<QCPItemPosition*> positions() const { return mPositions; }
-    QList<QCPItemAnchor*> anchors() const { return mAnchors; }
-    QCPItemPosition *position(const QString &name) const;
-    QCPItemAnchor *anchor(const QString &name) const;
-    bool hasAnchor(const QString &name) const;
+        QCPAxisRect *clipAxisRect() const;
+
+        bool selectable() const { return mSelectable; }
+
+        bool selected() const { return mSelected; }
+
+        void setClipToAxisRect(bool clip);
+
+        void setClipAxisRect(QCPAxisRect *rect);
+
+        Q_SLOT void setSelectable(bool selectable);
+
+        Q_SLOT void setSelected(bool selected);
+
+        double selectTest(const QPointF &pos, bool onlySelectable, QVariant *details = nullptr) const override = 0;
+
+        QList<QCPItemPosition *> positions() const { return mPositions; }
+
+        QList<QCPItemAnchor *> anchors() const { return mAnchors; }
+
+        QCPItemPosition *position(const QString &name) const;
+
+        QCPItemAnchor *anchor(const QString &name) const;
+
+        bool hasAnchor(const QString &name) const;
 
     signals:
-    void selectionChanged(bool selected);
-    void selectableChanged(bool selectable);
+
+        void selectionChanged(bool selected);
+
+        void selectableChanged(bool selectable);
 
     protected:
-    // property members:
-    bool mClipToAxisRect;
-    QPointer<QCPAxisRect> mClipAxisRect;
-    QList<QCPItemPosition*> mPositions;
-    QList<QCPItemAnchor*> mAnchors;
-    bool mSelectable, mSelected;
+        bool mClipToAxisRect;
+        QPointer<QCPAxisRect> mClipAxisRect;
+        QList<QCPItemPosition *> mPositions;
+        QList<QCPItemAnchor *> mAnchors;
+        bool mSelectable, mSelected;
 
-    // reimplemented virtual methods:
-    virtual QCP::Interaction selectionCategory() const Q_DECL_OVERRIDE;
-    virtual QRect clipRect() const Q_DECL_OVERRIDE;
-    virtual void applyDefaultAntialiasingHint(QCPPainter *painter) const Q_DECL_OVERRIDE;
-    virtual void draw(QCPPainter *painter) Q_DECL_OVERRIDE = 0;
-    // events:
-    virtual void selectEvent(QMouseEvent *event, bool additive, const QVariant &details, bool *selectionStateChanged) Q_DECL_OVERRIDE;
-    virtual void deselectEvent(bool *selectionStateChanged) Q_DECL_OVERRIDE;
+        QCP::Interaction selectionCategory() const override;
 
-    // introduced virtual methods:
-    virtual QPointF anchorPixelPosition(int anchorId) const;
+        QRect clipRect() const override;
 
-    // non-virtual methods:
-    double rectDistance(const QRectF &rect, const QPointF &pos, bool filledRect) const;
-    QCPItemPosition *createPosition(const QString &name);
-    QCPItemAnchor *createAnchor(const QString &name, int anchorId);
+        void applyDefaultAntialiasingHint(QCPPainter *painter) const override;
 
-    private:
-    Q_DISABLE_COPY(QCPAbstractItem)
+        void draw(QCPPainter *painter) override = 0;
 
-    friend class QCustomPlot;
-    friend class QCPItemAnchor;
-};
+        void selectEvent(QMouseEvent *event, bool additive, const QVariant &details,
+                         bool *selectionStateChanged) override;
 
+        void deselectEvent(bool *selectionStateChanged) override;
 
-} // QCP
+        virtual QPointF anchorPixelPosition(int anchorId) const;
 
-#endif //QCUSTOMPLOT_QCPABSTRACTITEM_H
+        double rectDistance(const QRectF &rect, const QPointF &pos, bool filledRect) const;
+
+        QCPItemPosition *createPosition(const QString &name);
+
+        QCPItemAnchor *createAnchor(const QString &name, int anchorId);
+    };
+}
+#endif

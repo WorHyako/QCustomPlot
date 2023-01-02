@@ -1,6 +1,8 @@
-#include "include/QCPLayoutElement.hpp"
+#include "QCPLayoutElement.hpp"
+#include "inlines.hpp"
 
-namespace QCP {
+using namespace QCP;
+
 /*! \class QCPLayoutElement
   \brief The abstract base class for all objects that form \ref thelayoutsystem "the layout system".
 
@@ -26,8 +28,6 @@ namespace QCP {
   instance, actually derives from QCPLayoutGrid and the individual legend items are child layout
   elements in the grid layout.
 */
-
-/* start documentation of inline functions */
 
 /*! \fn QCPLayout *QCPLayoutElement::layout() const
 
@@ -58,32 +58,29 @@ namespace QCP {
   \see rect
 */
 
-/* end documentation of inline functions */
-
 /*!
   Creates an instance of QCPLayoutElement and sets default values.
 */
-    QCPLayoutElement::QCPLayoutElement(QCustomPlot *parentPlot) :
-    QCPLayerable(parentPlot), // parenthood is changed as soon as layout element gets inserted into a layout (except for top level layout)
-    mParentLayout(nullptr),
-    mMinimumSize(),
-    mMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX),
-    mSizeConstraintRect(scrInnerRect),
-    mRect(0, 0, 0, 0),
-    mOuterRect(0, 0, 0, 0),
-    mMargins(0, 0, 0, 0),
-    mMinimumMargins(0, 0, 0, 0),
-    mAutoMargins(QCP::msAll)
-    {
-    }
+QCPLayoutElement::QCPLayoutElement(QCustomPlot *parentPlot) :
+        QCPLayerable(
+                parentPlot), // parenthood is changed as soon as layout element gets inserted into a layout (except for top level layout)
+        mParentLayout(nullptr),
+        mMinimumSize(),
+        mMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX),
+        mSizeConstraintRect(scrInnerRect),
+        mRect(0, 0, 0, 0),
+        mOuterRect(0, 0, 0, 0),
+        mMargins(0, 0, 0, 0),
+        mMinimumMargins(0, 0, 0, 0),
+        mAutoMargins(QCP::msAll) {
+}
 
-    QCPLayoutElement::~QCPLayoutElement()
-    {
-        setMarginGroup(QCP::msAll, nullptr); // unregister at margin groups, if there are any
+QCPLayoutElement::~QCPLayoutElement() {
+    setMarginGroup(QCP::msAll, nullptr); // unregister at margin groups, if there are any
 // unregister at layout:
-        if (qobject_cast<QCPLayout*>(mParentLayout)) // the qobject_cast is just a safeguard in case the layout forgets to call clear() in its dtor and this dtor is called by QObject dtor
-            mParentLayout->take(this);
-    }
+    if (reinterpret_cast<QCPLayout *>(mParentLayout)) // the qobject_cast is just a safeguard in case the layout forgets to call clear() in its dtor and this dtor is called by QObject dtor
+        mParentLayout->take(this);
+}
 
 /*!
   Sets the outer rect of this layout element. If the layout element is inside a layout, the layout
@@ -96,14 +93,12 @@ namespace QCP {
 
   \see rect
 */
-    void QCPLayoutElement::setOuterRect(const QRect &rect)
-    {
-        if (mOuterRect != rect)
-        {
-            mOuterRect = rect;
-            mRect = mOuterRect.adjusted(mMargins.left(), mMargins.top(), -mMargins.right(), -mMargins.bottom());
-        }
+void QCPLayoutElement::setOuterRect(const QRect &rect) {
+    if (mOuterRect != rect) {
+        mOuterRect = rect;
+        mRect = mOuterRect.adjusted(mMargins.left(), mMargins.top(), -mMargins.right(), -mMargins.bottom());
     }
+}
 
 /*!
   Sets the margins of this layout element. If \ref setAutoMargins is disabled for some or all
@@ -116,14 +111,12 @@ namespace QCP {
 
   \see setAutoMargins
 */
-    void QCPLayoutElement::setMargins(const QMargins &margins)
-    {
-        if (mMargins != margins)
-        {
-            mMargins = margins;
-            mRect = mOuterRect.adjusted(mMargins.left(), mMargins.top(), -mMargins.right(), -mMargins.bottom());
-        }
+void QCPLayoutElement::setMargins(const QMargins &margins) {
+    if (mMargins != margins) {
+        mMargins = margins;
+        mRect = mOuterRect.adjusted(mMargins.left(), mMargins.top(), -mMargins.right(), -mMargins.bottom());
     }
+}
 
 /*!
   If \ref setAutoMargins is enabled on some or all margins, this function is used to provide
@@ -134,13 +127,11 @@ namespace QCP {
 
   \see setAutoMargins
 */
-    void QCPLayoutElement::setMinimumMargins(const QMargins &margins)
-    {
-        if (mMinimumMargins != margins)
-        {
-            mMinimumMargins = margins;
-        }
+void QCPLayoutElement::setMinimumMargins(const QMargins &margins) {
+    if (mMinimumMargins != margins) {
+        mMinimumMargins = margins;
     }
+}
 
 /*!
   Sets on which sides the margin shall be calculated automatically. If a side is calculated
@@ -152,10 +143,9 @@ namespace QCP {
 
   \see setMinimumMargins, setMargins, QCP::MarginSide
 */
-    void QCPLayoutElement::setAutoMargins(QCP::MarginSides sides)
-    {
-        mAutoMargins = sides;
-    }
+void QCPLayoutElement::setAutoMargins(QCP::MarginSides sides) {
+    mAutoMargins = sides;
+}
 
 /*!
   Sets the minimum size of this layout element. A parent layout tries to respect the \a size here
@@ -169,15 +159,13 @@ namespace QCP {
   Whether this constraint applies to the inner or the outer rect can be specified with \ref
   setSizeConstraintRect (see \ref rect and \ref outerRect).
 */
-    void QCPLayoutElement::setMinimumSize(const QSize &size)
-    {
-        if (mMinimumSize != size)
-        {
-            mMinimumSize = size;
-            if (mParentLayout)
-                mParentLayout->sizeConstraintsChanged();
-        }
+void QCPLayoutElement::setMinimumSize(const QSize &size) {
+    if (mMinimumSize != size) {
+        mMinimumSize = size;
+        if (mParentLayout)
+            mParentLayout->sizeConstraintsChanged();
     }
+}
 
 /*! \overload
 
@@ -186,10 +174,9 @@ namespace QCP {
   Whether this constraint applies to the inner or the outer rect can be specified with \ref
   setSizeConstraintRect (see \ref rect and \ref outerRect).
 */
-    void QCPLayoutElement::setMinimumSize(int width, int height)
-    {
-        setMinimumSize(QSize(width, height));
-    }
+void QCPLayoutElement::setMinimumSize(int width, int height) {
+    setMinimumSize(QSize(width, height));
+}
 
 /*!
   Sets the maximum size of this layout element. A parent layout tries to respect the \a size here
@@ -198,15 +185,13 @@ namespace QCP {
   Whether this constraint applies to the inner or the outer rect can be specified with \ref
   setSizeConstraintRect (see \ref rect and \ref outerRect).
 */
-    void QCPLayoutElement::setMaximumSize(const QSize &size)
-    {
-        if (mMaximumSize != size)
-        {
-            mMaximumSize = size;
-            if (mParentLayout)
-                mParentLayout->sizeConstraintsChanged();
-        }
+void QCPLayoutElement::setMaximumSize(const QSize &size) {
+    if (mMaximumSize != size) {
+        mMaximumSize = size;
+        if (mParentLayout)
+            mParentLayout->sizeConstraintsChanged();
     }
+}
 
 /*! \overload
 
@@ -215,10 +200,9 @@ namespace QCP {
   Whether this constraint applies to the inner or the outer rect can be specified with \ref
   setSizeConstraintRect (see \ref rect and \ref outerRect).
 */
-    void QCPLayoutElement::setMaximumSize(int width, int height)
-    {
-        setMaximumSize(QSize(width, height));
-    }
+void QCPLayoutElement::setMaximumSize(int width, int height) {
+    setMaximumSize(QSize(width, height));
+}
 
 /*!
   Sets to which rect of a layout element the size constraints apply. Size constraints can be set
@@ -229,15 +213,13 @@ namespace QCP {
 
   \see setMinimumSize, setMaximumSize
 */
-    void QCPLayoutElement::setSizeConstraintRect(SizeConstraintRect constraintRect)
-    {
-        if (mSizeConstraintRect != constraintRect)
-        {
-            mSizeConstraintRect = constraintRect;
-            if (mParentLayout)
-                mParentLayout->sizeConstraintsChanged();
-        }
+void QCPLayoutElement::setSizeConstraintRect(SizeConstraintRect constraintRect) {
+    if (mSizeConstraintRect != constraintRect) {
+        mSizeConstraintRect = constraintRect;
+        if (mParentLayout)
+            mParentLayout->sizeConstraintsChanged();
     }
+}
 
 /*!
   Sets the margin \a group of the specified margin \a sides.
@@ -252,33 +234,28 @@ namespace QCP {
 
   \see QCP::MarginSide
 */
-    void QCPLayoutElement::setMarginGroup(QCP::MarginSides sides, QCPMarginGroup *group)
-    {
-        QVector<QCP::MarginSide> sideVector;
-        if (sides.testFlag(QCP::msLeft)) sideVector.append(QCP::msLeft);
-        if (sides.testFlag(QCP::msRight)) sideVector.append(QCP::msRight);
-        if (sides.testFlag(QCP::msTop)) sideVector.append(QCP::msTop);
-        if (sides.testFlag(QCP::msBottom)) sideVector.append(QCP::msBottom);
+void QCPLayoutElement::setMarginGroup(QCP::MarginSides sides, QCPMarginGroup *group) {
+    QVector<QCP::MarginSide> sideVector;
+    if (sides.testFlag(msLeft)) sideVector.append(msLeft);
+    if (sides.testFlag(msRight)) sideVector.append(msRight);
+    if (sides.testFlag(msTop)) sideVector.append(msTop);
+    if (sides.testFlag(msBottom)) sideVector.append(msBottom);
 
-        foreach (QCP::MarginSide side, sideVector)
-        {
-            if (marginGroup(side) != group)
-            {
-                QCPMarginGroup *oldGroup = marginGroup(side);
+            foreach (QCP::MarginSide side, sideVector) {
+            if (marginGroup(side) != group) {
+                QCPMarginGroup * oldGroup = marginGroup(side);
                 if (oldGroup) // unregister at old group
                     oldGroup->removeChild(side, this);
 
-                if (!group) // if setting to 0, remove hash entry. Else set hash entry to new group and register there
-                {
+                if (!group) { // if setting to 0, remove hash entry. Else set hash entry to new group and register there
                     mMarginGroups.remove(side);
-                } else // setting to a new group
-                {
+                } else { // setting to a new group
                     mMarginGroups[side] = group;
                     group->addChild(side, this);
                 }
             }
         }
-    }
+}
 
 /*!
   Updates the layout element and sub-elements. This function is automatically called before every
@@ -292,32 +269,31 @@ namespace QCP {
   The default implementation executes the automatic margin mechanism in the \ref upMargins phase.
   Subclasses should make sure to call the base class implementation.
 */
-    void QCPLayoutElement::update(UpdatePhase phase)
-    {
-        if (phase == upMargins)
-        {
-            if (mAutoMargins != QCP::msNone)
-            {
+void QCPLayoutElement::update(UpdatePhase phase) {
+    if (phase == upMargins) {
+        if (mAutoMargins != QCP::msNone) {
 // set the margins of this layout element according to automatic margin calculation, either directly or via a margin group:
-                QMargins newMargins = mMargins;
-                const QList<QCP::MarginSide> allMarginSides = QList<QCP::MarginSide>() << QCP::msLeft << QCP::msRight << QCP::msTop << QCP::msBottom;
-                foreach (QCP::MarginSide side, allMarginSides)
-                {
+            QMargins newMargins = mMargins;
+            const QList<QCP::MarginSide> allMarginSides =
+                    QList<QCP::MarginSide>() << QCP::msLeft << QCP::msRight << QCP::msTop << QCP::msBottom;
+                    foreach (QCP::MarginSide side, allMarginSides) {
                     if (mAutoMargins.testFlag(side)) // this side's margin shall be calculated automatically
                     {
                         if (mMarginGroups.contains(side))
-                            QCP::setMarginValue(newMargins, side, mMarginGroups[side]->commonMargin(side)); // this side is part of a margin group, so get the margin value from that group
+                            QCP::setMarginValue(newMargins, side, mMarginGroups[side]->commonMargin(side));
+                            // this side is part of a margin group, so get the margin value from that group
                         else
-                            QCP::setMarginValue(newMargins, side, calculateAutoMargin(side)); // this side is not part of a group, so calculate the value directly
+                            QCP::setMarginValue(newMargins, side, calculateAutoMargin(side));
+                        // this side is not part of a group, so calculate the value directly
 // apply minimum margin restrictions:
                         if (QCP::getMarginValue(newMargins, side) < QCP::getMarginValue(mMinimumMargins, side))
                             QCP::setMarginValue(newMargins, side, QCP::getMarginValue(mMinimumMargins, side));
                     }
                 }
-                setMargins(newMargins);
-            }
+            setMargins(newMargins);
         }
     }
+}
 
 /*!
   Returns the suggested minimum size this layout element (the \ref outerRect) may be compressed to,
@@ -333,10 +309,9 @@ namespace QCP {
   sum of the vertical margins for the height. Reimplementations may use their detailed knowledge
   about the layout element's content to provide size hints.
 */
-    QSize QCPLayoutElement::minimumOuterSizeHint() const
-    {
-        return {mMargins.left()+mMargins.right(), mMargins.top()+mMargins.bottom()};
-    }
+QSize QCPLayoutElement::minimumOuterSizeHint() const {
+    return {mMargins.left() + mMargins.right(), mMargins.top() + mMargins.bottom()};
+}
 
 /*!
   Returns the suggested maximum size this layout element (the \ref outerRect) may be expanded to,
@@ -352,10 +327,9 @@ namespace QCP {
   no suggested maximum size. Reimplementations may use their detailed knowledge about the layout
   element's content to provide size hints.
 */
-    QSize QCPLayoutElement::maximumOuterSizeHint() const
-    {
-        return {QWIDGETSIZE_MAX, QWIDGETSIZE_MAX};
-    }
+QSize QCPLayoutElement::maximumOuterSizeHint() const {
+    return {QWIDGETSIZE_MAX, QWIDGETSIZE_MAX};
+}
 
 /*!
   Returns a list of all child elements in this layout element. If \a recursive is true, all
@@ -364,11 +338,10 @@ namespace QCP {
   \warning There may be \c nullptr entries in the returned list. For example, QCPLayoutGrid may
   have empty cells which yield \c nullptr at the respective index.
 */
-    QList<QCPLayoutElement*> QCPLayoutElement::elements(bool recursive) const
-    {
-        Q_UNUSED(recursive)
-        return QList<QCPLayoutElement*>();
-    }
+QList<QCPLayoutElement *> QCPLayoutElement::elements(bool recursive) const {
+    Q_UNUSED(recursive)
+    return QList<QCPLayoutElement *>();
+}
 
 /*!
   Layout elements are sensitive to events inside their outer rect. If \a pos is within the outer
@@ -381,39 +354,34 @@ namespace QCP {
   QCPLayoutElement subclasses may reimplement this method to provide more specific selection test
   behaviour.
 */
-    double QCPLayoutElement::selectTest(const QPointF &pos, bool onlySelectable, QVariant *details) const
-    {
-        Q_UNUSED(details)
+double QCPLayoutElement::selectTest(const QPointF &pos, bool onlySelectable, QVariant *details) const {
+    Q_UNUSED(details)
 
-        if (onlySelectable)
-            return -1;
+    if (onlySelectable)
+        return -1;
 
-        if (QRectF(mOuterRect).contains(pos))
-        {
-            if (mParentPlot)
-                return mParentPlot->selectionTolerance()*0.99;
-            else
-            {
-                qDebug() << Q_FUNC_INFO << "parent plot not defined";
-                return -1;
-            }
-        } else
+    if (QRectF(mOuterRect).contains(pos)) {
+        if (mParentPlot)
+            return mParentPlot->selectionTolerance() * 0.99;
+        else {
+            qDebug() << Q_FUNC_INFO << "parent plot not defined";
             return -1;
-    }
+        }
+    } else
+        return -1;
+}
 
 /*! \internal
 
   propagates the parent plot initialization to all child elements, by calling \ref
   QCPLayerable::initializeParentPlot on them.
 */
-    void QCPLayoutElement::parentPlotInitialized(QCustomPlot *parentPlot)
-    {
-        foreach (QCPLayoutElement *el, elements(false))
-        {
+void QCPLayoutElement::parentPlotInitialized(QCustomPlot *parentPlot) {
+            foreach (QCPLayoutElement *el, elements(false)) {
             if (!el->parentPlot())
                 el->initializeParentPlot(parentPlot);
         }
-    }
+}
 
 /*! \internal
 
@@ -424,10 +392,9 @@ namespace QCP {
   The default implementation just returns the respective manual margin (\ref setMargins) or the
   minimum margin, whichever is larger.
 */
-    int QCPLayoutElement::calculateAutoMargin(QCP::MarginSide side)
-    {
-        return qMax(QCP::getMarginValue(mMargins, side), QCP::getMarginValue(mMinimumMargins, side));
-    }
+int QCPLayoutElement::calculateAutoMargin(QCP::MarginSide side) {
+    return qMax(QCP::getMarginValue(mMargins, side), QCP::getMarginValue(mMinimumMargins, side));
+}
 
 /*! \internal
 
@@ -440,8 +407,5 @@ namespace QCP {
 
   The default implementation does nothing.
 */
-    void QCPLayoutElement::layoutChanged()
-    {
-    }
-
-} // QCP
+void QCPLayoutElement::layoutChanged() {
+}

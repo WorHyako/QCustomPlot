@@ -1,6 +1,7 @@
 #include "include/QCPAxis.hpp"
 
-namespace QCP {
+using namespace QCP;
+
 /*! \class QCPAxis
   \brief Manages a single axis inside a QCustomPlot.
 
@@ -22,8 +23,6 @@ namespace QCP {
   the specialized subclasses, or your own subclass) via \ref setTicker. For details, see the
   documentation of QCPAxisTicker.
 */
-
-/* start of documentation of inline functions */
 
 /*! \fn Qt::Orientation QCPAxis::orientation() const
 
@@ -81,9 +80,6 @@ namespace QCP {
   \see setTicker
 */
 
-/* end of documentation of inline functions */
-/* start of documentation of signals */
-
 /*! \fn void QCPAxis::rangeChanged(const QCPRange &newRange)
 
   This signal is emitted when the range of this axis has changed. You can connect it to the \ref
@@ -121,8 +117,6 @@ namespace QCP {
 
   This signal is emitted when the selectability changes, by calls to \ref setSelectableParts
 */
-
-/* end of documentation of signals */
 
 /*!
   Constructs an Axis instance of Type \a type for the axis rect \a parent.
@@ -1803,10 +1797,7 @@ int QCPAxis::calculateMargin()
 }
 
 /* inherits documentation from base class */
-QCP::Interaction QCPAxis::selectionCategory() const
+Interaction QCPAxis::selectionCategory() const
 {
-    return QCP::iSelectAxes;
+    return iSelectAxes;
 }
-
-
-} // QCP

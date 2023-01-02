@@ -1,60 +1,67 @@
-#ifndef QCUSTOMPLOT_QCPGRID_H
-#define QCUSTOMPLOT_QCPGRID_H
+#ifndef QCUSTOMPLOT_QCPGRID_HPP
+#define QCUSTOMPLOT_QCPGRID_HPP
+
+#include "defs.hpp"
+#include "QCPLayerable.hpp"
+#include "QCPPainter.hpp"
+
+#include <QObject>
 
 namespace QCP {
 
-    class QCP_LIB_DECL QCPGrid :public QCPLayerable
-{
+    class QCP_LIB_DECL QCPGrid : public QCPLayerable {
     Q_OBJECT
-    /// \cond INCLUDE_QPROPERTIES
-    Q_PROPERTY(bool subGridVisible READ subGridVisible WRITE setSubGridVisible)
-    Q_PROPERTY(bool antialiasedSubGrid READ antialiasedSubGrid WRITE setAntialiasedSubGrid)
-    Q_PROPERTY(bool antialiasedZeroLine READ antialiasedZeroLine WRITE setAntialiasedZeroLine)
-    Q_PROPERTY(QPen pen READ pen WRITE setPen)
-    Q_PROPERTY(QPen subGridPen READ subGridPen WRITE setSubGridPen)
-    Q_PROPERTY(QPen zeroLinePen READ zeroLinePen WRITE setZeroLinePen)
-    /// \endcond
+        /// \cond INCLUDE_QPROPERTIES
+        Q_PROPERTY(bool subGridVisible READ subGridVisible WRITE setSubGridVisible)
+        Q_PROPERTY(bool antialiasedSubGrid READ antialiasedSubGrid WRITE setAntialiasedSubGrid)
+        Q_PROPERTY(bool antialiasedZeroLine READ antialiasedZeroLine WRITE setAntialiasedZeroLine)
+        Q_PROPERTY(QPen pen READ pen WRITE setPen)
+        Q_PROPERTY(QPen subGridPen READ subGridPen WRITE setSubGridPen)
+        Q_PROPERTY(QPen zeroLinePen READ zeroLinePen WRITE setZeroLinePen)
     public:
-    explicit QCPGrid(QCPAxis *parentAxis);
+        /// \endcond
+        explicit QCPGrid(QCPAxis *parentAxis);
 
-    // getters:
-    bool subGridVisible() const { return mSubGridVisible; }
-    bool antialiasedSubGrid() const { return mAntialiasedSubGrid; }
-    bool antialiasedZeroLine() const { return mAntialiasedZeroLine; }
-    QPen pen() const { return mPen; }
-    QPen subGridPen() const { return mSubGridPen; }
-    QPen zeroLinePen() const { return mZeroLinePen; }
+        virtual ~QCPGrid() = default;
 
-    // setters:
-    void setSubGridVisible(bool visible);
-    void setAntialiasedSubGrid(bool enabled);
-    void setAntialiasedZeroLine(bool enabled);
-    void setPen(const QPen &pen);
-    void setSubGridPen(const QPen &pen);
-    void setZeroLinePen(const QPen &pen);
+        bool subGridVisible() const { return mSubGridVisible; }
+
+        bool antialiasedSubGrid() const { return mAntialiasedSubGrid; }
+
+        bool antialiasedZeroLine() const { return mAntialiasedZeroLine; }
+
+        QPen pen() const { return mPen; }
+
+        QPen subGridPen() const { return mSubGridPen; }
+
+        QPen zeroLinePen() const { return mZeroLinePen; }
+
+        void setSubGridVisible(bool visible);
+
+        void setAntialiasedSubGrid(bool enabled);
+
+        void setAntialiasedZeroLine(bool enabled);
+
+        void setPen(const QPen &pen);
+
+        void setSubGridPen(const QPen &pen);
+
+        void setZeroLinePen(const QPen &pen);
 
     protected:
-    // property members:
-    bool mSubGridVisible;
-    bool mAntialiasedSubGrid, mAntialiasedZeroLine;
-    QPen mPen, mSubGridPen, mZeroLinePen;
+        bool mSubGridVisible;
+        bool mAntialiasedSubGrid, mAntialiasedZeroLine;
+        QPen mPen, mSubGridPen, mZeroLinePen;
 
-    // non-property members:
-    QCPAxis *mParentAxis;
+        QCPAxis *mParentAxis;
 
-    // reimplemented virtual methods:
-    virtual void applyDefaultAntialiasingHint(QCPPainter *painter) const Q_DECL_OVERRIDE;
-    virtual void draw(QCPPainter *painter) Q_DECL_OVERRIDE;
+        void applyDefaultAntialiasingHint(QCPPainter *painter) const override;
 
-    // non-virtual methods:
-    void drawGridLines(QCPPainter *painter) const;
-    void drawSubGridLines(QCPPainter *painter) const;
+        void draw(QCPPainter *painter) override;
 
-    friend class QCPAxis;
-};
+        void drawGridLines(QCPPainter *painter) const;
 
-
-
-} // QCP
-
-#endif //QCUSTOMPLOT_QCPGRID_H
+        void drawSubGridLines(QCPPainter *painter) const;
+    };
+}
+#endif

@@ -1,27 +1,34 @@
-#ifndef QCUSTOMPLOT_QCPGRAPHDATA_H
-#define QCUSTOMPLOT_QCPGRAPHDATA_H
+#ifndef QCUSTOMPLOT_QCPGRAPHDATA_HPP
+#define QCUSTOMPLOT_QCPGRAPHDATA_HPP
+
+#include "defs.hpp"
+#include "QCPRange.hpp"
+#include "QCPDataContainer.hpp"
+
+#include <QtCore>
 
 namespace QCP {
 
-    class QCP_LIB_DECL QCPGraphData
-            {
-                    public:
-                    QCPGraphData();
-                    QCPGraphData(double key, double value);
+    class QCP_LIB_DECL QCPGraphData {
+    public:
+        QCPGraphData();
 
-                    inline double sortKey() const { return key; }
-                    inline static QCPGraphData fromSortKey(double sortKey) { return QCPGraphData(sortKey, 0); }
-                    inline static bool sortKeyIsMainKey() { return true; }
+        QCPGraphData(double key, double value);
 
-                    inline double mainKey() const { return key; }
-                    inline double mainValue() const { return value; }
+        inline double sortKey() const { return key; }
 
-                    inline QCPRange valueRange() const { return QCPRange(value, value); }
+        inline static QCPGraphData fromSortKey(double sortKey) { return QCPGraphData(sortKey, 0); }
 
-                    double key, value;
-            };
-    Q_DECLARE_TYPEINFO(QCPGraphData, Q_PRIMITIVE_TYPE);
+        inline static bool sortKeyIsMainKey() { return true; }
 
+        inline double mainKey() const { return key; }
+
+        inline double mainValue() const { return value; }
+
+        inline QCPRange valueRange() const { return QCPRange(value, value); }
+
+        double key, value;
+    };
 
 /*! \typedef QCPGraphDataContainer
 
@@ -33,7 +40,7 @@ namespace QCP {
   \see QCPGraphData, QCPGraph::setData
 */
     typedef QCPDataContainer<QCPGraphData> QCPGraphDataContainer;
+}
+Q_DECLARE_TYPEINFO(QCP::QCPGraphData, Q_PRIMITIVE_TYPE);
 
-} // QCP
-
-#endif //QCUSTOMPLOT_QCPGRAPHDATA_H
+#endif

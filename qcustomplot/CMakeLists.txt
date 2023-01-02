@@ -2,7 +2,7 @@ file(GLOB_RECURSE Sources *.cpp)
 
 add_library(qcustomplot STATIC)
 target_sources(qcustomplot PRIVATE ${Sources})
-set(includes newFiles newFiles/extra)
+set(includes extra include)
 target_include_directories(qcustomplot PRIVATE ${includes})
 target_link_libraries(qcustomplot PUBLIC
         Qt6::Core

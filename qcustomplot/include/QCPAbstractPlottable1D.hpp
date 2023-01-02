@@ -1,32 +1,52 @@
-#ifndef QCUSTOMPLOT_QCPABSTRACTPLOTTABLE1D_H
-#define QCUSTOMPLOT_QCPABSTRACTPLOTTABLE1D_H
+#ifndef QCUSTOMPLOT_QCPABSTRACTPLOTTABLE1D_HPP
+#define QCUSTOMPLOT_QCPABSTRACTPLOTTABLE1D_HPP
+
+#include "QCPPlottableInterface1D.hpp"
+#include "QCPAbstractPlottable.hpp"
+#include "QCPAxis.hpp"
+#include "QCPRange.hpp"
+#include "QCPDataRange.hpp"
+#include "QCPDataSelection.hpp"
+#include "QCPDataContainer.hpp"
 
 namespace QCP {
 
-
-    template <class DataType>
-    class QCPAbstractPlottable1D : public QCPAbstractPlottable, public QCPPlottableInterface1D // no QCP_LIB_DECL, template class ends up in header (cpp included below)
+    template<class DataType>
+    class QCPAbstractPlottable1D
+            : public QCPAbstractPlottable,
+              public QCPPlottableInterface1D // no QCP_LIB_DECL, template class ends up in header (cpp included below)
     {
         // No Q_OBJECT macro due to template class
-
     public:
         QCPAbstractPlottable1D(QCPAxis *keyAxis, QCPAxis *valueAxis);
+
         virtual ~QCPAbstractPlottable1D() Q_DECL_OVERRIDE;
 
         // virtual methods of 1d plottable interface:
         virtual int dataCount() const Q_DECL_OVERRIDE;
+
         virtual double dataMainKey(int index) const Q_DECL_OVERRIDE;
+
         virtual double dataSortKey(int index) const Q_DECL_OVERRIDE;
+
         virtual double dataMainValue(int index) const Q_DECL_OVERRIDE;
+
         virtual QCPRange dataValueRange(int index) const Q_DECL_OVERRIDE;
+
         virtual QPointF dataPixelPosition(int index) const Q_DECL_OVERRIDE;
+
         virtual bool sortKeyIsMainKey() const Q_DECL_OVERRIDE;
+
         virtual QCPDataSelection selectTestRect(const QRectF &rect, bool onlySelectable) const Q_DECL_OVERRIDE;
-        virtual int findBegin(double sortKey, bool expandedRange=true) const Q_DECL_OVERRIDE;
-        virtual int findEnd(double sortKey, bool expandedRange=true) const Q_DECL_OVERRIDE;
+
+        virtual int findBegin(double sortKey, bool expandedRange = true) const Q_DECL_OVERRIDE;
+
+        virtual int findEnd(double sortKey, bool expandedRange = true) const Q_DECL_OVERRIDE;
 
         // reimplemented virtual methods:
-        virtual double selectTest(const QPointF &pos, bool onlySelectable, QVariant *details=nullptr) const Q_DECL_OVERRIDE;
+        virtual double
+        selectTest(const QPointF &pos, bool onlySelectable, QVariant *details = nullptr) const Q_DECL_OVERRIDE;
+
         virtual QCPPlottableInterface1D *interface1D() Q_DECL_OVERRIDE { return this; }
 
     protected:
@@ -35,6 +55,7 @@ namespace QCP {
 
         // helpers for subclasses:
         void getDataSegments(QList<QCPDataRange> &selectedSegments, QList<QCPDataRange> &unselectedSegments) const;
+
         void drawPolyline(QCPPainter *painter, const QVector<QPointF> &lineData) const;
 
     private:
@@ -66,8 +87,6 @@ namespace QCP {
   again, to provide a more accurate hit test based on their specific data visualization geometry.
 */
 
-/* start documentation of inline functions */
-
 /*! \fn QCPPlottableInterface1D *QCPAbstractPlottable1D::interface1D()
 
   Returns a \ref QCPPlottableInterface1D pointer to this plottable, providing access to its 1D
@@ -76,44 +95,36 @@ namespace QCP {
   \seebaseclassmethod
 */
 
-/* end documentation of inline functions */
-
 /*!
   Forwards \a keyAxis and \a valueAxis to the \ref QCPAbstractPlottable::QCPAbstractPlottable
   "QCPAbstractPlottable" constructor and allocates the \a mDataContainer.
 */
-    template <class DataType>
+    template<class DataType>
     QCPAbstractPlottable1D<DataType>::QCPAbstractPlottable1D(QCPAxis *keyAxis, QCPAxis *valueAxis) :
             QCPAbstractPlottable(keyAxis, valueAxis),
-            mDataContainer(new QCPDataContainer<DataType>)
-    {
+            mDataContainer(new QCPDataContainer<DataType>) {
     }
 
-    template <class DataType>
-    QCPAbstractPlottable1D<DataType>::~QCPAbstractPlottable1D()
-    {
+    template<class DataType>
+    QCPAbstractPlottable1D<DataType>::~QCPAbstractPlottable1D() {
     }
 
 /*!
   \copydoc QCPPlottableInterface1D::dataCount
 */
-    template <class DataType>
-    int QCPAbstractPlottable1D<DataType>::dataCount() const
-    {
+    template<class DataType>
+    int QCPAbstractPlottable1D<DataType>::dataCount() const {
         return mDataContainer->size();
     }
 
 /*!
   \copydoc QCPPlottableInterface1D::dataMainKey
 */
-    template <class DataType>
-    double QCPAbstractPlottable1D<DataType>::dataMainKey(int index) const
-    {
-        if (index >= 0 && index < mDataContainer->size())
-        {
-            return (mDataContainer->constBegin()+index)->mainKey();
-        } else
-        {
+    template<class DataType>
+    double QCPAbstractPlottable1D<DataType>::dataMainKey(int index) const {
+        if (index >= 0 && index < mDataContainer->size()) {
+            return (mDataContainer->constBegin() + index)->mainKey();
+        } else {
             qDebug() << Q_FUNC_INFO << "Index out of bounds" << index;
             return 0;
         }
@@ -122,14 +133,11 @@ namespace QCP {
 /*!
   \copydoc QCPPlottableInterface1D::dataSortKey
 */
-    template <class DataType>
-    double QCPAbstractPlottable1D<DataType>::dataSortKey(int index) const
-    {
-        if (index >= 0 && index < mDataContainer->size())
-        {
-            return (mDataContainer->constBegin()+index)->sortKey();
-        } else
-        {
+    template<class DataType>
+    double QCPAbstractPlottable1D<DataType>::dataSortKey(int index) const {
+        if (index >= 0 && index < mDataContainer->size()) {
+            return (mDataContainer->constBegin() + index)->sortKey();
+        } else {
             qDebug() << Q_FUNC_INFO << "Index out of bounds" << index;
             return 0;
         }
@@ -138,14 +146,11 @@ namespace QCP {
 /*!
   \copydoc QCPPlottableInterface1D::dataMainValue
 */
-    template <class DataType>
-    double QCPAbstractPlottable1D<DataType>::dataMainValue(int index) const
-    {
-        if (index >= 0 && index < mDataContainer->size())
-        {
-            return (mDataContainer->constBegin()+index)->mainValue();
-        } else
-        {
+    template<class DataType>
+    double QCPAbstractPlottable1D<DataType>::dataMainValue(int index) const {
+        if (index >= 0 && index < mDataContainer->size()) {
+            return (mDataContainer->constBegin() + index)->mainValue();
+        } else {
             qDebug() << Q_FUNC_INFO << "Index out of bounds" << index;
             return 0;
         }
@@ -154,14 +159,11 @@ namespace QCP {
 /*!
   \copydoc QCPPlottableInterface1D::dataValueRange
 */
-    template <class DataType>
-    QCPRange QCPAbstractPlottable1D<DataType>::dataValueRange(int index) const
-    {
-        if (index >= 0 && index < mDataContainer->size())
-        {
-            return (mDataContainer->constBegin()+index)->valueRange();
-        } else
-        {
+    template<class DataType>
+    QCPRange QCPAbstractPlottable1D<DataType>::dataValueRange(int index) const {
+        if (index >= 0 && index < mDataContainer->size()) {
+            return (mDataContainer->constBegin() + index)->valueRange();
+        } else {
             qDebug() << Q_FUNC_INFO << "Index out of bounds" << index;
             return QCPRange(0, 0);
         }
@@ -170,15 +172,12 @@ namespace QCP {
 /*!
   \copydoc QCPPlottableInterface1D::dataPixelPosition
 */
-    template <class DataType>
-    QPointF QCPAbstractPlottable1D<DataType>::dataPixelPosition(int index) const
-    {
-        if (index >= 0 && index < mDataContainer->size())
-        {
-            const typename QCPDataContainer<DataType>::const_iterator it = mDataContainer->constBegin()+index;
+    template<class DataType>
+    QPointF QCPAbstractPlottable1D<DataType>::dataPixelPosition(int index) const {
+        if (index >= 0 && index < mDataContainer->size()) {
+            const typename QCPDataContainer<DataType>::const_iterator it = mDataContainer->constBegin() + index;
             return coordsToPixels(it->mainKey(), it->mainValue());
-        } else
-        {
+        } else {
             qDebug() << Q_FUNC_INFO << "Index out of bounds" << index;
             return QPointF();
         }
@@ -187,9 +186,8 @@ namespace QCP {
 /*!
   \copydoc QCPPlottableInterface1D::sortKeyIsMainKey
 */
-    template <class DataType>
-    bool QCPAbstractPlottable1D<DataType>::sortKeyIsMainKey() const
-    {
+    template<class DataType>
+    bool QCPAbstractPlottable1D<DataType>::sortKeyIsMainKey() const {
         return DataType::sortKeyIsMainKey();
     }
 
@@ -200,9 +198,8 @@ namespace QCP {
 
   \seebaseclassmethod
 */
-    template <class DataType>
-    QCPDataSelection QCPAbstractPlottable1D<DataType>::selectTestRect(const QRectF &rect, bool onlySelectable) const
-    {
+    template<class DataType>
+    QCPDataSelection QCPAbstractPlottable1D<DataType>::selectTestRect(const QRectF &rect, bool onlySelectable) const {
         QCPDataSelection result;
         if ((onlySelectable && mSelectable == QCP::stNone) || mDataContainer->isEmpty())
             return result;
@@ -213,7 +210,8 @@ namespace QCP {
         double key1, value1, key2, value2;
         pixelsToCoords(rect.topLeft(), key1, value1);
         pixelsToCoords(rect.bottomRight(), key2, value2);
-        QCPRange keyRange(key1, key2); // QCPRange normalizes internally so we don't have to care about whether key1 < key2
+        QCPRange keyRange(key1,
+                          key2); // QCPRange normalizes internally so we don't have to care about whether key1 < key2
         QCPRange valueRange(value1, value2);
         typename QCPDataContainer<DataType>::const_iterator begin = mDataContainer->constBegin();
         typename QCPDataContainer<DataType>::const_iterator end = mDataContainer->constEnd();
@@ -226,21 +224,19 @@ namespace QCP {
             return result;
 
         int currentSegmentBegin = -1; // -1 means we're currently not in a segment that's contained in rect
-        for (typename QCPDataContainer<DataType>::const_iterator it=begin; it!=end; ++it)
-        {
-            if (currentSegmentBegin == -1)
-            {
+        for (typename QCPDataContainer<DataType>::const_iterator it = begin; it != end; ++it) {
+            if (currentSegmentBegin == -1) {
                 if (valueRange.contains(it->mainValue()) && keyRange.contains(it->mainKey())) // start segment
-                    currentSegmentBegin = int(it-mDataContainer->constBegin());
+                    currentSegmentBegin = int(it - mDataContainer->constBegin());
             } else if (!valueRange.contains(it->mainValue()) || !keyRange.contains(it->mainKey())) // segment just ended
             {
-                result.addDataRange(QCPDataRange(currentSegmentBegin, int(it-mDataContainer->constBegin())), false);
+                result.addDataRange(QCPDataRange(currentSegmentBegin, int(it - mDataContainer->constBegin())), false);
                 currentSegmentBegin = -1;
             }
         }
         // process potential last segment:
         if (currentSegmentBegin != -1)
-            result.addDataRange(QCPDataRange(currentSegmentBegin, int(end-mDataContainer->constBegin())), false);
+            result.addDataRange(QCPDataRange(currentSegmentBegin, int(end - mDataContainer->constBegin())), false);
 
         result.simplify();
         return result;
@@ -249,19 +245,17 @@ namespace QCP {
 /*!
   \copydoc QCPPlottableInterface1D::findBegin
 */
-    template <class DataType>
-    int QCPAbstractPlottable1D<DataType>::findBegin(double sortKey, bool expandedRange) const
-    {
-        return int(mDataContainer->findBegin(sortKey, expandedRange)-mDataContainer->constBegin());
+    template<class DataType>
+    int QCPAbstractPlottable1D<DataType>::findBegin(double sortKey, bool expandedRange) const {
+        return int(mDataContainer->findBegin(sortKey, expandedRange) - mDataContainer->constBegin());
     }
 
 /*!
   \copydoc QCPPlottableInterface1D::findEnd
 */
-    template <class DataType>
-    int QCPAbstractPlottable1D<DataType>::findEnd(double sortKey, bool expandedRange) const
-    {
-        return int(mDataContainer->findEnd(sortKey, expandedRange)-mDataContainer->constBegin());
+    template<class DataType>
+    int QCPAbstractPlottable1D<DataType>::findEnd(double sortKey, bool expandedRange) const {
+        return int(mDataContainer->findEnd(sortKey, expandedRange) - mDataContainer->constBegin());
     }
 
 /*!
@@ -274,9 +268,9 @@ namespace QCP {
 
   \seebaseclassmethod
 */
-    template <class DataType>
-    double QCPAbstractPlottable1D<DataType>::selectTest(const QPointF &pos, bool onlySelectable, QVariant *details) const
-    {
+    template<class DataType>
+    double
+    QCPAbstractPlottable1D<DataType>::selectTest(const QPointF &pos, bool onlySelectable, QVariant *details) const {
         if ((onlySelectable && mSelectable == QCP::stNone) || mDataContainer->isEmpty())
             return -1;
         if (!mKeyAxis || !mValueAxis)
@@ -292,8 +286,10 @@ namespace QCP {
         {
             // determine which key range comes into question, taking selection tolerance around pos into account:
             double posKeyMin, posKeyMax, dummy;
-            pixelsToCoords(pos-QPointF(mParentPlot->selectionTolerance(), mParentPlot->selectionTolerance()), posKeyMin, dummy);
-            pixelsToCoords(pos+QPointF(mParentPlot->selectionTolerance(), mParentPlot->selectionTolerance()), posKeyMax, dummy);
+            pixelsToCoords(pos - QPointF(mParentPlot->selectionTolerance(), mParentPlot->selectionTolerance()),
+                           posKeyMin, dummy);
+            pixelsToCoords(pos + QPointF(mParentPlot->selectionTolerance(), mParentPlot->selectionTolerance()),
+                           posKeyMax, dummy);
             if (posKeyMin > posKeyMax)
                 qSwap(posKeyMin, posKeyMax);
             begin = mDataContainer->findBegin(posKeyMin, true);
@@ -303,22 +299,21 @@ namespace QCP {
             return -1;
         QCPRange keyRange(mKeyAxis->range());
         QCPRange valueRange(mValueAxis->range());
-        for (typename QCPDataContainer<DataType>::const_iterator it=begin; it!=end; ++it)
-        {
+        for (typename QCPDataContainer<DataType>::const_iterator it = begin; it != end; ++it) {
             const double mainKey = it->mainKey();
             const double mainValue = it->mainValue();
-            if (keyRange.contains(mainKey) && valueRange.contains(mainValue)) // make sure data point is inside visible range, for speedup in cases where sort key isn't main key and we iterate over all points
+            if (keyRange.contains(mainKey) && valueRange.contains(
+                    mainValue)) // make sure data point is inside visible range, for speedup in cases where sort key isn't main key and we iterate over all points
             {
-                const double currentDistSqr = QCPVector2D(coordsToPixels(mainKey, mainValue)-pos).lengthSquared();
-                if (currentDistSqr < minDistSqr)
-                {
+                const double currentDistSqr = QCPVector2D(coordsToPixels(mainKey, mainValue) - pos).lengthSquared();
+                if (currentDistSqr < minDistSqr) {
                     minDistSqr = currentDistSqr;
-                    minDistIndex = int(it-mDataContainer->constBegin());
+                    minDistIndex = int(it - mDataContainer->constBegin());
                 }
             }
         }
         if (minDistIndex != mDataContainer->size())
-            selectionResult.addDataRange(QCPDataRange(minDistIndex, minDistIndex+1), false);
+            selectionResult.addDataRange(QCPDataRange(minDistIndex, minDistIndex + 1), false);
 
         selectionResult.simplify();
         if (details)
@@ -336,19 +331,19 @@ namespace QCP {
 
   \see setSelection
 */
-    template <class DataType>
-    void QCPAbstractPlottable1D<DataType>::getDataSegments(QList<QCPDataRange> &selectedSegments, QList<QCPDataRange> &unselectedSegments) const
-    {
+    template<class DataType>
+    void QCPAbstractPlottable1D<DataType>::getDataSegments(QList<QCPDataRange> &selectedSegments,
+                                                           QList<QCPDataRange> &unselectedSegments) const {
         selectedSegments.clear();
         unselectedSegments.clear();
-        if (mSelectable == QCP::stWhole) // stWhole selection type draws the entire plottable with selected style if mSelection isn't empty
+        if (mSelectable ==
+            QCP::stWhole) // stWhole selection type draws the entire plottable with selected style if mSelection isn't empty
         {
             if (selected())
                 selectedSegments << QCPDataRange(0, dataCount());
             else
                 unselectedSegments << QCPDataRange(0, dataCount());
-        } else
-        {
+        } else {
             QCPDataSelection sel(selection());
             sel.simplify();
             selectedSegments = sel.dataRanges();
@@ -366,16 +361,14 @@ namespace QCP {
   QPainter::drawPolyline if the configured \ref QCustomPlot::setPlottingHints() and \a painter
   style allows.
 */
-    template <class DataType>
-    void QCPAbstractPlottable1D<DataType>::drawPolyline(QCPPainter *painter, const QVector<QPointF> &lineData) const
-    {
+    template<class DataType>
+    void QCPAbstractPlottable1D<DataType>::drawPolyline(QCPPainter *painter, const QVector<QPointF> &lineData) const {
         // if drawing lines in plot (instead of PDF), reduce 1px lines to cosmetic, because at least in
         // Qt6 drawing of "1px" width lines is much slower even though it has same appearance apart from
         // High-DPI. In High-DPI cases people must set a pen width slightly larger than 1.0 to get
         // correct DPI scaling of width, but of course with performance penalty.
         if (!painter->modes().testFlag(QCPPainter::pmVectorized) &&
-            qFuzzyCompare(painter->pen().widthF(), 1.0))
-        {
+            qFuzzyCompare(painter->pen().widthF(), 1.0)) {
             QPen newPen = painter->pen();
             newPen.setWidth(0);
             painter->setPen(newPen);
@@ -385,45 +378,43 @@ namespace QCP {
         if (mParentPlot->plottingHints().testFlag(QCP::phFastPolylines) &&
             painter->pen().style() == Qt::SolidLine &&
             !painter->modes().testFlag(QCPPainter::pmVectorized) &&
-            !painter->modes().testFlag(QCPPainter::pmNoCaching))
-        {
+            !painter->modes().testFlag(QCPPainter::pmNoCaching)) {
             int i = 0;
             bool lastIsNan = false;
             const int lineDataSize = lineData.size();
-            while (i < lineDataSize && (qIsNaN(lineData.at(i).y()) || qIsNaN(lineData.at(i).x()))) // make sure first point is not NaN
+            while (i < lineDataSize &&
+                   (qIsNaN(lineData.at(i).y()) || qIsNaN(lineData.at(i).x()))) // make sure first point is not NaN
                 ++i;
             ++i; // because drawing works in 1 point retrospect
-            while (i < lineDataSize)
-            {
+            while (i < lineDataSize) {
                 if (!qIsNaN(lineData.at(i).y()) && !qIsNaN(lineData.at(i).x())) // NaNs create a gap in the line
                 {
                     if (!lastIsNan)
-                        painter->drawLine(lineData.at(i-1), lineData.at(i));
+                        painter->drawLine(lineData.at(i - 1), lineData.at(i));
                     else
                         lastIsNan = false;
                 } else
                     lastIsNan = true;
                 ++i;
             }
-        } else
-        {
+        } else {
             int segmentStart = 0;
             int i = 0;
             const int lineDataSize = lineData.size();
-            while (i < lineDataSize)
-            {
-                if (qIsNaN(lineData.at(i).y()) || qIsNaN(lineData.at(i).x()) || qIsInf(lineData.at(i).y())) // NaNs create a gap in the line. Also filter Infs which make drawPolyline block
+            while (i < lineDataSize) {
+                if (qIsNaN(lineData.at(i).y()) || qIsNaN(lineData.at(i).x()) || qIsInf(lineData.at(
+                        i).y())) // NaNs create a gap in the line. Also filter Infs which make drawPolyline block
                 {
-                    painter->drawPolyline(lineData.constData()+segmentStart, i-segmentStart); // i, because we don't want to include the current NaN point
-                    segmentStart = i+1;
+                    painter->drawPolyline(lineData.constData() + segmentStart, i -
+                                                                               segmentStart); // i, because we don't want to include the current NaN point
+                    segmentStart = i + 1;
                 }
                 ++i;
             }
             // draw last segment:
-            painter->drawPolyline(lineData.constData()+segmentStart, lineDataSize-segmentStart);
+            painter->drawPolyline(lineData.constData() + segmentStart, lineDataSize - segmentStart);
         }
     }
-
 
 
 } // QCP

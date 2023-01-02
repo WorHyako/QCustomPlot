@@ -1,4 +1,4 @@
-#include "include/QCustomPlot.hpp"
+#include "QCustomPlot.hpp"
 
 using namespace QCP;
 
@@ -10,8 +10,6 @@ using namespace QCP;
   For tutorials on how to use QCustomPlot, see the website\n
   https://www.qcustomplot.com/
 */
-
-/* start of documentation of inline functions */
 
 /*! \fn QCPSelectionRect *QCustomPlot::selectionRect() const
 
@@ -26,9 +24,6 @@ using namespace QCP;
   Returns the top level layout of this QCustomPlot instance. It is a \ref QCPLayoutGrid, initially containing just
   one cell with the main QCPAxisRect inside.
 */
-
-/* end of documentation of inline functions */
-/* start of documentation of signals */
 
 /*! \fn void QCustomPlot::mouseDoubleClick(QMouseEvent *event)
 
@@ -221,9 +216,6 @@ using namespace QCP;
   \see replot, beforeReplot, afterLayout
 */
 
-/* end of documentation of signals */
-/* start of documentation of public members */
-
 /*! \var QCPAxis *QCustomPlot::xAxis
 
   A pointer to the primary x Axis (bottom) of the main axis rect of the plot.
@@ -319,8 +311,6 @@ using namespace QCP;
   the according new axes. Similarly the \ref legend convenience pointer will be reset if a legend
   is added after the main legend was removed before.
 */
-
-/* end of documentation of public members */
 
 /*!
   Constructs a QCustomPlot and sets reasonable default values.

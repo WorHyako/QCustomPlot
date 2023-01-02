@@ -1,6 +1,7 @@
 #include "include/QCPLayout.hpp"
 
-namespace QCP {
+using namespace QCP;
+
 /*! \class QCPLayout
   \brief The abstract base class for layouts
 
@@ -23,8 +24,6 @@ namespace QCP {
   For a general introduction to the layout system, see the dedicated documentation page \ref
   thelayoutsystem "The Layout System".
 */
-
-/* start documentation of pure virtual functions */
 
 /*! \fn virtual int QCPLayout::elementCount() const = 0
 
@@ -69,15 +68,10 @@ namespace QCP {
   \see takeAt
 */
 
-/* end documentation of pure virtual functions */
-
-/*!
+/*! ctor
   Creates an instance of QCPLayout and sets default values. Note that since QCPLayout
   is an abstract base class, it can't be instantiated directly.
 */
-    QCPLayout::QCPLayout()
-    {
-    }
 
 /*!
   If \a phase is \ref upLayout, calls \ref updateLayout, which subclasses may reimplement to
@@ -88,8 +82,7 @@ namespace QCP {
   For details about this method and the update phases, see the documentation of \ref
   QCPLayoutElement::update.
 */
-    void QCPLayout::update(UpdatePhase phase)
-    {
+    void QCPLayout::update(UpdatePhase phase)    {
         QCPLayoutElement::update(phase);
 
 // set child element rects according to layout:
@@ -98,16 +91,14 @@ namespace QCP {
 
 // propagate update call to child elements:
         const int elCount = elementCount();
-        for (int i=0; i<elCount; ++i)
-        {
+        for (int i=0; i<elCount; ++i)        {
             if (QCPLayoutElement *el = elementAt(i))
                 el->update(phase);
         }
     }
 
 /* inherits documentation from base class */
-    QList<QCPLayoutElement*> QCPLayout::elements(bool recursive) const
-    {
+    QList<QCPLayoutElement*> QCPLayout::elements(bool recursive) const     {
         const int c = elementCount();
         QList<QCPLayoutElement*> result;
 #if QT_VERSION >= QT_VERSION_CHECK(4, 7, 0)
@@ -115,10 +106,8 @@ namespace QCP {
 #endif
         for (int i=0; i<c; ++i)
             result.append(elementAt(i));
-        if (recursive)
-        {
-            for (int i=0; i<c; ++i)
-            {
+        if (recursive)        {
+            for (int i=0; i<c; ++i)            {
                 if (result.at(i))
                     result << result.at(i)->elements(recursive);
             }
@@ -133,8 +122,7 @@ namespace QCP {
   Not all layouts need simplification. For example, QCPLayoutInset doesn't use explicit
   simplification while QCPLayoutGrid does.
 */
-    void QCPLayout::simplify()
-    {
+    void QCPLayout::simplify()    {
     }
 
 /*!
@@ -148,10 +136,8 @@ namespace QCP {
 
   \see remove, takeAt
 */
-    bool QCPLayout::removeAt(int index)
-    {
-        if (QCPLayoutElement *el = takeAt(index))
-        {
+    bool QCPLayout::removeAt(int index)    {
+        if (QCPLayoutElement *el = takeAt(index))        {
             delete el;
             return true;
         } else
@@ -169,10 +155,8 @@ namespace QCP {
 
   \see removeAt, take
 */
-    bool QCPLayout::remove(QCPLayoutElement *element)
-    {
-        if (take(element))
-        {
+    bool QCPLayout::remove(QCPLayoutElement *element)    {
+        if (take(element))        {
             delete element;
             return true;
         } else
@@ -185,10 +169,8 @@ namespace QCP {
 
   \see remove, removeAt
 */
-    void QCPLayout::clear()
-    {
-        for (int i=elementCount()-1; i>=0; --i)
-        {
+    void QCPLayout::clear()    {
+        for (int i=elementCount()-1; i>=0; --i)        {
             if (elementAt(i))
                 removeAt(i);
         }
@@ -203,11 +185,10 @@ namespace QCP {
   QCustomPlot), calls QWidget::updateGeometry, so if the QCustomPlot widget is inside a Qt QLayout,
   it may update itself and resize cells accordingly.
 */
-    void QCPLayout::sizeConstraintsChanged() const
-    {
-        if (QWidget *w = qobject_cast<QWidget*>(parent()))
+    void QCPLayout::sizeConstraintsChanged() const    {
+        if (auto *w = reinterpret_cast<QWidget*>(reinterpret_cast<const QObject*>(this)->parent()))
             w->updateGeometry();
-        else if (QCPLayout *l = qobject_cast<QCPLayout*>(parent()))
+        else if (auto *l = reinterpret_cast<QCPLayout*>(reinterpret_cast<const QObject*>(this)->parent()))
             l->sizeConstraintsChanged();
     }
 
@@ -466,5 +447,3 @@ namespace QCP {
         return {maxOuter.width() < QWIDGETSIZE_MAX ? maxOuter.width() : maxOuterHint.width(),
                 maxOuter.height() < QWIDGETSIZE_MAX ? maxOuter.height() : maxOuterHint.height()};
     }
-
-} // QCP

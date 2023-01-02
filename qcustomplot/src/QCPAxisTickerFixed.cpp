@@ -1,6 +1,6 @@
 #include "include/QCPAxisTickerFixed.hpp"
 
-namespace QCP {
+using namespace QCP;
 /*! \class QCPAxisTickerFixed
   \brief Specialized axis ticker with a fixed tick step
 
@@ -25,11 +25,10 @@ namespace QCP {
   Constructs the ticker and sets reasonable default values. Axis tickers are commonly created
   managed by a QSharedPointer, which then can be passed to QCPAxis::setTicker.
 */
-    QCPAxisTickerFixed::QCPAxisTickerFixed() :
-            mTickStep(1.0),
-            mScaleStrategy(ssNone)
-    {
-    }
+QCPAxisTickerFixed::QCPAxisTickerFixed() :
+        mTickStep(1.0),
+        mScaleStrategy(ssNone) {
+}
 
 /*!
   Sets the fixed tick interval to \a step.
@@ -40,13 +39,12 @@ namespace QCP {
   step. This will enable the ticker to reduce the number of ticks to a reasonable amount (see \ref
   setTickCount).
 */
-    void QCPAxisTickerFixed::setTickStep(double step)
-    {
-        if (step > 0)
-            mTickStep = step;
-        else
-            qDebug() << Q_FUNC_INFO << "tick step must be greater than zero:" << step;
-    }
+void QCPAxisTickerFixed::setTickStep(double step) {
+    if (step > 0)
+        mTickStep = step;
+    else
+        qDebug() << Q_FUNC_INFO << "tick step must be greater than zero:" << step;
+}
 
 /*!
   Sets whether the specified tick step (\ref setTickStep) is absolutely fixed or whether
@@ -55,10 +53,9 @@ namespace QCP {
 
   The default strategy is \ref ssNone, which means the tick step is absolutely fixed.
 */
-    void QCPAxisTickerFixed::setScaleStrategy(QCPAxisTickerFixed::ScaleStrategy strategy)
-    {
-        mScaleStrategy = strategy;
-    }
+void QCPAxisTickerFixed::setScaleStrategy(QCPAxisTickerFixed::ScaleStrategy strategy) {
+    mScaleStrategy = strategy;
+}
 
 /*! \internal
 
@@ -70,34 +67,24 @@ namespace QCP {
 
   \seebaseclassmethod
 */
-    double QCPAxisTickerFixed::getTickStep(const QCPRange &range)
-    {
-        switch (mScaleStrategy)
-        {
-            case ssNone:
-            {
-                return mTickStep;
-            }
-            case ssMultiples:
-            {
-                double exactStep = range.size()/double(mTickCount+1e-10); // mTickCount ticks on average, the small addition is to prevent jitter on exact integers
-                if (exactStep < mTickStep)
-                    return mTickStep;
-                else
-                    return qint64(cleanMantissa(exactStep/mTickStep)+0.5)*mTickStep;
-            }
-            case ssPowers:
-            {
-                double exactStep = range.size()/double(mTickCount+1e-10); // mTickCount ticks on average, the small addition is to prevent jitter on exact integers
-                return qPow(mTickStep, int(qLn(exactStep)/qLn(mTickStep)+0.5));
-            }
+double QCPAxisTickerFixed::getTickStep(const QCPRange &range) {
+    switch (mScaleStrategy) {
+        case ssNone: {
+            return mTickStep;
         }
-        return mTickStep;
+        case ssMultiples: {
+            double exactStep = range.size() / double(mTickCount +
+                                                     1e-10); // mTickCount ticks on average, the small addition is to prevent jitter on exact integers
+            if (exactStep < mTickStep)
+                return mTickStep;
+            else
+                return qint64(cleanMantissa(exactStep / mTickStep) + 0.5) * mTickStep;
+        }
+        case ssPowers: {
+            double exactStep = range.size() / double(mTickCount +
+                                                     1e-10); // mTickCount ticks on average, the small addition is to prevent jitter on exact integers
+            return qPow(mTickStep, int(qLn(exactStep) / qLn(mTickStep) + 0.5));
+        }
     }
-/* end of 'src/axis/axistickerfixed.cpp' */
-
-
-/* including file 'src/axis/axistickertext.cpp' */
-/* modified 2022-11-06T12:45:56, size 8742      */
-
-} // QCP
+    return mTickStep;
+}

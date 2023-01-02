@@ -1,6 +1,8 @@
 #include "include/QCPMarginGroup.hpp"
+#include "inlines.hpp"
 
-namespace QCP {
+using namespace QCP;
+
 /*! \class QCPMarginGroup
   \brief A margin group allows synchronization of margin sides if working with multiple layout elements.
 
@@ -32,66 +34,56 @@ namespace QCP {
   each other and their right margins with each other.
 */
 
-/* start documentation of inline functions */
-
 /*! \fn QList<QCPLayoutElement*> QCPMarginGroup::elements(QCP::MarginSide side) const
 
   Returns a list of all layout elements that have their margin \a side associated with this margin
   group.
 */
 
-/* end documentation of inline functions */
-
 /*!
   Creates a new QCPMarginGroup instance in \a parentPlot.
 */
-    QCPMarginGroup::QCPMarginGroup(QCustomPlot *parentPlot) :
-    QObject(parentPlot),
-    mParentPlot(parentPlot)
-    {
-        mChildren.insert(QCP::msLeft, QList<QCPLayoutElement*>());
-        mChildren.insert(QCP::msRight, QList<QCPLayoutElement*>());
-        mChildren.insert(QCP::msTop, QList<QCPLayoutElement*>());
-        mChildren.insert(QCP::msBottom, QList<QCPLayoutElement*>());
-    }
+QCPMarginGroup::QCPMarginGroup(QCustomPlot *parentPlot) :
+        QObject(parentPlot),
+        mParentPlot(parentPlot) {
+    mChildren.insert(QCP::msLeft, QList<QCPLayoutElement *>());
+    mChildren.insert(QCP::msRight, QList<QCPLayoutElement *>());
+    mChildren.insert(QCP::msTop, QList<QCPLayoutElement *>());
+    mChildren.insert(QCP::msBottom, QList<QCPLayoutElement *>());
+}
 
-    QCPMarginGroup::~QCPMarginGroup()
-    {
-        clear();
-    }
+QCPMarginGroup::~QCPMarginGroup() {
+    clear();
+}
 
 /*!
   Returns whether this margin group is empty. If this function returns true, no layout elements use
   this margin group to synchronize margin sides.
 */
-    bool QCPMarginGroup::isEmpty() const
-    {
-        QHashIterator<QCP::MarginSide, QList<QCPLayoutElement*> > it(mChildren);
-        while (it.hasNext())
-        {
-            it.next();
-            if (!it.value().isEmpty())
-                return false;
-        }
-        return true;
+bool QCPMarginGroup::isEmpty() const {
+    QHashIterator<QCP::MarginSide, QList<QCPLayoutElement *> > it(mChildren);
+    while (it.hasNext()) {
+        it.next();
+        if (!it.value().isEmpty())
+            return false;
     }
+    return true;
+}
 
 /*!
   Clears this margin group. The synchronization of the margin sides that use this margin group is
   lifted and they will use their individual margin sizes again.
 */
-    void QCPMarginGroup::clear()
-    {
+void QCPMarginGroup::clear() {
 // make all children remove themselves from this margin group:
-        QHashIterator<QCP::MarginSide, QList<QCPLayoutElement*> > it(mChildren);
-        while (it.hasNext())
-        {
-            it.next();
-            const QList<QCPLayoutElement*> elements = it.value();
-            for (int i=elements.size()-1; i>=0; --i)
-                elements.at(i)->setMarginGroup(it.key(), nullptr); // removes itself from mChildren via removeChild
-        }
+    QHashIterator<QCP::MarginSide, QList<QCPLayoutElement *> > it(mChildren);
+    while (it.hasNext()) {
+        it.next();
+        const QList<QCPLayoutElement *> elements = it.value();
+        for (int i = elements.size() - 1; i >= 0; --i)
+            elements.at(i)->setMarginGroup(it.key(), nullptr); // removes itself from mChildren via removeChild
     }
+}
 
 /*! \internal
 
@@ -103,20 +95,18 @@ namespace QCP {
   group, and choosing the largest returned value. (QCPLayoutElement::minimumMargins is taken into
   account, too.)
 */
-    int QCPMarginGroup::commonMargin(QCP::MarginSide side) const
-    {
+int QCPMarginGroup::commonMargin(QCP::MarginSide side) const {
 // query all automatic margins of the layout elements in this margin group side and find maximum:
-        int result = 0;
-        foreach (QCPLayoutElement *el, mChildren.value(side))
-        {
+    int result = 0;
+            foreach (QCPLayoutElement *el, mChildren.value(side)) {
             if (!el->autoMargins().testFlag(side))
                 continue;
-            int m = qMax(el->calculateAutoMargin(side), QCP::getMarginValue(el->minimumMargins(), side));
+            int m = qMax(el->calculateAutoMargin(side), getMarginValue(el->minimumMargins(), side));
             if (m > result)
                 result = m;
         }
-        return result;
-    }
+    return result;
+}
 
 /*! \internal
 
@@ -124,13 +114,13 @@ namespace QCP {
 
   This function does not modify the margin group property of \a element.
 */
-    void QCPMarginGroup::addChild(QCP::MarginSide side, QCPLayoutElement *element)
-    {
-        if (!mChildren[side].contains(element))
-            mChildren[side].append(element);
-        else
-            qDebug() << Q_FUNC_INFO << "element is already child of this margin group side" << reinterpret_cast<quintptr>(element);
-    }
+void QCPMarginGroup::addChild(QCP::MarginSide side, QCPLayoutElement *element) {
+    if (!mChildren[side].contains(element))
+        mChildren[side].append(element);
+    else
+        qDebug() << Q_FUNC_INFO << "element is already child of this margin group side"
+                 << reinterpret_cast<quintptr>(element);
+}
 
 /*! \internal
 
@@ -138,11 +128,8 @@ namespace QCP {
 
   This function does not modify the margin group property of \a element.
 */
-    void QCPMarginGroup::removeChild(QCP::MarginSide side, QCPLayoutElement *element)
-    {
-        if (!mChildren[side].removeOne(element))
-            qDebug() << Q_FUNC_INFO << "element is not child of this margin group side" << reinterpret_cast<quintptr>(element);
-    }
-
-
-} // QCP
+void QCPMarginGroup::removeChild(QCP::MarginSide side, QCPLayoutElement *element) {
+    if (!mChildren[side].removeOne(element))
+        qDebug() << Q_FUNC_INFO << "element is not child of this margin group side"
+                 << reinterpret_cast<quintptr>(element);
+}

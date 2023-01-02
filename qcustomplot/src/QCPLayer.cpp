@@ -1,6 +1,8 @@
 #include "include/QCPLayer.hpp"
 
-namespace QCP {
+#include <QDebug>
+
+using namespace QCP;
 
 /*! \class QCPLayer
   \brief A layer that may contain objects, to control the rendering order
@@ -58,8 +60,6 @@ namespace QCP {
   QCustomPlot instance is the "overlay" layer, containing the selection rect.
 */
 
-/* start documentation of inline functions */
-
 /*! \fn QList<QCPLayerable*> QCPLayer::children() const
 
   Returns a list of all layerables on this layer. The order corresponds to the rendering order:
@@ -74,8 +74,6 @@ namespace QCP {
   Layers with higher indices will be drawn above layers with lower indices.
 */
 
-/* end documentation of inline functions */
-
 /*!
   Creates a new QCPLayer instance.
 
@@ -84,31 +82,30 @@ namespace QCP {
   \warning It is not checked that \a layerName is actually a unique layer name in \a parentPlot.
   This check is only performed by \ref QCustomPlot::addLayer.
 */
-    QCPLayer::QCPLayer(QCustomPlot *parentPlot, const QString &layerName) :
-            QObject(parentPlot),
-            mParentPlot(parentPlot),
-            mName(layerName),
-            mIndex(-1), // will be set to a proper value by the QCustomPlot layer creation function
-            mVisible(true),
-            mMode(lmLogical)
-    {
+QCPLayer::QCPLayer(QCustomPlot *parentPlot, const QString &layerName) :
+        QObject(parentPlot),
+        mParentPlot(parentPlot),
+        mName(layerName),
+        mIndex(-1), // will be set to a proper value by the QCustomPlot layer creation function
+        mVisible(true),
+        mMode(lmLogical) {
 // Note: no need to make sure layerName is unique, because layer
 // management is done with QCustomPlot functions.
-    }
+}
 
-    QCPLayer::~QCPLayer()
-    {
+QCPLayer::~QCPLayer() {
 // If child layerables are still on this layer, detach them, so they don't try to reach back to this
 // then invalid layer once they get deleted/moved themselves. This only happens when layers are deleted
 // directly, like in the QCustomPlot destructor. (The regular layer removal procedure for the user is to
 // call QCustomPlot::removeLayer, which moves all layerables off this layer before deleting it.)
 
-        while (!mChildren.isEmpty())
-            mChildren.last()->setLayer(nullptr); // removes itself from mChildren via removeChild()
+    while (!mChildren.isEmpty())
+        mChildren.last()->setLayer(nullptr); // removes itself from mChildren via removeChild()
 
-        if (mParentPlot->currentLayer() == this)
-            qDebug() << Q_FUNC_INFO << "The parent plot's mCurrentLayer will be a dangling pointer. Should have been set to a valid layer or nullptr beforehand.";
-    }
+    if (mParentPlot->currentLayer() == this)
+        qDebug() << Q_FUNC_INFO
+                 << "The parent plot's mCurrentLayer will be a dangling pointer. Should have been set to a valid layer or nullptr beforehand.";
+}
 
 /*!
   Sets whether this layer is visible or not. If \a visible is set to false, all layerables on this
@@ -118,10 +115,9 @@ namespace QCP {
   QCPLayerable::setVisible), but the \ref QCPLayerable::realVisibility of each layerable takes the
   visibility of the parent layer into account.
 */
-    void QCPLayer::setVisible(bool visible)
-    {
-        mVisible = visible;
-    }
+void QCPLayer::setVisible(bool visible) {
+    mVisible = visible;
+}
 
 /*!
   Sets the rendering mode of this layer.
@@ -144,15 +140,13 @@ namespace QCP {
 
   \see replot
 */
-    void QCPLayer::setMode(QCPLayer::LayerMode mode)
-    {
-        if (mMode != mode)
-        {
-            mMode = mode;
-            if (QSharedPointer<QCPAbstractPaintBuffer> pb = mPaintBuffer.toStrongRef())
-                pb->setInvalidated();
-        }
+void QCPLayer::setMode(QCPLayer::LayerMode mode) {
+    if (mMode != mode) {
+        mMode = mode;
+        if (QSharedPointer<QCPAbstractPaintBuffer> pb = mPaintBuffer.toStrongRef())
+            pb->setInvalidated();
     }
+}
 
 /*! \internal
 
@@ -160,12 +154,9 @@ namespace QCP {
 
   \see replot, drawToPaintBuffer
 */
-    void QCPLayer::draw(QCPPainter *painter)
-    {
-        foreach (QCPLayerable *child, mChildren)
-        {
-            if (child->realVisibility())
-            {
+void QCPLayer::draw(QCPPainter *painter) {
+            foreach (QCPLayerable *child, mChildren) {
+            if (child->realVisibility()) {
                 painter->save();
                 painter->setClipRect(child->clipRect().translated(0, -1));
                 child->applyDefaultAntialiasingHint(painter);
@@ -173,7 +164,7 @@ namespace QCP {
                 painter->restore();
             }
         }
-    }
+}
 
 /*! \internal
 
@@ -183,23 +174,20 @@ namespace QCP {
 
   \see draw
 */
-    void QCPLayer::drawToPaintBuffer()
-    {
-        if (QSharedPointer<QCPAbstractPaintBuffer> pb = mPaintBuffer.toStrongRef())
-        {
-            if (QCPPainter *painter = pb->startPainting())
-            {
-                if (painter->isActive())
-                    draw(painter);
-                else
-                    qDebug() << Q_FUNC_INFO << "paint buffer returned inactive painter";
-                delete painter;
-                pb->donePainting();
-            } else
-                qDebug() << Q_FUNC_INFO << "paint buffer returned nullptr painter";
+void QCPLayer::drawToPaintBuffer() {
+    if (QSharedPointer<QCPAbstractPaintBuffer> pb = mPaintBuffer.toStrongRef()) {
+        if (QCPPainter *painter = pb->startPainting()) {
+            if (painter->isActive())
+                draw(painter);
+            else
+                qDebug() << Q_FUNC_INFO << "paint buffer returned inactive painter";
+            delete painter;
+            pb->donePainting();
         } else
-            qDebug() << Q_FUNC_INFO << "no valid paint buffer associated with this layer";
-    }
+            qDebug() << Q_FUNC_INFO << "paint buffer returned nullptr painter";
+    } else
+        qDebug() << Q_FUNC_INFO << "no valid paint buffer associated with this layer";
+}
 
 /*!
   If the layer mode (\ref setMode) is set to \ref lmBuffered, this method allows replotting only
@@ -215,21 +203,19 @@ namespace QCP {
 
   \see draw
 */
-    void QCPLayer::replot()
-    {
-        if (mMode == lmBuffered && !mParentPlot->hasInvalidatedPaintBuffers())
-        {
-            if (QSharedPointer<QCPAbstractPaintBuffer> pb = mPaintBuffer.toStrongRef())
-            {
-                pb->clear(Qt::transparent);
-                drawToPaintBuffer();
-                pb->setInvalidated(false); // since layer is lmBuffered, we know only this layer is on buffer and we can reset invalidated flag
-                mParentPlot->update();
-            } else
-                qDebug() << Q_FUNC_INFO << "no valid paint buffer associated with this layer";
+void QCPLayer::replot() {
+    if (mMode == lmBuffered && !mParentPlot->hasInvalidatedPaintBuffers()) {
+        if (QSharedPointer<QCPAbstractPaintBuffer> pb = mPaintBuffer.toStrongRef()) {
+            pb->clear(Qt::transparent);
+            drawToPaintBuffer();
+            pb->setInvalidated(
+                    false); // since layer is lmBuffered, we know only this layer is on buffer and we can reset invalidated flag
+            mParentPlot->update();
         } else
-            mParentPlot->replot();
-    }
+            qDebug() << Q_FUNC_INFO << "no valid paint buffer associated with this layer";
+    } else
+        mParentPlot->replot();
+}
 
 /*! \internal
 
@@ -241,19 +227,17 @@ namespace QCP {
 
   \see removeChild
 */
-    void QCPLayer::addChild(QCPLayerable *layerable, bool prepend)
-    {
-        if (!mChildren.contains(layerable))
-        {
-            if (prepend)
-                mChildren.prepend(layerable);
-            else
-                mChildren.append(layerable);
-            if (QSharedPointer<QCPAbstractPaintBuffer> pb = mPaintBuffer.toStrongRef())
-                pb->setInvalidated();
-        } else
-            qDebug() << Q_FUNC_INFO << "layerable is already child of this layer" << reinterpret_cast<quintptr>(layerable);
-    }
+void QCPLayer::addChild(QCPLayerable *layerable, bool prepend) {
+    if (!mChildren.contains(layerable)) {
+        if (prepend)
+            mChildren.prepend(layerable);
+        else
+            mChildren.append(layerable);
+        if (QSharedPointer<QCPAbstractPaintBuffer> pb = mPaintBuffer.toStrongRef())
+            pb->setInvalidated();
+    } else
+        qDebug() << Q_FUNC_INFO << "layerable is already child of this layer" << reinterpret_cast<quintptr>(layerable);
+}
 
 /*! \internal
 
@@ -264,15 +248,10 @@ namespace QCP {
 
   \see addChild
 */
-    void QCPLayer::removeChild(QCPLayerable *layerable)
-    {
-        if (mChildren.removeOne(layerable))
-        {
-            if (QSharedPointer<QCPAbstractPaintBuffer> pb = mPaintBuffer.toStrongRef())
-                pb->setInvalidated();
-        } else
-            qDebug() << Q_FUNC_INFO << "layerable is not child of this layer" << reinterpret_cast<quintptr>(layerable);
-    }
-
-
-} // QCP
+void QCPLayer::removeChild(QCPLayerable *layerable) {
+    if (mChildren.removeOne(layerable)) {
+        if (QSharedPointer<QCPAbstractPaintBuffer> pb = mPaintBuffer.toStrongRef())
+            pb->setInvalidated();
+    } else
+        qDebug() << Q_FUNC_INFO << "layerable is not child of this layer" << reinterpret_cast<quintptr>(layerable);
+}

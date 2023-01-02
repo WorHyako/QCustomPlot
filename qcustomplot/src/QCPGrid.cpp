@@ -1,6 +1,6 @@
 #include "include/QCPGrid.hpp"
 
-namespace QCP {
+using namespace QCP;
 /*! \class QCPGrid
   \brief Responsible for drawing the grid of a QCPAxis.
 
@@ -224,4 +224,3 @@ namespace QCP {
             }
         }
     }
-} // QCP

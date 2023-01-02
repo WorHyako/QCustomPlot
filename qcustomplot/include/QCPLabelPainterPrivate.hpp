@@ -1,78 +1,111 @@
-#ifndef QCUSTOMPLOT_QCPLABELPAINTERPRIVATE_H
-#define QCUSTOMPLOT_QCPLABELPAINTERPRIVATE_H
+#ifndef QCUSTOMPLOT_QCPLABELPAINTERPRIVATE_HPP
+#define QCUSTOMPLOT_QCPLABELPAINTERPRIVATE_HPP
+
+#include "QCustomPlot.hpp"
+#include "QCPPainter.hpp"
+
+#include <QObject>
+#include <QFont>
+#include <QColor>
 
 namespace QCP {
 
-    class QCPLabelPainterPrivate
-    {
-        Q_GADGET
+    class QCPLabelPainterPrivate {
+    Q_GADGET
     public:
         /*!
         TODO
       */
-        enum AnchorMode { amRectangular    ///<
-            ,amSkewedUpright ///<
-            ,amSkewedRotated ///<
+        enum AnchorMode {
+            amRectangular,    ///<
+            amSkewedUpright, ///<
+            amSkewedRotated,///<
         };
-        Q_ENUMS(AnchorMode)
+
+        Q_ENUM(AnchorMode)
 
         /*!
         TODO
       */
-        enum AnchorReferenceType { artNormal    ///<
-            ,artTangent ///<
+        enum AnchorReferenceType {
+            artNormal,    ///<
+            artTangent ///<
         };
-        Q_ENUMS(AnchorReferenceType)
+
+        Q_ENUM(AnchorReferenceType)
 
         /*!
         TODO
       */
-        enum AnchorSide { asLeft      ///<
-            ,asRight    ///<
-            ,asTop      ///<
-            ,asBottom   ///<
-            ,asTopLeft
-            ,asTopRight
-            ,asBottomRight
-            ,asBottomLeft
+        enum AnchorSide {
+            asLeft,      ///<
+            asRight,    ///<
+            asTop,   ///<
+            asBottom,  ///<
+            asTopLeft,
+            asTopRight,
+            asBottomRight,
+            asBottomLeft,
         };
-        Q_ENUMS(AnchorSide)
+
+        Q_ENUM(AnchorSide)
 
         explicit QCPLabelPainterPrivate(QCustomPlot *parentPlot);
+
         virtual ~QCPLabelPainterPrivate();
 
-        // setters:
         void setAnchorSide(AnchorSide side);
+
         void setAnchorMode(AnchorMode mode);
+
         void setAnchorReference(const QPointF &pixelPoint);
+
         void setAnchorReferenceType(AnchorReferenceType type);
+
         void setFont(const QFont &font);
+
         void setColor(const QColor &color);
+
         void setPadding(int padding);
+
         void setRotation(double rotation);
+
         void setSubstituteExponent(bool enabled);
+
         void setMultiplicationSymbol(QChar symbol);
+
         void setAbbreviateDecimalPowers(bool enabled);
+
         void setCacheSize(int labelCount);
 
-        // getters:
         AnchorMode anchorMode() const { return mAnchorMode; }
+
         AnchorSide anchorSide() const { return mAnchorSide; }
+
         QPointF anchorReference() const { return mAnchorReference; }
+
         AnchorReferenceType anchorReferenceType() const { return mAnchorReferenceType; }
+
         QFont font() const { return mFont; }
+
         QColor color() const { return mColor; }
+
         int padding() const { return mPadding; }
+
         double rotation() const { return mRotation; }
+
         bool substituteExponent() const { return mSubstituteExponent; }
+
         QChar multiplicationSymbol() const { return mMultiplicationSymbol; }
+
         bool abbreviateDecimalPowers() const { return mAbbreviateDecimalPowers; }
+
         int cacheSize() const;
 
         //virtual int size() const;
 
-        // non-property methods:
         void drawTickLabel(QCPPainter *painter, const QPointF &tickPos, const QString &text);
+
         void clearCache();
 
         // constants that may be used with setMultiplicationSymbol:
@@ -80,13 +113,11 @@ namespace QCP {
         static const QChar SymbolCross;
 
     protected:
-        struct CachedLabel
-        {
+        struct CachedLabel {
             QPoint offset;
             QPixmap pixmap;
         };
-        struct LabelData
-        {
+        struct LabelData {
             AnchorSide side;
             double rotation; // angle in degrees
             QTransform transform; // the transform about the label anchor which is at (0, 0). Does not contain final absolute x/y positioning on the plot/axis
@@ -98,7 +129,6 @@ namespace QCP {
             QColor color;
         };
 
-        // property members:
         AnchorMode mAnchorMode;
         AnchorSide mAnchorSide;
         QPointF mAnchorReference;
@@ -117,27 +147,37 @@ namespace QCP {
         QRect mAxisSelectionBox, mTickLabelsSelectionBox, mLabelSelectionBox;
         int mLetterCapHeight, mLetterDescent;
 
-        // introduced virtual methods:
-        virtual void drawLabelMaybeCached(QCPPainter *painter, const QFont &font, const QColor &color, const QPointF &pos, AnchorSide side, double rotation, const QString &text);
-        virtual QByteArray generateLabelParameterHash() const; // TODO: get rid of this in favor of invalidation flag upon setters?
+        virtual void
+        drawLabelMaybeCached(QCPPainter *painter, const QFont &font, const QColor &color, const QPointF &pos,
+                             AnchorSide side, double rotation, const QString &text);
 
-        // non-virtual methods:
+        virtual QByteArray
+        generateLabelParameterHash() const; // TODO: get rid of this in favor of invalidation flag upon setters?
+
         QPointF getAnchorPos(const QPointF &tickPos);
+
         void drawText(QCPPainter *painter, const QPointF &pos, const LabelData &labelData) const;
-        LabelData getTickLabelData(const QFont &font, const QColor &color, double rotation, AnchorSide side, const QString &text) const;
+
+        LabelData getTickLabelData(const QFont &font, const QColor &color, double rotation, AnchorSide side,
+                                   const QString &text) const;
+
         void applyAnchorTransform(LabelData &labelData) const;
+
         //void getMaxTickLabelSize(const QFont &font, const QString &text, QSize *tickLabelsSize) const;
         CachedLabel *createCachedLabel(const LabelData &labelData) const;
+
         QByteArray cacheKey(const QString &text, const QColor &color, double rotation, AnchorSide side) const;
+
         AnchorSide skewedAnchorSide(const QPointF &tickPos, double sideExpandHorz, double sideExpandVert) const;
+
         AnchorSide rotationCorrectedSide(AnchorSide side, double rotation) const;
+
         void analyzeFontMetrics();
     };
-    Q_DECLARE_METATYPE(QCPLabelPainterPrivate::AnchorMode)
-    Q_DECLARE_METATYPE(QCPLabelPainterPrivate::AnchorSide)
+}
 
+Q_DECLARE_METATYPE(QCP::QCPLabelPainterPrivate::AnchorMode)
 
+Q_DECLARE_METATYPE(QCP::QCPLabelPainterPrivate::AnchorSide)
 
-} // QCP
-
-#endif //QCUSTOMPLOT_QCPLABELPAINTERPRIVATE_H
+#endif

@@ -1,6 +1,7 @@
 #include "include/QCPAxisRect.hpp"
 
-namespace QCP {
+using namespace QCP;
+
 /*! \class QCPAxisRect
   \brief Holds multiple axes and arranges them in a rectangular shape.
 
@@ -37,8 +38,6 @@ namespace QCP {
   <center>Overview of the spacings and paddings that define the geometry of an axis. The dashed
   line on the far left indicates the viewport/widget border.</center>
 */
-
-/* start documentation of inline functions */
 
 /*! \fn QCPLayoutInset *QCPAxisRect::insetLayout() const
 
@@ -119,8 +118,6 @@ namespace QCP {
   Returns the center of this axis rect in pixels. Margins are not taken into account here, so the
   returned value is with respect to the inner \ref rect.
 */
-
-/* end documentation of inline functions */
 
 /*!
   Creates a QCPAxisRect instance and sets default values. An axis is added for each of the four
@@ -1275,4 +1272,3 @@ namespace QCP {
             }
         }
     }
-} // QCP

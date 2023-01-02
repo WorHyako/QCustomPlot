@@ -1,6 +1,8 @@
 #include "include/QCPPainter.hpp"
 
-namespace QCP {
+#include <QDebug>
+
+using namespace QCP;
 
 /*! \class QCPPainter
   \brief QPainter subclass used internally
@@ -18,13 +20,12 @@ namespace QCP {
 /*!
   Creates a new QCPPainter instance and sets default values
 */
-    QCPPainter::QCPPainter() :
-            mModes(pmDefault),
-            mIsAntialiasing(false)
-    {
+QCPPainter::QCPPainter() :
+        mModes(pmDefault),
+        mIsAntialiasing(false) {
 // don't setRenderHint(QPainter::NonCosmeticDefautPen) here, because painter isn't active yet and
 // a call to begin() will follow
-    }
+}
 
 /*!
   Creates a new QCPPainter instance on the specified paint \a device and sets default values. Just
@@ -32,16 +33,15 @@ namespace QCP {
 
   Like \ref begin, this method sets QPainter::NonCosmeticDefaultPen in Qt versions before Qt5.
 */
-    QCPPainter::QCPPainter(QPaintDevice *device) :
-            QPainter(device),
-            mModes(pmDefault),
-            mIsAntialiasing(false)
-    {
+QCPPainter::QCPPainter(QPaintDevice *device) :
+        QPainter(device),
+        mModes(pmDefault),
+        mIsAntialiasing(false) {
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0) // before Qt5, default pens used to be cosmetic if NonCosmeticDefaultPen flag isn't set. So we set it to get consistency across Qt versions.
-        if (isActive())
+    if (isActive())
 setRenderHint(QPainter::NonCosmeticDefaultPen);
 #endif
-    }
+}
 
 /*!
   Sets the pen of the painter and applies certain fixes to it, depending on the mode of this
@@ -49,12 +49,11 @@ setRenderHint(QPainter::NonCosmeticDefaultPen);
 
   \note this function hides the non-virtual base class implementation.
 */
-    void QCPPainter::setPen(const QPen &pen)
-    {
-        QPainter::setPen(pen);
-        if (mModes.testFlag(pmNonCosmetic))
-            makeNonCosmetic();
-    }
+void QCPPainter::setPen(const QPen &pen) {
+    QPainter::setPen(pen);
+    if (mModes.testFlag(pmNonCosmetic))
+        makeNonCosmetic();
+}
 
 /*! \overload
 
@@ -63,12 +62,11 @@ setRenderHint(QPainter::NonCosmeticDefaultPen);
 
   \note this function hides the non-virtual base class implementation.
 */
-    void QCPPainter::setPen(const QColor &color)
-    {
-        QPainter::setPen(color);
-        if (mModes.testFlag(pmNonCosmetic))
-            makeNonCosmetic();
-    }
+void QCPPainter::setPen(const QColor &color) {
+    QPainter::setPen(color);
+    if (mModes.testFlag(pmNonCosmetic))
+        makeNonCosmetic();
+}
 
 /*! \overload
 
@@ -77,12 +75,11 @@ setRenderHint(QPainter::NonCosmeticDefaultPen);
 
   \note this function hides the non-virtual base class implementation.
 */
-    void QCPPainter::setPen(Qt::PenStyle penStyle)
-    {
-        QPainter::setPen(penStyle);
-        if (mModes.testFlag(pmNonCosmetic))
-            makeNonCosmetic();
-    }
+void QCPPainter::setPen(Qt::PenStyle penStyle) {
+    QPainter::setPen(penStyle);
+    if (mModes.testFlag(pmNonCosmetic))
+        makeNonCosmetic();
+}
 
 /*! \overload
 
@@ -92,13 +89,12 @@ setRenderHint(QPainter::NonCosmeticDefaultPen);
 
   \note this function hides the non-virtual base class implementation.
 */
-    void QCPPainter::drawLine(const QLineF &line)
-    {
-        if (mIsAntialiasing || mModes.testFlag(pmVectorized))
-            QPainter::drawLine(line);
-        else
-            QPainter::drawLine(line.toLine());
-    }
+void QCPPainter::drawLine(const QLineF &line) {
+    if (mIsAntialiasing || mModes.testFlag(pmVectorized))
+        QPainter::drawLine(line);
+    else
+        QPainter::drawLine(line.toLine());
+}
 
 /*!
   Sets whether painting uses antialiasing or not. Use this method instead of using setRenderHint
@@ -106,30 +102,27 @@ setRenderHint(QPainter::NonCosmeticDefaultPen);
   antialiased and non-antialiased painting (Since Qt < 5.0 uses slightly different coordinate systems for
   AA/Non-AA painting).
 */
-    void QCPPainter::setAntialiasing(bool enabled)
-    {
-        setRenderHint(QPainter::Antialiasing, enabled);
-        if (mIsAntialiasing != enabled)
+void QCPPainter::setAntialiasing(bool enabled) {
+    setRenderHint(QPainter::Antialiasing, enabled);
+    if (mIsAntialiasing != enabled) {
+        mIsAntialiasing = enabled;
+        if (!mModes.testFlag(pmVectorized)) // antialiasing half-pixel shift only needed for rasterized outputs
         {
-            mIsAntialiasing = enabled;
-            if (!mModes.testFlag(pmVectorized)) // antialiasing half-pixel shift only needed for rasterized outputs
-            {
-                if (mIsAntialiasing)
-                    translate(0.5, 0.5);
-                else
-                    translate(-0.5, -0.5);
-            }
+            if (mIsAntialiasing)
+                translate(0.5, 0.5);
+            else
+                translate(-0.5, -0.5);
         }
     }
+}
 
 /*!
   Sets the mode of the painter. This controls whether the painter shall adjust its
   fixes/workarounds optimized for certain output devices.
 */
-    void QCPPainter::setModes(QCPPainter::PainterModes modes)
-    {
-        mModes = modes;
-    }
+void QCPPainter::setModes(QCPPainter::PainterModes modes) {
+    mModes = modes;
+}
 
 /*!
   Sets the QPainter::NonCosmeticDefaultPen in Qt versions before Qt5 after beginning painting on \a
@@ -142,28 +135,26 @@ setRenderHint(QPainter::NonCosmeticDefaultPen);
 
   \note this function hides the non-virtual base class implementation.
 */
-    bool QCPPainter::begin(QPaintDevice *device)
-    {
-        bool result = QPainter::begin(device);
+bool QCPPainter::begin(QPaintDevice *device) {
+    bool result = QPainter::begin(device);
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0) // before Qt5, default pens used to be cosmetic if NonCosmeticDefaultPen flag isn't set. So we set it to get consistency across Qt versions.
-        if (result)
+    if (result)
 setRenderHint(QPainter::NonCosmeticDefaultPen);
 #endif
-        return result;
-    }
+    return result;
+}
 
 /*! \overload
 
   Sets the mode of the painter. This controls whether the painter shall adjust its
   fixes/workarounds optimized for certain output devices.
 */
-    void QCPPainter::setMode(QCPPainter::PainterMode mode, bool enabled)
-    {
-        if (!enabled && mModes.testFlag(mode))
-            mModes &= ~mode;
-        else if (enabled && !mModes.testFlag(mode))
-            mModes |= mode;
-    }
+void QCPPainter::setMode(QCPPainter::PainterMode mode, bool enabled) {
+    if (!enabled && mModes.testFlag(mode))
+        mModes &= ~mode;
+    else if (enabled && !mModes.testFlag(mode))
+        mModes |= mode;
+}
 
 /*!
   Saves the painter (see QPainter::save). Since QCPPainter adds some new internal state to
@@ -173,11 +164,10 @@ setRenderHint(QPainter::NonCosmeticDefaultPen);
 
   \see restore
 */
-    void QCPPainter::save()
-    {
-        mAntialiasingStack.push(mIsAntialiasing);
-        QPainter::save();
-    }
+void QCPPainter::save() {
+    mAntialiasingStack.push(mIsAntialiasing);
+    QPainter::save();
+}
 
 /*!
   Restores the painter (see QPainter::restore). Since QCPPainter adds some new internal state to
@@ -187,29 +177,22 @@ setRenderHint(QPainter::NonCosmeticDefaultPen);
 
   \see save
 */
-    void QCPPainter::restore()
-    {
-        if (!mAntialiasingStack.isEmpty())
-            mIsAntialiasing = mAntialiasingStack.pop();
-        else
-            qDebug() << Q_FUNC_INFO << "Unbalanced save/restore";
-        QPainter::restore();
-    }
+void QCPPainter::restore() {
+    if (!mAntialiasingStack.isEmpty())
+        mIsAntialiasing = mAntialiasingStack.pop();
+    else
+        qDebug() << Q_FUNC_INFO << "Unbalanced save/restore";
+    QPainter::restore();
+}
 
 /*!
   Changes the pen width to 1 if it currently is 0. This function is called in the \ref setPen
   overrides when the \ref pmNonCosmetic mode is set.
 */
-    void QCPPainter::makeNonCosmetic()
-    {
-        if (qFuzzyIsNull(pen().widthF()))
-        {
-            QPen p = pen();
-            p.setWidth(1);
-            QPainter::setPen(p);
-        }
+void QCPPainter::makeNonCosmetic() {
+    if (qFuzzyIsNull(pen().widthF())) {
+        QPen p = pen();
+        p.setWidth(1);
+        QPainter::setPen(p);
     }
-/* end of 'src/painter.cpp' */
-
-
-} // QCP
+}

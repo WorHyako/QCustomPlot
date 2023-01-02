@@ -1,6 +1,9 @@
 #include "include/QCPAbstractPaintBuffer.hpp"
 
-namespace QCP {
+#include <QDebug>
+
+using namespace QCP;
+
 /*! \class QCPAbstractPaintBuffer
   \brief The abstract base class for paint buffers, which define the rendering backend
 
@@ -20,8 +23,6 @@ namespace QCP {
   frame buffer objects is provided by \ref QCPPaintBufferGlPbuffer and \ref QCPPaintBufferGlFbo.
   They are used automatically if \ref QCustomPlot::setOpenGl is enabled.
 */
-
-/* start documentation of pure virtual functions */
 
 /*! \fn virtual QCPPainter *QCPAbstractPaintBuffer::startPainting() = 0
 
@@ -64,9 +65,6 @@ namespace QCP {
   because calling pure virtual methods in base class constructors is not possible).
 */
 
-/* end documentation of pure virtual functions */
-/* start documentation of inline functions */
-
 /*! \fn virtual void QCPAbstractPaintBuffer::donePainting()
 
   If you have acquired a \ref QCPPainter to paint onto this paint buffer via \ref startPainting,
@@ -77,23 +75,17 @@ namespace QCP {
   default implementation does nothing.
 */
 
-/* end documentation of inline functions */
-
 /*!
   Creates a paint buffer and initializes it with the provided \a size and \a devicePixelRatio.
 
   Subclasses must call their \ref reallocateBuffer implementation in their respective constructors.
 */
-    QCPAbstractPaintBuffer::QCPAbstractPaintBuffer(const QSize &size, double devicePixelRatio) :
-            mSize(size),
-            mDevicePixelRatio(devicePixelRatio),
-            mInvalidated(true)
-    {
-    }
+QCPAbstractPaintBuffer::QCPAbstractPaintBuffer(const QSize &size, double devicePixelRatio) :
+        mSize(size),
+        mDevicePixelRatio(devicePixelRatio),
+        mInvalidated(true) {
+}
 
-    QCPAbstractPaintBuffer::~QCPAbstractPaintBuffer()
-    {
-    }
 
 /*!
   Sets the paint buffer size.
@@ -103,14 +95,12 @@ namespace QCP {
 
   If \a size is already the current buffer size, this method does nothing.
 */
-    void QCPAbstractPaintBuffer::setSize(const QSize &size)
-    {
-        if (mSize != size)
-        {
-            mSize = size;
-            reallocateBuffer();
-        }
+void QCPAbstractPaintBuffer::setSize(const QSize &size) {
+    if (mSize != size) {
+        mSize = size;
+        reallocateBuffer();
     }
+}
 
 /*!
   Sets the invalidated flag to \a invalidated.
@@ -127,10 +117,9 @@ namespace QCP {
 
   Under normal circumstances, it is not necessary to manually call this method.
 */
-    void QCPAbstractPaintBuffer::setInvalidated(bool invalidated)
-    {
-        mInvalidated = invalidated;
-    }
+void QCPAbstractPaintBuffer::setInvalidated(bool invalidated) {
+    mInvalidated = invalidated;
+}
 
 /*!
   Sets the device pixel ratio to \a ratio. This is useful to render on high-DPI output devices.
@@ -141,17 +130,14 @@ namespace QCP {
 
   \note This method is only available for Qt versions 5.4 and higher.
 */
-    void QCPAbstractPaintBuffer::setDevicePixelRatio(double ratio)
-    {
-        if (!qFuzzyCompare(ratio, mDevicePixelRatio))
-        {
+void QCPAbstractPaintBuffer::setDevicePixelRatio(double ratio) {
+    if (!qFuzzyCompare(ratio, mDevicePixelRatio)) {
 #ifdef QCP_DEVICEPIXELRATIO_SUPPORTED
-            mDevicePixelRatio = ratio;
+        mDevicePixelRatio = ratio;
 reallocateBuffer();
 #else
-            qDebug() << Q_FUNC_INFO << "Device pixel ratios not supported for Qt versions before 5.4";
-            mDevicePixelRatio = 1.0;
+        qDebug() << Q_FUNC_INFO << "Device pixel ratios not supported for Qt versions before 5.4";
+        mDevicePixelRatio = 1.0;
 #endif
-        }
     }
-} // QCP
+}

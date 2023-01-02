@@ -1,6 +1,9 @@
 #include "include/QCPAbstractPlottable.hpp"
 
-namespace QCP {
+#include "QCPPlottableLegendItem.hpp"
+
+using namespace QCP;
+
 /*! \class QCPAbstractPlottable
   \brief The abstract base class for all data representing objects in a plot.
 
@@ -82,8 +85,6 @@ namespace QCP {
   </table>
 */
 
-/* start of documentation of inline functions */
-
 /*! \fn QCPSelectionDecorator *QCPAbstractPlottable::selectionDecorator() const
 
   Provides access to the selection decorator of this plottable. The selection decorator controls
@@ -117,9 +118,6 @@ namespace QCP {
   You can use this method to gain read access to data coordinates while holding a pointer to the
   abstract base class only.
 */
-
-/* end of documentation of inline functions */
-/* start of documentation of pure virtual functions */
 
 /*! \fn void QCPAbstractPlottable::drawLegendIcon(QCPPainter *painter, const QRect &rect) const = 0
   \internal
@@ -171,9 +169,6 @@ namespace QCP {
   \see rescaleAxes, getKeyRange
 */
 
-/* end of documentation of pure virtual functions */
-/* start of documentation of signals */
-
 /*! \fn void QCPAbstractPlottable::selectionChanged(bool selected)
 
   This signal is emitted when the selection state of this plottable has changed, either by user
@@ -199,8 +194,6 @@ namespace QCP {
   \see setSelectable
 */
 
-/* end of documentation of signals */
-
 /*!
   Constructs an abstract plottable which uses \a keyAxis as its key axis ("x") and \a valueAxis as
   its value axis ("y"). \a keyAxis and \a valueAxis must reside in the same QCustomPlot instance
@@ -212,44 +205,51 @@ namespace QCP {
 
   You probably want one of the subclasses like \ref QCPGraph or \ref QCPCurve instead.
 */
-    QCPAbstractPlottable::QCPAbstractPlottable(QCPAxis *keyAxis, QCPAxis *valueAxis) :
-            QCPLayerable(keyAxis->parentPlot(), QString(), keyAxis->axisRect()),
-            mName(),
-            mAntialiasedFill(true),
-            mAntialiasedScatters(true),
-            mPen(Qt::black),
-            mBrush(Qt::NoBrush),
-            mKeyAxis(keyAxis),
-            mValueAxis(valueAxis),
-            mSelectable(QCP::stWhole),
-            mSelectionDecorator(nullptr)
-    {
-        if (keyAxis->parentPlot() != valueAxis->parentPlot())
-            qDebug() << Q_FUNC_INFO << "Parent plot of keyAxis is not the same as that of valueAxis.";
-        if (keyAxis->orientation() == valueAxis->orientation())
-            qDebug() << Q_FUNC_INFO << "keyAxis and valueAxis must be orthogonal to each other.";
+QCPAbstractPlottable::QCPAbstractPlottable(QCPAxis * keyAxis, QCPAxis * valueAxis)
+:
+QCPLayerable(keyAxis
+->
 
-        mParentPlot->registerPlottable(this);
-        setSelectionDecorator(new QCPSelectionDecorator);
-    }
+parentPlot(), QString(), keyAxis
 
-    QCPAbstractPlottable::~QCPAbstractPlottable()
-    {
-        if (mSelectionDecorator)
-        {
-            delete mSelectionDecorator;
-            mSelectionDecorator = nullptr;
-        }
+->
+
+axisRect()
+
+),
+
+mName(),
+mAntialiasedFill(true),
+mAntialiasedScatters(true),
+mPen(Qt::black),
+mBrush(Qt::NoBrush),
+mKeyAxis(keyAxis),
+mValueAxis(valueAxis),
+mSelectable(QCP::stWhole),
+mSelectionDecorator(nullptr) {
+    if (keyAxis->parentPlot() != valueAxis->parentPlot())
+        qDebug() << Q_FUNC_INFO << "Parent plot of keyAxis is not the same as that of valueAxis.";
+    if (keyAxis->orientation() == valueAxis->orientation())
+        qDebug() << Q_FUNC_INFO << "keyAxis and valueAxis must be orthogonal to each other.";
+
+    mParentPlot->registerPlottable(this);
+    setSelectionDecorator(new QCPSelectionDecorator);
+}
+
+QCPAbstractPlottable::~QCPAbstractPlottable() {
+    if (mSelectionDecorator) {
+        delete mSelectionDecorator;
+        mSelectionDecorator = nullptr;
     }
+}
 
 /*!
    The name is the textual representation of this plottable as it is displayed in the legend
    (\ref QCPLegend). It may contain any UTF-8 characters, including newlines.
 */
-    void QCPAbstractPlottable::setName(const QString &name)
-    {
-        mName = name;
-    }
+void QCPAbstractPlottable::setName(const QString &name) {
+    mName = name;
+}
 
 /*!
   Sets whether fills of this plottable are drawn antialiased or not.
@@ -257,10 +257,9 @@ namespace QCP {
   Note that this setting may be overridden by \ref QCustomPlot::setAntialiasedElements and \ref
   QCustomPlot::setNotAntialiasedElements.
 */
-    void QCPAbstractPlottable::setAntialiasedFill(bool enabled)
-    {
-        mAntialiasedFill = enabled;
-    }
+void QCPAbstractPlottable::setAntialiasedFill(bool enabled) {
+    mAntialiasedFill = enabled;
+}
 
 /*!
   Sets whether the scatter symbols of this plottable are drawn antialiased or not.
@@ -268,10 +267,9 @@ namespace QCP {
   Note that this setting may be overridden by \ref QCustomPlot::setAntialiasedElements and \ref
   QCustomPlot::setNotAntialiasedElements.
 */
-    void QCPAbstractPlottable::setAntialiasedScatters(bool enabled)
-    {
-        mAntialiasedScatters = enabled;
-    }
+void QCPAbstractPlottable::setAntialiasedScatters(bool enabled) {
+    mAntialiasedScatters = enabled;
+}
 
 /*!
   The pen is used to draw basic lines that make up the plottable representation in the
@@ -281,10 +279,9 @@ namespace QCP {
 
   \see setBrush
 */
-    void QCPAbstractPlottable::setPen(const QPen &pen)
-    {
-        mPen = pen;
-    }
+void QCPAbstractPlottable::setPen(const QPen &pen) {
+    mPen = pen;
+}
 
 /*!
   The brush is used to draw basic fills of the plottable representation in the
@@ -295,10 +292,9 @@ namespace QCP {
 
   \see setPen
 */
-    void QCPAbstractPlottable::setBrush(const QBrush &brush)
-    {
-        mBrush = brush;
-    }
+void QCPAbstractPlottable::setBrush(const QBrush &brush) {
+    mBrush = brush;
+}
 
 /*!
   The key axis of a plottable can be set to any axis of a QCustomPlot, as long as it is orthogonal
@@ -311,10 +307,9 @@ namespace QCP {
 
   \see setValueAxis
 */
-    void QCPAbstractPlottable::setKeyAxis(QCPAxis *axis)
-    {
-        mKeyAxis = axis;
-    }
+void QCPAbstractPlottable::setKeyAxis(QCPAxis * axis) {
+    mKeyAxis = axis;
+}
 
 /*!
   The value axis of a plottable can be set to any axis of a QCustomPlot, as long as it is
@@ -327,10 +322,9 @@ namespace QCP {
 
   \see setKeyAxis
 */
-    void QCPAbstractPlottable::setValueAxis(QCPAxis *axis)
-    {
-        mValueAxis = axis;
-    }
+void QCPAbstractPlottable::setValueAxis(QCPAxis * axis) {
+    mValueAxis = axis;
+}
 
 
 /*!
@@ -351,14 +345,17 @@ namespace QCP {
 
   \see setSelectable, selectTest
 */
-    void QCPAbstractPlottable::setSelection(QCPDataSelection selection)
+void QCPAbstractPlottable::setSelection(QCPDataSelection
+selection)
 {
-    selection.enforceType(mSelectable);
-    if (mSelection != selection)
+selection.
+enforceType(mSelectable);
+if (mSelection != selection)
 {
-    mSelection = selection;
-    emit selectionChanged(selected());
-    emit selectionChanged(mSelection);
+mSelection = selection;
+emit selectionChanged (selected());
+
+emit selectionChanged(mSelection);
 }
 }
 
@@ -371,12 +368,9 @@ namespace QCP {
 
   The currently set decorator can be accessed via \ref selectionDecorator.
 */
-void QCPAbstractPlottable::setSelectionDecorator(QCPSelectionDecorator *decorator)
-{
-    if (decorator)
-    {
-        if (decorator->registerWithPlottable(this))
-        {
+void QCPAbstractPlottable::setSelectionDecorator(QCPSelectionDecorator * decorator) {
+    if (decorator) {
+        if (decorator->registerWithPlottable(this)) {
             delete mSelectionDecorator; // delete old decorator if necessary
             mSelectionDecorator = decorator;
         }
@@ -397,16 +391,13 @@ void QCPAbstractPlottable::setSelectionDecorator(QCPSelectionDecorator *decorato
 
   \see setSelection, QCP::SelectionType
 */
-void QCPAbstractPlottable::setSelectable(QCP::SelectionType selectable)
-{
-    if (mSelectable != selectable)
-    {
+void QCPAbstractPlottable::setSelectable(QCP::SelectionType selectable) {
+    if (mSelectable != selectable) {
         mSelectable = selectable;
         QCPDataSelection oldSelection = mSelection;
         mSelection.enforceType(mSelectable);
         emit selectableChanged(mSelectable);
-        if (mSelection != oldSelection)
-        {
+        if (mSelection != oldSelection) {
             emit selectionChanged(selected());
             emit selectionChanged(mSelection);
         }
@@ -423,18 +414,18 @@ void QCPAbstractPlottable::setSelectable(QCP::SelectionType selectable)
 
   \see pixelsToCoords, QCPAxis::coordToPixel
 */
-void QCPAbstractPlottable::coordsToPixels(double key, double value, double &x, double &y) const
-{
-    QCPAxis *keyAxis = mKeyAxis.data();
-    QCPAxis *valueAxis = mValueAxis.data();
-    if (!keyAxis || !valueAxis) { qDebug() << Q_FUNC_INFO << "invalid key or value axis"; return; }
+void QCPAbstractPlottable::coordsToPixels(double key, double value, double &x, double &y) const {
+    QCPAxis * keyAxis = mKeyAxis.data();
+    QCPAxis * valueAxis = mValueAxis.data();
+    if (!keyAxis || !valueAxis) {
+        qDebug() << Q_FUNC_INFO << "invalid key or value axis";
+        return;
+    }
 
-    if (keyAxis->orientation() == Qt::Horizontal)
-    {
+    if (keyAxis->orientation() == Qt::Horizontal) {
         x = keyAxis->coordToPixel(key);
         y = valueAxis->coordToPixel(value);
-    } else
-    {
+    } else {
         y = keyAxis->coordToPixel(key);
         x = valueAxis->coordToPixel(value);
     }
@@ -444,11 +435,13 @@ void QCPAbstractPlottable::coordsToPixels(double key, double value, double &x, d
 
   Transforms the given \a key and \a value to pixel coordinates and returns them in a QPointF.
 */
-const QPointF QCPAbstractPlottable::coordsToPixels(double key, double value) const
-{
-    QCPAxis *keyAxis = mKeyAxis.data();
-    QCPAxis *valueAxis = mValueAxis.data();
-    if (!keyAxis || !valueAxis) { qDebug() << Q_FUNC_INFO << "invalid key or value axis"; return QPointF(); }
+const QPointF QCPAbstractPlottable::coordsToPixels(double key, double value) const {
+    QCPAxis * keyAxis = mKeyAxis.data();
+    QCPAxis * valueAxis = mValueAxis.data();
+    if (!keyAxis || !valueAxis) {
+        qDebug() << Q_FUNC_INFO << "invalid key or value axis";
+        return QPointF();
+    }
 
     if (keyAxis->orientation() == Qt::Horizontal)
         return QPointF(keyAxis->coordToPixel(key), valueAxis->coordToPixel(value));
@@ -465,18 +458,18 @@ const QPointF QCPAbstractPlottable::coordsToPixels(double key, double value) con
 
   \see coordsToPixels, QCPAxis::coordToPixel
 */
-void QCPAbstractPlottable::pixelsToCoords(double x, double y, double &key, double &value) const
-{
-    QCPAxis *keyAxis = mKeyAxis.data();
-    QCPAxis *valueAxis = mValueAxis.data();
-    if (!keyAxis || !valueAxis) { qDebug() << Q_FUNC_INFO << "invalid key or value axis"; return; }
+void QCPAbstractPlottable::pixelsToCoords(double x, double y, double &key, double &value) const {
+    QCPAxis * keyAxis = mKeyAxis.data();
+    QCPAxis * valueAxis = mValueAxis.data();
+    if (!keyAxis || !valueAxis) {
+        qDebug() << Q_FUNC_INFO << "invalid key or value axis";
+        return;
+    }
 
-    if (keyAxis->orientation() == Qt::Horizontal)
-    {
+    if (keyAxis->orientation() == Qt::Horizontal) {
         key = keyAxis->pixelToCoord(x);
         value = valueAxis->pixelToCoord(y);
-    } else
-    {
+    } else {
         key = keyAxis->pixelToCoord(y);
         value = valueAxis->pixelToCoord(x);
     }
@@ -486,8 +479,7 @@ void QCPAbstractPlottable::pixelsToCoords(double x, double y, double &key, doubl
 
   Returns the pixel input \a pixelPos as plot coordinates \a key and \a value.
 */
-void QCPAbstractPlottable::pixelsToCoords(const QPointF &pixelPos, double &key, double &value) const
-{
+void QCPAbstractPlottable::pixelsToCoords(const QPointF &pixelPos, double &key, double &value) const {
     pixelsToCoords(pixelPos.x(), pixelPos.y(), key, value);
 }
 
@@ -504,8 +496,7 @@ void QCPAbstractPlottable::pixelsToCoords(const QPointF &pixelPos, double &key, 
 
   \see rescaleKeyAxis, rescaleValueAxis, QCustomPlot::rescaleAxes, QCPAxis::rescale
 */
-void QCPAbstractPlottable::rescaleAxes(bool onlyEnlarge) const
-{
+void QCPAbstractPlottable::rescaleAxes(bool onlyEnlarge) const {
     rescaleKeyAxis(onlyEnlarge);
     rescaleValueAxis(onlyEnlarge);
 }
@@ -515,10 +506,12 @@ void QCPAbstractPlottable::rescaleAxes(bool onlyEnlarge) const
 
   See \ref rescaleAxes for detailed behaviour.
 */
-void QCPAbstractPlottable::rescaleKeyAxis(bool onlyEnlarge) const
-{
-    QCPAxis *keyAxis = mKeyAxis.data();
-    if (!keyAxis) { qDebug() << Q_FUNC_INFO << "invalid key axis"; return; }
+void QCPAbstractPlottable::rescaleKeyAxis(bool onlyEnlarge) const {
+    QCPAxis * keyAxis = mKeyAxis.data();
+    if (!keyAxis) {
+        qDebug() << Q_FUNC_INFO << "invalid key axis";
+        return;
+    }
 
     QCP::SignDomain signDomain = QCP::sdBoth;
     if (keyAxis->scaleType() == QCPAxis::stLogarithmic)
@@ -526,21 +519,21 @@ void QCPAbstractPlottable::rescaleKeyAxis(bool onlyEnlarge) const
 
     bool foundRange;
     QCPRange newRange = getKeyRange(foundRange, signDomain);
-    if (foundRange)
-    {
+    if (foundRange) {
         if (onlyEnlarge)
             newRange.expand(keyAxis->range());
-        if (!QCPRange::validRange(newRange)) // likely due to range being zero (plottable has only constant data in this axis dimension), shift current range to at least center the plottable
+        if (!QCPRange::validRange(
+                newRange)) // likely due to range being zero (plottable has only constant data in this axis dimension), shift current range to at least center the plottable
         {
-            double center = (newRange.lower+newRange.upper)*0.5; // upper and lower should be equal anyway, but just to make sure, incase validRange returned false for other reason
-            if (keyAxis->scaleType() == QCPAxis::stLinear)
-            {
-                newRange.lower = center-keyAxis->range().size()/2.0;
-                newRange.upper = center+keyAxis->range().size()/2.0;
+            double center = (newRange.lower + newRange.upper) *
+                            0.5; // upper and lower should be equal anyway, but just to make sure, incase validRange returned false for other reason
+            if (keyAxis->scaleType() == QCPAxis::stLinear) {
+                newRange.lower = center - keyAxis->range().size() / 2.0;
+                newRange.upper = center + keyAxis->range().size() / 2.0;
             } else // scaleType() == stLogarithmic
             {
-                newRange.lower = center/qSqrt(keyAxis->range().upper/keyAxis->range().lower);
-                newRange.upper = center*qSqrt(keyAxis->range().upper/keyAxis->range().lower);
+                newRange.lower = center / qSqrt(keyAxis->range().upper / keyAxis->range().lower);
+                newRange.upper = center * qSqrt(keyAxis->range().upper / keyAxis->range().lower);
             }
         }
         keyAxis->setRange(newRange);
@@ -557,11 +550,13 @@ void QCPAbstractPlottable::rescaleKeyAxis(bool onlyEnlarge) const
 
   See \ref rescaleAxes for detailed behaviour.
 */
-void QCPAbstractPlottable::rescaleValueAxis(bool onlyEnlarge, bool inKeyRange) const
-{
-    QCPAxis *keyAxis = mKeyAxis.data();
-    QCPAxis *valueAxis = mValueAxis.data();
-    if (!keyAxis || !valueAxis) { qDebug() << Q_FUNC_INFO << "invalid key or value axis"; return; }
+void QCPAbstractPlottable::rescaleValueAxis(bool onlyEnlarge, bool inKeyRange) const {
+    QCPAxis * keyAxis = mKeyAxis.data();
+    QCPAxis * valueAxis = mValueAxis.data();
+    if (!keyAxis || !valueAxis) {
+        qDebug() << Q_FUNC_INFO << "invalid key or value axis";
+        return;
+    }
 
     QCP::SignDomain signDomain = QCP::sdBoth;
     if (valueAxis->scaleType() == QCPAxis::stLogarithmic)
@@ -569,21 +564,21 @@ void QCPAbstractPlottable::rescaleValueAxis(bool onlyEnlarge, bool inKeyRange) c
 
     bool foundRange;
     QCPRange newRange = getValueRange(foundRange, signDomain, inKeyRange ? keyAxis->range() : QCPRange());
-    if (foundRange)
-    {
+    if (foundRange) {
         if (onlyEnlarge)
             newRange.expand(valueAxis->range());
-        if (!QCPRange::validRange(newRange)) // likely due to range being zero (plottable has only constant data in this axis dimension), shift current range to at least center the plottable
+        if (!QCPRange::validRange(
+                newRange)) // likely due to range being zero (plottable has only constant data in this axis dimension), shift current range to at least center the plottable
         {
-            double center = (newRange.lower+newRange.upper)*0.5; // upper and lower should be equal anyway, but just to make sure, incase validRange returned false for other reason
-            if (valueAxis->scaleType() == QCPAxis::stLinear)
-            {
-                newRange.lower = center-valueAxis->range().size()/2.0;
-                newRange.upper = center+valueAxis->range().size()/2.0;
+            double center = (newRange.lower + newRange.upper) *
+                            0.5; // upper and lower should be equal anyway, but just to make sure, incase validRange returned false for other reason
+            if (valueAxis->scaleType() == QCPAxis::stLinear) {
+                newRange.lower = center - valueAxis->range().size() / 2.0;
+                newRange.upper = center + valueAxis->range().size() / 2.0;
             } else // scaleType() == stLogarithmic
             {
-                newRange.lower = center/qSqrt(valueAxis->range().upper/valueAxis->range().lower);
-                newRange.upper = center*qSqrt(valueAxis->range().upper/valueAxis->range().lower);
+                newRange.lower = center / qSqrt(valueAxis->range().upper / valueAxis->range().lower);
+                newRange.upper = center * qSqrt(valueAxis->range().upper / valueAxis->range().lower);
             }
         }
         valueAxis->setRange(newRange);
@@ -604,21 +599,17 @@ void QCPAbstractPlottable::rescaleValueAxis(bool onlyEnlarge, bool inKeyRange) c
 
   \see removeFromLegend, QCPLegend::addItem
 */
-bool QCPAbstractPlottable::addToLegend(QCPLegend *legend)
-{
-    if (!legend)
-    {
+bool QCPAbstractPlottable::addToLegend(QCPLegend *legend) {
+    if (!legend) {
         qDebug() << Q_FUNC_INFO << "passed legend is null";
         return false;
     }
-    if (legend->parentPlot() != mParentPlot)
-    {
+    if (legend->parentPlot() != mParentPlot) {
         qDebug() << Q_FUNC_INFO << "passed legend isn't in the same QCustomPlot as this plottable";
         return false;
     }
 
-    if (!legend->hasItemWithPlottable(this))
-    {
+    if (!legend->hasItemWithPlottable(this)) {
         legend->addItem(new QCPPlottableLegendItem(legend, this));
         return true;
     } else
@@ -631,8 +622,7 @@ bool QCPAbstractPlottable::addToLegend(QCPLegend *legend)
 
   \see removeFromLegend
 */
-bool QCPAbstractPlottable::addToLegend()
-{
+bool QCPAbstractPlottable::addToLegend() {
     if (!mParentPlot || !mParentPlot->legend)
         return false;
     else
@@ -649,15 +639,13 @@ bool QCPAbstractPlottable::addToLegend()
 
   \see addToLegend, QCPLegend::removeItem
 */
-bool QCPAbstractPlottable::removeFromLegend(QCPLegend *legend) const
-{
-    if (!legend)
-    {
+bool QCPAbstractPlottable::removeFromLegend(QCPLegend *legend) const {
+    if (!legend) {
         qDebug() << Q_FUNC_INFO << "passed legend is null";
         return false;
     }
 
-    if (QCPPlottableLegendItem *lip = legend->itemWithPlottable(this))
+    if (QCPPlottableLegendItem * lip = legend->itemWithPlottable(this))
         return legend->removeItem(lip);
     else
         return false;
@@ -669,8 +657,7 @@ bool QCPAbstractPlottable::removeFromLegend(QCPLegend *legend) const
 
   \see addToLegend
 */
-bool QCPAbstractPlottable::removeFromLegend() const
-{
+bool QCPAbstractPlottable::removeFromLegend() const {
     if (!mParentPlot || !mParentPlot->legend)
         return false;
     else
@@ -678,8 +665,7 @@ bool QCPAbstractPlottable::removeFromLegend() const
 }
 
 /* inherits documentation from base class */
-QRect QCPAbstractPlottable::clipRect() const
-{
+QRect QCPAbstractPlottable::clipRect() const {
     if (mKeyAxis && mValueAxis)
         return mKeyAxis.data()->axisRect()->rect() & mValueAxis.data()->axisRect()->rect();
     else
@@ -687,8 +673,7 @@ QRect QCPAbstractPlottable::clipRect() const
 }
 
 /* inherits documentation from base class */
-QCP::Interaction QCPAbstractPlottable::selectionCategory() const
-{
+QCP::Interaction QCPAbstractPlottable::selectionCategory() const {
     return QCP::iSelectPlottables;
 }
 
@@ -707,8 +692,7 @@ QCP::Interaction QCPAbstractPlottable::selectionCategory() const
 
   \see setAntialiased, applyFillAntialiasingHint, applyScattersAntialiasingHint
 */
-void QCPAbstractPlottable::applyDefaultAntialiasingHint(QCPPainter *painter) const
-{
+void QCPAbstractPlottable::applyDefaultAntialiasingHint(QCPPainter *painter) const {
     applyAntialiasingHint(painter, mAntialiased, QCP::aePlottables);
 }
 
@@ -723,8 +707,7 @@ void QCPAbstractPlottable::applyDefaultAntialiasingHint(QCPPainter *painter) con
 
   \see setAntialiased, applyDefaultAntialiasingHint, applyScattersAntialiasingHint
 */
-void QCPAbstractPlottable::applyFillAntialiasingHint(QCPPainter *painter) const
-{
+void QCPAbstractPlottable::applyFillAntialiasingHint(QCPPainter *painter) const {
     applyAntialiasingHint(painter, mAntialiasedFill, QCP::aeFills);
 }
 
@@ -739,23 +722,21 @@ void QCPAbstractPlottable::applyFillAntialiasingHint(QCPPainter *painter) const
 
   \see setAntialiased, applyFillAntialiasingHint, applyDefaultAntialiasingHint
 */
-void QCPAbstractPlottable::applyScattersAntialiasingHint(QCPPainter *painter) const
-{
+void QCPAbstractPlottable::applyScattersAntialiasingHint(QCPPainter *painter) const {
     applyAntialiasingHint(painter, mAntialiasedScatters, QCP::aeScatters);
 }
 
 /* inherits documentation from base class */
-void QCPAbstractPlottable::selectEvent(QMouseEvent *event, bool additive, const QVariant &details, bool *selectionStateChanged)
-{
+void QCPAbstractPlottable::selectEvent(QMouseEvent *event, bool additive, const QVariant &details,
+                                       bool *selectionStateChanged) {
     Q_UNUSED(event)
 
-    if (mSelectable != QCP::stNone)
-    {
+    if (mSelectable != QCP::stNone) {
         QCPDataSelection newSelection = details.value<QCPDataSelection>();
         QCPDataSelection selectionBefore = mSelection;
-        if (additive)
-        {
-            if (mSelectable == QCP::stWhole) // in whole selection mode, we toggle to no selection even if currently unselected point was hit
+        if (additive) {
+            if (mSelectable ==
+                QCP::stWhole) // in whole selection mode, we toggle to no selection even if currently unselected point was hit
             {
                 if (selected())
                     setSelection(QCPDataSelection());
@@ -764,9 +745,9 @@ void QCPAbstractPlottable::selectEvent(QMouseEvent *event, bool additive, const 
             } else // in all other selection modes we toggle selections of homogeneously selected/unselected segments
             {
                 if (mSelection.contains(newSelection)) // if entire newSelection is already selected, toggle selection
-                    setSelection(mSelection-newSelection);
+                    setSelection(mSelection - newSelection);
                 else
-                    setSelection(mSelection+newSelection);
+                    setSelection(mSelection + newSelection);
             }
         } else
             setSelection(newSelection);
@@ -776,14 +757,11 @@ void QCPAbstractPlottable::selectEvent(QMouseEvent *event, bool additive, const 
 }
 
 /* inherits documentation from base class */
-void QCPAbstractPlottable::deselectEvent(bool *selectionStateChanged)
-{
-    if (mSelectable != QCP::stNone)
-    {
+void QCPAbstractPlottable::deselectEvent(bool *selectionStateChanged) {
+    if (mSelectable != QCP::stNone) {
         QCPDataSelection selectionBefore = mSelection;
         setSelection(QCPDataSelection());
         if (selectionStateChanged)
             *selectionStateChanged = mSelection != selectionBefore;
     }
 }
-} // QCP
