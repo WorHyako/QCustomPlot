@@ -8,7 +8,6 @@ namespace QCP {
 
     class QCP_LIB_DECL QCPLayoutGrid : public QCPLayout {
     Q_OBJECT
-        /// \cond INCLUDE_QPROPERTIES
         Q_PROPERTY(int rowCount READ rowCount)
         Q_PROPERTY(int columnCount READ columnCount)
         Q_PROPERTY(QList<double> columnStretchFactors READ columnStretchFactors WRITE setColumnStretchFactors)
@@ -17,7 +16,6 @@ namespace QCP {
         Q_PROPERTY(int rowSpacing READ rowSpacing WRITE setRowSpacing)
         Q_PROPERTY(FillOrder fillOrder READ fillOrder WRITE setFillOrder)
         Q_PROPERTY(int wrap READ wrap WRITE setWrap)
-        /// \endcond
     public:
         /*!
         Defines in which direction the grid is filled when using \ref addElement(QCPLayoutElement*).

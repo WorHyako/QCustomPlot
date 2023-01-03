@@ -1,32 +1,30 @@
-#ifndef QCUSTOMPLOT_QCPPOLARLEGENDITEM_H
-#define QCUSTOMPLOT_QCPPOLARLEGENDITEM_H
+#ifndef QCUSTOMPLOT_QCPPOLARLEGENDITEM_HPP
+#define QCUSTOMPLOT_QCPPOLARLEGENDITEM_HPP
+
+#include "QCPAbstractLegendItem.hpp"
+#include "QCPPolarGraph.hpp"
 
 namespace QCP {
 
-    class QCP_LIB_DECL QCPPolarLegendItem : public QCPAbstractLegendItem
-{
+    class QCP_LIB_DECL QCPPolarLegendItem : public QCPAbstractLegendItem {
     Q_OBJECT
     public:
-    QCPPolarLegendItem(QCPLegend *parent, QCPPolarGraph *graph);
+        QCPPolarLegendItem(QCPLegend *parent, QCPPolarGraph *graph);
 
-    // getters:
-    QCPPolarGraph *polarGraph() { return mPolarGraph; }
+        QCPPolarGraph *polarGraph() { return mPolarGraph; }
 
     protected:
-    // property members:
-    QCPPolarGraph *mPolarGraph;
+        QCPPolarGraph *mPolarGraph;
 
-    // reimplemented virtual methods:
-    virtual void draw(QCPPainter *painter) Q_DECL_OVERRIDE;
-    virtual QSize minimumOuterSizeHint() const Q_DECL_OVERRIDE;
+        void draw(QCPPainter *painter) override;
 
-    // non-virtual methods:
-    QPen getIconBorderPen() const;
-    QColor getTextColor() const;
-    QFont getFont() const;
-};
+        QSize minimumOuterSizeHint() const override;
 
+        QPen getIconBorderPen() const;
 
-} // QCP
+        QColor getTextColor() const;
 
-#endif //QCUSTOMPLOT_QCPPOLARLEGENDITEM_H
+        QFont getFont() const;
+    };
+}
+#endif

@@ -12,14 +12,12 @@ namespace QCP {
 
     class QCP_LIB_DECL QCPLayer : public QObject {
     Q_OBJECT
-        /// \cond INCLUDE_QPROPERTIES
         Q_PROPERTY(QCustomPlot *parentPlot READ parentPlot)
         Q_PROPERTY(QString name READ name)
         Q_PROPERTY(int index READ index)
         Q_PROPERTY(QList<QCPLayerable *> children READ children)
         Q_PROPERTY(bool visible READ visible WRITE setVisible)
         Q_PROPERTY(LayerMode mode READ mode WRITE setMode)
-        /// \endcond
     public:
 
         /*!

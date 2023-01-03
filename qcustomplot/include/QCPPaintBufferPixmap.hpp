@@ -1,28 +1,26 @@
-#ifndef QCUSTOMPLOT_QCPPAINTBUFFERPIXMAP_H
-#define QCUSTOMPLOT_QCPPAINTBUFFERPIXMAP_H
+#ifndef QCUSTOMPLOT_QCPPAINTBUFFERPIXMAP_HPP
+#define QCUSTOMPLOT_QCPPAINTBUFFERPIXMAP_HPP
+
+#include "QCPAbstractPaintBuffer.hpp"
 
 namespace QCP {
 
-
-    class QCP_LIB_DECL QCPPaintBufferPixmap : public QCPAbstractPaintBuffer
-{
+    class QCP_LIB_DECL QCPPaintBufferPixmap : public QCPAbstractPaintBuffer {
     public:
-    explicit QCPPaintBufferPixmap(const QSize &size, double devicePixelRatio);
-    virtual ~QCPPaintBufferPixmap() Q_DECL_OVERRIDE;
+        explicit QCPPaintBufferPixmap(const QSize &size, double devicePixelRatio);
 
-    // reimplemented virtual methods:
-    virtual QCPPainter *startPainting() Q_DECL_OVERRIDE;
-    virtual void draw(QCPPainter *painter) const Q_DECL_OVERRIDE;
-    void clear(const QColor &color) Q_DECL_OVERRIDE;
+        ~QCPPaintBufferPixmap() override;
+
+        QCPPainter *startPainting() override;
+
+        void draw(QCPPainter *painter) const override;
+
+        void clear(const QColor &color) override;
 
     protected:
-    // non-property members:
-    QPixmap mBuffer;
+        QPixmap mBuffer;
 
-    // reimplemented virtual methods:
-    virtual void reallocateBuffer() Q_DECL_OVERRIDE;
-};
-
-} // QCP
-
-#endif //QCUSTOMPLOT_QCPPAINTBUFFERPIXMAP_H
+        void reallocateBuffer() override;
+    };
+}
+#endif

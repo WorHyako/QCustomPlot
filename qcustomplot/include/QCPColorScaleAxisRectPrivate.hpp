@@ -1,13 +1,16 @@
-#ifndef QCUSTOMPLOT_QCPCOLORSCALEAXISRECTPRIVATE_H
-#define QCUSTOMPLOT_QCPCOLORSCALEAXISRECTPRIVATE_H
+#ifndef QCUSTOMPLOT_QCPCOLORSCALEAXISRECTPRIVATE_HPP
+#define QCUSTOMPLOT_QCPCOLORSCALEAXISRECTPRIVATE_HPP
+
+#include "QCPAxisRect.hpp"
+#include "QCPColorScale.hpp"
 
 namespace QCP {
 
-    class QCPColorScaleAxisRectPrivate : public QCPAxisRect
-    {
-        Q_OBJECT
+    class QCPColorScaleAxisRectPrivate : public QCPAxisRect {
+    Q_OBJECT
     public:
         explicit QCPColorScaleAxisRectPrivate(QCPColorScale *parentColorScale);
+
     protected:
         QCPColorScale *mParentColorScale;
         QImage mGradientImage;
@@ -19,14 +22,14 @@ namespace QCP {
         using QCPAxisRect::mouseReleaseEvent;
         using QCPAxisRect::wheelEvent;
         using QCPAxisRect::update;
-        virtual void draw(QCPPainter *painter) Q_DECL_OVERRIDE;
+
+        void draw(QCPPainter *painter) override;
+
         void updateGradientImage();
+
         Q_SLOT void axisSelectionChanged(QCPAxis::SelectableParts selectedParts);
+
         Q_SLOT void axisSelectableChanged(QCPAxis::SelectableParts selectableParts);
-        friend class QCPColorScale;
     };
-
-
-} // QCP
-
-#endif //QCUSTOMPLOT_QCPCOLORSCALEAXISRECTPRIVATE_H
+}
+#endif

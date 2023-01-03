@@ -1,27 +1,31 @@
-#ifndef QCUSTOMPLOT_QCPCURVEDATA_H
-#define QCUSTOMPLOT_QCPCURVEDATA_H
+#ifndef QCUSTOMPLOT_QCPCURVEDATA_HPP
+#define QCUSTOMPLOT_QCPCURVEDATA_HPP
+
+#include "QCPRange.hpp"
+#include "QCPDataContainer.hpp"
 
 namespace QCP {
 
-    class QCP_LIB_DECL QCPCurveData
-            {
-                    public:
-                    QCPCurveData();
-                    QCPCurveData(double t, double key, double value);
+    class QCP_LIB_DECL QCPCurveData {
+    public:
+        QCPCurveData();
 
-                    inline double sortKey() const { return t; }
-                    inline static QCPCurveData fromSortKey(double sortKey) { return QCPCurveData(sortKey, 0, 0); }
-                    inline static bool sortKeyIsMainKey() { return false; }
+        QCPCurveData(double t, double key, double value);
 
-                    inline double mainKey() const { return key; }
-                    inline double mainValue() const { return value; }
+        inline double sortKey() const { return t; }
 
-                    inline QCPRange valueRange() const { return QCPRange(value, value); }
+        inline static QCPCurveData fromSortKey(double sortKey) { return QCPCurveData(sortKey, 0, 0); }
 
-                    double t, key, value;
-            };
-    Q_DECLARE_TYPEINFO(QCPCurveData, Q_PRIMITIVE_TYPE);
+        inline static bool sortKeyIsMainKey() { return false; }
 
+        inline double mainKey() const { return key; }
+
+        inline double mainValue() const { return value; }
+
+        inline QCPRange valueRange() const { return QCPRange(value, value); }
+
+        double t, key, value;
+    };
 
 /*! \typedef QCPCurveDataContainer
 
@@ -34,7 +38,7 @@ namespace QCP {
   \see QCPCurveData, QCPCurve::setData
 */
     typedef QCPDataContainer<QCPCurveData> QCPCurveDataContainer;
+}
+Q_DECLARE_TYPEINFO(QCP::QCPCurveData, Q_PRIMITIVE_TYPE);
 
-} // QCP
-
-#endif //QCUSTOMPLOT_QCPCURVEDATA_H
+#endif

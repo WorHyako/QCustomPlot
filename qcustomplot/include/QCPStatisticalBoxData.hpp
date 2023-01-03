@@ -1,35 +1,42 @@
-#ifndef QCUSTOMPLOT_QCPSTATISTICALBOXDATA_H
-#define QCUSTOMPLOT_QCPSTATISTICALBOXDATA_H
+#ifndef QCUSTOMPLOT_QCPSTATISTICALBOXDATA_HPP
+#define QCUSTOMPLOT_QCPSTATISTICALBOXDATA_HPP
+
+#include "defs.hpp"
+#include "QCPDataContainer.hpp"
+#include "QCPRange.hpp"
 
 namespace QCP {
 
+    class QCP_LIB_DECL QCPStatisticalBoxData {
+    public:
+        QCPStatisticalBoxData();
 
-    class QCP_LIB_DECL QCPStatisticalBoxData
-            {
-                    public:
-                    QCPStatisticalBoxData();
-                    QCPStatisticalBoxData(double key, double minimum, double lowerQuartile, double median, double upperQuartile, double maximum, const QVector<double>& outliers=QVector<double>());
+        QCPStatisticalBoxData(double key, double minimum, double lowerQuartile, double median, double upperQuartile,
+                              double maximum, const QVector<double> &outliers = QVector<double>());
 
-                    inline double sortKey() const { return key; }
-                    inline static QCPStatisticalBoxData fromSortKey(double sortKey) { return QCPStatisticalBoxData(sortKey, 0, 0, 0, 0, 0); }
-                    inline static bool sortKeyIsMainKey() { return true; }
+        inline double sortKey() const { return key; }
 
-                    inline double mainKey() const { return key; }
-                    inline double mainValue() const { return median; }
+        inline static QCPStatisticalBoxData fromSortKey(double sortKey) {
+            return QCPStatisticalBoxData(sortKey, 0, 0, 0, 0, 0);
+        }
 
-                    inline QCPRange valueRange() const
-                    {
-                        QCPRange result(minimum, maximum);
-                        for (QVector<double>::const_iterator it = outliers.constBegin(); it != outliers.constEnd(); ++it)
-                            result.expand(*it);
-                        return result;
-                    }
+        inline static bool sortKeyIsMainKey() { return true; }
 
-                    double key, minimum, lowerQuartile, median, upperQuartile, maximum;
-                    QVector<double> outliers;
-            };
-    Q_DECLARE_TYPEINFO(QCPStatisticalBoxData, Q_MOVABLE_TYPE);
+        inline double mainKey() const { return key; }
 
+        inline double mainValue() const { return median; }
+
+        inline QCPRange valueRange() const {
+            QCPRange result(minimum, maximum);
+            for (QVector<double>::const_iterator it = outliers.constBegin();
+                 it != outliers.constEnd(); ++it)
+                result.expand(*it);
+            return result;
+        }
+
+        double key, minimum, lowerQuartile, median, upperQuartile, maximum;
+        QVector<double> outliers;
+    };
 
 /*! \typedef QCPStatisticalBoxDataContainer
 
@@ -42,8 +49,7 @@ namespace QCP {
   \see QCPStatisticalBoxData, QCPStatisticalBox::setData
 */
     typedef QCPDataContainer<QCPStatisticalBoxData> QCPStatisticalBoxDataContainer;
+}
+Q_DECLARE_TYPEINFO(QCP::QCPStatisticalBoxData, Q_MOVABLE_TYPE);
 
-
-} // QCP
-
-#endif //QCUSTOMPLOT_QCPSTATISTICALBOXDATA_H
+#endif

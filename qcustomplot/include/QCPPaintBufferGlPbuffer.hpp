@@ -1,29 +1,30 @@
-#ifndef QCUSTOMPLOT_QCPPAINTBUFFERGLPBUFFER_H
-#define QCUSTOMPLOT_QCPPAINTBUFFERGLPBUFFER_H
+#ifndef QCUSTOMPLOT_QCPPAINTBUFFERGLPBUFFER_HPP
+#define QCUSTOMPLOT_QCPPAINTBUFFERGLPBUFFER_HPP
+
+#include "QCPAbstractPaintBuffer.hpp"
+
+#include <QOpenGLContext>
 
 namespace QCP {
-#ifdef QCP_OPENGL_PBUFFER
-    class QCP_LIB_DECL QCPPaintBufferGlPbuffer : public QCPAbstractPaintBuffer
-{
+//#ifdef QCP_OPENGL_PBUFFER
+    class QCP_LIB_DECL QCPPaintBufferGlPbuffer : public QCPAbstractPaintBuffer {
     public:
-    explicit QCPPaintBufferGlPbuffer(const QSize &size, double devicePixelRatio, int multisamples);
-    virtual ~QCPPaintBufferGlPbuffer() Q_DECL_OVERRIDE;
+        explicit QCPPaintBufferGlPbuffer(const QSize &size, double devicePixelRatio, int multisamples);
 
-    // reimplemented virtual methods:
-    virtual QCPPainter *startPainting() Q_DECL_OVERRIDE;
-    virtual void draw(QCPPainter *painter) const Q_DECL_OVERRIDE;
-    void clear(const QColor &color) Q_DECL_OVERRIDE;
+        ~QCPPaintBufferGlPbuffer() override;
+
+        QCPPainter *startPainting() override;
+
+        void draw(QCPPainter *painter) const override;
+
+        void clear(const QColor &color) override;
 
     protected:
-    // non-property members:
-    QGLPixelBuffer *mGlPBuffer;
-    int mMultisamples;
+        QGLPixelBuffer *mGlPBuffer;
+        int mMultisamples;
 
-    // reimplemented virtual methods:
-    virtual void reallocateBuffer() Q_DECL_OVERRIDE;
-};
-#endif // QCP_OPENGL_PBUFFER
-
+        void reallocateBuffer() override;
+    };
+//#endif
 }
-
-#endif //QCUSTOMPLOT_QCPPAINTBUFFERGLPBUFFER_H
+#endif

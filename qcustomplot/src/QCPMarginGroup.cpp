@@ -44,7 +44,7 @@ using namespace QCP;
   Creates a new QCPMarginGroup instance in \a parentPlot.
 */
 QCPMarginGroup::QCPMarginGroup(QCustomPlot *parentPlot) :
-        QObject(parentPlot),
+        QObject(reinterpret_cast<QObject*>(parentPlot)),
         mParentPlot(parentPlot) {
     mChildren.insert(QCP::msLeft, QList<QCPLayoutElement *>());
     mChildren.insert(QCP::msRight, QList<QCPLayoutElement *>());

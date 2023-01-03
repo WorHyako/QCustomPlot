@@ -18,7 +18,6 @@ namespace QCP {
 
     class QCP_LIB_DECL QCPLayoutElement : public QCPLayerable {
     Q_OBJECT
-        /// \cond INCLUDE_QPROPERTIES
         Q_PROPERTY(QCPLayout *layout READ layout)
         Q_PROPERTY(QRect rect READ rect)
         Q_PROPERTY(QRect outerRect READ outerRect WRITE setOuterRect)
@@ -27,7 +26,6 @@ namespace QCP {
         Q_PROPERTY(QSize minimumSize READ minimumSize WRITE setMinimumSize)
         Q_PROPERTY(QSize maximumSize READ maximumSize WRITE setMaximumSize)
         Q_PROPERTY(SizeConstraintRect sizeConstraintRect READ sizeConstraintRect WRITE setSizeConstraintRect)
-        /// \endcond
     public:
         /*!
         Defines the phases of the update process, that happens just before a replot. At each phase,

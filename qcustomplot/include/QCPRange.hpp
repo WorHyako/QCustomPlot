@@ -84,7 +84,11 @@ namespace QCP {
         static const double minRange;
         static const double maxRange;
     };
+}
 
+Q_DECLARE_TYPEINFO(QCP::QCPRange, Q_MOVABLE_TYPE);
+
+using namespace QCP;
 /*! \relates QCPRange
 
   Prints \a range in a human readable format to the qDebug output.
@@ -147,7 +151,5 @@ namespace QCP {
         result /= value;
         return result;
     }
-}
-Q_DECLARE_TYPEINFO(QCP::QCPRange, Q_MOVABLE_TYPE);
 
 #endif

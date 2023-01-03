@@ -1,33 +1,29 @@
-#ifndef QCUSTOMPLOT_QCPPLOTTABLELEGENDITEM_H
-#define QCUSTOMPLOT_QCPPLOTTABLELEGENDITEM_H
+#ifndef QCUSTOMPLOT_QCPPLOTTABLELEGENDITEM_HPP
+#define QCUSTOMPLOT_QCPPLOTTABLELEGENDITEM_HPP
+
+#include "QCPAbstractLegendItem.hpp"
 
 namespace QCP {
 
-
-    class QCP_LIB_DECL QCPPlottableLegendItem : public QCPAbstractLegendItem
-{
+    class QCP_LIB_DECL QCPPlottableLegendItem : public QCPAbstractLegendItem {
     Q_OBJECT
     public:
-    QCPPlottableLegendItem(QCPLegend *parent, QCPAbstractPlottable *plottable);
+        QCPPlottableLegendItem(QCPLegend *parent, QCPAbstractPlottable *plottable);
 
-    // getters:
-    QCPAbstractPlottable *plottable() { return mPlottable; }
+        QCPAbstractPlottable *plottable() { return mPlottable; }
 
     protected:
-    // property members:
-    QCPAbstractPlottable *mPlottable;
+        QCPAbstractPlottable *mPlottable;
 
-    // reimplemented virtual methods:
-    virtual void draw(QCPPainter *painter) Q_DECL_OVERRIDE;
-    virtual QSize minimumOuterSizeHint() const Q_DECL_OVERRIDE;
+        void draw(QCPPainter *painter) override;
 
-    // non-virtual methods:
-    QPen getIconBorderPen() const;
-    QColor getTextColor() const;
-    QFont getFont() const;
-};
+        QSize minimumOuterSizeHint() const override;
 
+        QPen getIconBorderPen() const;
 
-} // QCP
+        QColor getTextColor() const;
 
-#endif //QCUSTOMPLOT_QCPPLOTTABLELEGENDITEM_H
+        QFont getFont() const;
+    };
+}
+#endif

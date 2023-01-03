@@ -15,26 +15,23 @@ namespace QCP {
 
     class QCP_LIB_DECL QCPAbstractPlottable : public QCPLayerable {
     Q_OBJECT
-        /// \cond INCLUDE_QPROPERTIES
         Q_PROPERTY(QString name READ name WRITE setName)
         Q_PROPERTY(bool antialiasedFill READ antialiasedFill WRITE setAntialiasedFill)
         Q_PROPERTY(bool antialiasedScatters READ antialiasedScatters WRITE setAntialiasedScatters)
         Q_PROPERTY(QPen pen READ pen WRITE setPen)
         Q_PROPERTY(QBrush brush READ brush WRITE setBrush)
-        Q_PROPERTY(QCPAxis * keyAxis READ keyAxis WRITE setKeyAxis)
-        Q_PROPERTY(QCPAxis * valueAxis READ valueAxis WRITE setValueAxis)
+        Q_PROPERTY(QCPAxis *keyAxis READ keyAxis WRITE setKeyAxis)
+        Q_PROPERTY(QCPAxis *valueAxis READ valueAxis WRITE setValueAxis)
         Q_PROPERTY(QCP::SelectionType selectable READ selectable WRITE setSelectable NOTIFY selectableChanged)
         Q_PROPERTY(QCPDataSelection selection READ selection WRITE setSelection NOTIFY selectionChanged)
         Q_PROPERTY(QCPSelectionDecorator * selectionDecorator READ selectionDecorator WRITE setSelectionDecorator)
     public:
         Q_DISABLE_COPY(QCPAbstractPlottable)
 
-        /// \endcond
         QCPAbstractPlottable(QCPAxis *keyAxis, QCPAxis *valueAxis);
 
         ~QCPAbstractPlottable() override;
 
-        // getters:
         QString name() const { return mName; }
 
         bool antialiasedFill() const { return mAntialiasedFill; }
@@ -130,7 +127,7 @@ namespace QCP {
 
         void draw(QCPPainter *painter) override = 0;
 
-        QCP::Interaction selectionCategory() const override;
+        Interaction selectionCategory() const override;
 
         void applyDefaultAntialiasingHint(QCPPainter *painter) const override;
 
@@ -144,7 +141,6 @@ namespace QCP {
         void applyFillAntialiasingHint(QCPPainter *painter) const;
 
         void applyScattersAntialiasingHint(QCPPainter *painter) const;
-
     };
 }
 #endif

@@ -7,7 +7,6 @@
 
 #include <QObject>
 
-
 namespace QCP {
 
     class QCP_LIB_DECL QCPMarginGroup : public QObject {

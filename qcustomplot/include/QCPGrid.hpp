@@ -11,7 +11,6 @@ namespace QCP {
 
     class QCP_LIB_DECL QCPGrid : public QCPLayerable {
     Q_OBJECT
-        /// \cond INCLUDE_QPROPERTIES
         Q_PROPERTY(bool subGridVisible READ subGridVisible WRITE setSubGridVisible)
         Q_PROPERTY(bool antialiasedSubGrid READ antialiasedSubGrid WRITE setAntialiasedSubGrid)
         Q_PROPERTY(bool antialiasedZeroLine READ antialiasedZeroLine WRITE setAntialiasedZeroLine)
@@ -19,7 +18,6 @@ namespace QCP {
         Q_PROPERTY(QPen subGridPen READ subGridPen WRITE setSubGridPen)
         Q_PROPERTY(QPen zeroLinePen READ zeroLinePen WRITE setZeroLinePen)
     public:
-        /// \endcond
         explicit QCPGrid(QCPAxis *parentAxis);
 
         virtual ~QCPGrid() = default;

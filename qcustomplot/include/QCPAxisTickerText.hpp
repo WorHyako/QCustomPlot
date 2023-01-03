@@ -40,5 +40,4 @@ namespace QCP {
         QVector<double> createTickVector(double tickStep, const QCPRange &range) override;
     };
 }
-
 #endif

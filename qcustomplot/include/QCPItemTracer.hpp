@@ -13,7 +13,6 @@ namespace QCP {
 
     class QCP_LIB_DECL QCPItemTracer : public QCPAbstractItem {
     Q_OBJECT
-        /// \cond INCLUDE_QPROPERTIES
         Q_PROPERTY(QPen pen READ pen WRITE setPen)
         Q_PROPERTY(QPen selectedPen READ selectedPen WRITE setSelectedPen)
         Q_PROPERTY(QBrush brush READ brush WRITE setBrush)
@@ -23,7 +22,6 @@ namespace QCP {
         Q_PROPERTY(QCPGraph * graph READ graph WRITE setGraph)
         Q_PROPERTY(double graphKey READ graphKey WRITE setGraphKey)
         Q_PROPERTY(bool interpolating READ interpolating WRITE setInterpolating)
-        /// \endcond
     public:
         /*!
         The different visual appearances a tracer item can have. Some styles size may be controlled with \ref setSize.

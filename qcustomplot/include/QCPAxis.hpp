@@ -12,7 +12,6 @@ namespace QCP {
 
     class QCP_LIB_DECL QCPAxis : public QCPLayerable {
     Q_OBJECT
-        /// \cond INCLUDE_QPROPERTIES
         Q_PROPERTY(AxisType axisType READ axisType)
         Q_PROPERTY(QCPAxisRect * axisRect READ axisRect)
         Q_PROPERTY(ScaleType scaleType READ scaleType WRITE setScaleType NOTIFY scaleTypeChanged)
@@ -57,7 +56,6 @@ namespace QCP {
         Q_PROPERTY(QCPLineEnding lowerEnding READ lowerEnding WRITE setLowerEnding)
         Q_PROPERTY(QCPLineEnding upperEnding READ upperEnding WRITE setUpperEnding)
         Q_PROPERTY(QCPGrid *grid READ grid)
-        /// \endcond
     public:
         /*!
         Defines at which side of the axis rect the axis will appear. This also affects how the tick

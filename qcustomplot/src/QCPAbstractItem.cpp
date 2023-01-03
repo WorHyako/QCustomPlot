@@ -1,6 +1,6 @@
-#include "include/QCPAbstractItem.hpp"
+#include "QCPAbstractItem.hpp"
 
-namespace QCP {
+using namespace QCP;
 /*! \class QCPAbstractItem
   \brief The abstract base class for all items in a plot.
 
@@ -126,8 +126,6 @@ namespace QCP {
   position when anything attached to the anchor needs to know the coordinates.
 */
 
-/* start of documentation of inline functions */
-
 /*! \fn QList<QCPItemPosition*> QCPAbstractItem::positions() const
 
   Returns all positions of the item in a list.
@@ -143,9 +141,6 @@ namespace QCP {
   \see positions, anchor
 */
 
-/* end of documentation of inline functions */
-/* start documentation of pure virtual functions */
-
 /*! \fn void QCPAbstractItem::draw(QCPPainter *painter) = 0
   \internal
 
@@ -156,46 +151,37 @@ namespace QCP {
   setClipToAxisRect and \ref setClipAxisRect.
 */
 
-/* end documentation of pure virtual functions */
-/* start documentation of signals */
-
 /*! \fn void QCPAbstractItem::selectionChanged(bool selected)
   This signal is emitted when the selection state of this item has changed, either by user interaction
   or by a direct call to \ref setSelected.
 */
 
-/* end documentation of signals */
-
 /*!
   Base class constructor which initializes base class members.
 */
-    QCPAbstractItem::QCPAbstractItem(QCustomPlot *parentPlot) :
-            QCPLayerable(parentPlot),
-            mClipToAxisRect(false),
-            mSelectable(true),
-            mSelected(false)
-    {
-        parentPlot->registerItem(this);
+QCPAbstractItem::QCPAbstractItem(QCustomPlot *parentPlot) :
+        QCPLayerable(parentPlot),
+        mClipToAxisRect(false),
+        mSelectable(true),
+        mSelected(false) {
+    parentPlot->registerItem(this);
 
-        QList<QCPAxisRect*> rects = parentPlot->axisRects();
-        if (!rects.isEmpty())
-        {
-            setClipToAxisRect(true);
-            setClipAxisRect(rects.first());
-        }
+    QList<QCPAxisRect *> rects = parentPlot->axisRects();
+    if (!rects.isEmpty()) {
+        setClipToAxisRect(true);
+        setClipAxisRect(rects.first());
     }
+}
 
-    QCPAbstractItem::~QCPAbstractItem()
-    {
+QCPAbstractItem::~QCPAbstractItem() {
 // don't delete mPositions because every position is also an anchor and thus in mAnchors
-        qDeleteAll(mAnchors);
-    }
+    qDeleteAll(mAnchors);
+}
 
 /* can't make this a header inline function, because QPointer breaks with forward declared types, see QTBUG-29588 */
-    QCPAxisRect *QCPAbstractItem::clipAxisRect() const
-    {
-        return mClipAxisRect.data();
-    }
+QCPAxisRect *QCPAbstractItem::clipAxisRect() const {
+    return mClipAxisRect.data();
+}
 
 /*!
   Sets whether the item shall be clipped to an axis rect or whether it shall be visible on the
@@ -203,12 +189,11 @@ namespace QCP {
 
   \see setClipAxisRect
 */
-    void QCPAbstractItem::setClipToAxisRect(bool clip)
-    {
-        mClipToAxisRect = clip;
-        if (mClipToAxisRect)
-            setParentLayerable(mClipAxisRect.data());
-    }
+void QCPAbstractItem::setClipToAxisRect(bool clip) {
+    mClipToAxisRect = clip;
+    if (mClipToAxisRect)
+        setParentLayerable(mClipAxisRect.data());
+}
 
 /*!
   Sets the clip axis rect. It defines the rect that will be used to clip the item when \ref
@@ -216,12 +201,11 @@ namespace QCP {
 
   \see setClipToAxisRect
 */
-    void QCPAbstractItem::setClipAxisRect(QCPAxisRect *rect)
-    {
-        mClipAxisRect = rect;
-        if (mClipToAxisRect)
-            setParentLayerable(mClipAxisRect.data());
-    }
+void QCPAbstractItem::setClipAxisRect(QCPAxisRect *rect) {
+    mClipAxisRect = rect;
+    if (mClipToAxisRect)
+        setParentLayerable(mClipAxisRect.data());
+}
 
 /*!
   Sets whether the user can (de-)select this item by clicking on the QCustomPlot surface.
@@ -232,14 +216,12 @@ namespace QCP {
 
   \see QCustomPlot::setInteractions, setSelected
 */
-    void QCPAbstractItem::setSelectable(bool selectable)
-    {
-        if (mSelectable != selectable)
-        {
-            mSelectable = selectable;
-            emit selectableChanged(mSelectable);
-        }
+void QCPAbstractItem::setSelectable(bool selectable) {
+    if (mSelectable != selectable) {
+        mSelectable = selectable;
+        emit selectableChanged(mSelectable);
     }
+}
 
 /*!
   Sets whether this item is selected or not. When selected, it might use a different visual
@@ -255,14 +237,12 @@ namespace QCP {
 
   \see setSelectable, selectTest
 */
-    void QCPAbstractItem::setSelected(bool selected)
-    {
-        if (mSelected != selected)
-        {
-            mSelected = selected;
-            emit selectionChanged(mSelected);
-        }
+void QCPAbstractItem::setSelected(bool selected) {
+    if (mSelected != selected) {
+        mSelected = selected;
+        emit selectionChanged(mSelected);
     }
+}
 
 /*!
   Returns the QCPItemPosition with the specified \a name. If this item doesn't have a position by
@@ -274,16 +254,14 @@ namespace QCP {
 
   \see positions, anchor
 */
-    QCPItemPosition *QCPAbstractItem::position(const QString &name) const
-    {
-        foreach (QCPItemPosition *position, mPositions)
-        {
+QCPItemPosition *QCPAbstractItem::position(const QString &name) const {
+            foreach (QCPItemPosition *position, mPositions) {
             if (position->name() == name)
                 return position;
         }
-        qDebug() << Q_FUNC_INFO << "position with name not found:" << name;
-        return nullptr;
-    }
+    qDebug() << Q_FUNC_INFO << "position with name not found:" << name;
+    return nullptr;
+}
 
 /*!
   Returns the QCPItemAnchor with the specified \a name. If this item doesn't have an anchor by
@@ -295,16 +273,14 @@ namespace QCP {
 
   \see anchors, position
 */
-    QCPItemAnchor *QCPAbstractItem::anchor(const QString &name) const
-    {
-        foreach (QCPItemAnchor *anchor, mAnchors)
-        {
+QCPItemAnchor *QCPAbstractItem::anchor(const QString &name) const {
+            foreach (QCPItemAnchor *anchor, mAnchors) {
             if (anchor->name() == name)
                 return anchor;
         }
-        qDebug() << Q_FUNC_INFO << "anchor with name not found:" << name;
-        return nullptr;
-    }
+    qDebug() << Q_FUNC_INFO << "anchor with name not found:" << name;
+    return nullptr;
+}
 
 /*!
   Returns whether this item has an anchor with the specified \a name.
@@ -314,15 +290,13 @@ namespace QCP {
 
   \see anchor, position
 */
-    bool QCPAbstractItem::hasAnchor(const QString &name) const
-    {
-        foreach (QCPItemAnchor *anchor, mAnchors)
-        {
+bool QCPAbstractItem::hasAnchor(const QString &name) const {
+            foreach (QCPItemAnchor *anchor, mAnchors) {
             if (anchor->name() == name)
                 return true;
         }
-        return false;
-    }
+    return false;
+}
 
 /*! \internal
 
@@ -333,13 +307,12 @@ namespace QCP {
 
   \see draw
 */
-    QRect QCPAbstractItem::clipRect() const
-    {
-        if (mClipToAxisRect && mClipAxisRect)
-            return mClipAxisRect.data()->rect();
-        else
-            return mParentPlot->viewport();
-    }
+QRect QCPAbstractItem::clipRect() const {
+    if (mClipToAxisRect && mClipAxisRect)
+        return mClipAxisRect.data()->rect();
+    else
+        return mParentPlot->viewport();
+}
 
 /*! \internal
 
@@ -354,10 +327,9 @@ namespace QCP {
 
   \see setAntialiased
 */
-    void QCPAbstractItem::applyDefaultAntialiasingHint(QCPPainter *painter) const
-    {
-        applyAntialiasingHint(painter, mAntialiased, QCP::aeItems);
-    }
+void QCPAbstractItem::applyDefaultAntialiasingHint(QCPPainter *painter) const {
+    applyAntialiasingHint(painter, mAntialiased, QCP::aeItems);
+}
 
 /*! \internal
 
@@ -372,31 +344,29 @@ namespace QCP {
   rect, in your \ref selectTest reimplementation. Finally, return the minimum (non -1) of all four
   returned values.
 */
-    double QCPAbstractItem::rectDistance(const QRectF &rect, const QPointF &pos, bool filledRect) const
-    {
-        double result = -1;
+double QCPAbstractItem::rectDistance(const QRectF &rect, const QPointF &pos, bool filledRect) const {
+    double result = -1;
 
 // distance to border:
-        const QList<QLineF> lines = QList<QLineF>() << QLineF(rect.topLeft(), rect.topRight()) << QLineF(rect.bottomLeft(), rect.bottomRight())
-                                                    << QLineF(rect.topLeft(), rect.bottomLeft()) << QLineF(rect.topRight(), rect.bottomRight());
-        const QCPVector2D posVec(pos);
-        double minDistSqr = (std::numeric_limits<double>::max)();
-        foreach (const QLineF &line, lines)
-        {
+    const QList<QLineF> lines =
+            QList<QLineF>() << QLineF(rect.topLeft(), rect.topRight()) << QLineF(rect.bottomLeft(), rect.bottomRight())
+                            << QLineF(rect.topLeft(), rect.bottomLeft()) << QLineF(rect.topRight(), rect.bottomRight());
+    const QCPVector2D posVec(pos);
+    double minDistSqr = (std::numeric_limits<double>::max)();
+            foreach (const QLineF &line, lines) {
             double distSqr = posVec.distanceSquaredToLine(line.p1(), line.p2());
             if (distSqr < minDistSqr)
                 minDistSqr = distSqr;
         }
-        result = qSqrt(minDistSqr);
+    result = qSqrt(minDistSqr);
 
 // filled rect, allow click inside to count as hit:
-        if (filledRect && result > mParentPlot->selectionTolerance()*0.99)
-        {
-            if (rect.contains(pos))
-                result = mParentPlot->selectionTolerance()*0.99;
-        }
-        return result;
+    if (filledRect && result > mParentPlot->selectionTolerance() * 0.99) {
+        if (rect.contains(pos))
+            result = mParentPlot->selectionTolerance() * 0.99;
     }
+    return result;
+}
 
 /*! \internal
 
@@ -408,11 +378,11 @@ namespace QCP {
 
   \see createAnchor
 */
-    QPointF QCPAbstractItem::anchorPixelPosition(int anchorId) const
-    {
-        qDebug() << Q_FUNC_INFO << "called on item which shouldn't have any anchors (this method not reimplemented). anchorId" << anchorId;
-        return {};
-    }
+QPointF QCPAbstractItem::anchorPixelPosition(int anchorId) const {
+    qDebug() << Q_FUNC_INFO
+             << "called on item which shouldn't have any anchors (this method not reimplemented). anchorId" << anchorId;
+    return {};
+}
 
 /*! \internal
 
@@ -428,20 +398,19 @@ namespace QCP {
 
   \see createAnchor
 */
-    QCPItemPosition *QCPAbstractItem::createPosition(const QString &name)
-    {
-        if (hasAnchor(name))
-            qDebug() << Q_FUNC_INFO << "anchor/position with name exists already:" << name;
-        QCPItemPosition *newPosition = new QCPItemPosition(mParentPlot, this, name);
-        mPositions.append(newPosition);
-        mAnchors.append(newPosition); // every position is also an anchor
-        newPosition->setAxes(mParentPlot->xAxis, mParentPlot->yAxis);
-        newPosition->setType(QCPItemPosition::ptPlotCoords);
-        if (mParentPlot->axisRect())
-            newPosition->setAxisRect(mParentPlot->axisRect());
-        newPosition->setCoords(0, 0);
-        return newPosition;
-    }
+QCPItemPosition *QCPAbstractItem::createPosition(const QString &name) {
+    if (hasAnchor(name))
+        qDebug() << Q_FUNC_INFO << "anchor/position with name exists already:" << name;
+    QCPItemPosition *newPosition = new QCPItemPosition(mParentPlot, this, name);
+    mPositions.append(newPosition);
+    mAnchors.append(newPosition); // every position is also an anchor
+    newPosition->setAxes(mParentPlot->xAxis, mParentPlot->yAxis);
+    newPosition->setType(QCPItemPosition::ptPlotCoords);
+    if (mParentPlot->axisRect())
+        newPosition->setAxisRect(mParentPlot->axisRect());
+    newPosition->setCoords(0, 0);
+    return newPosition;
+}
 
 /*! \internal
 
@@ -462,44 +431,39 @@ namespace QCP {
 
   \see createPosition
 */
-    QCPItemAnchor *QCPAbstractItem::createAnchor(const QString &name, int anchorId)
-    {
-        if (hasAnchor(name))
-            qDebug() << Q_FUNC_INFO << "anchor/position with name exists already:" << name;
-        QCPItemAnchor *newAnchor = new QCPItemAnchor(mParentPlot, this, name, anchorId);
-        mAnchors.append(newAnchor);
-        return newAnchor;
-    }
+QCPItemAnchor *QCPAbstractItem::createAnchor(const QString &name, int anchorId) {
+    if (hasAnchor(name))
+        qDebug() << Q_FUNC_INFO << "anchor/position with name exists already:" << name;
+    QCPItemAnchor *newAnchor = new QCPItemAnchor(mParentPlot, this, name, anchorId);
+    mAnchors.append(newAnchor);
+    return newAnchor;
+}
 
 /* inherits documentation from base class */
-    void QCPAbstractItem::selectEvent(QMouseEvent *event, bool additive, const QVariant &details, bool *selectionStateChanged)
-    {
-        Q_UNUSED(event)
-        Q_UNUSED(details)
-        if (mSelectable)
-        {
-            bool selBefore = mSelected;
-            setSelected(additive ? !mSelected : true);
-            if (selectionStateChanged)
-                *selectionStateChanged = mSelected != selBefore;
-        }
+void
+QCPAbstractItem::selectEvent(QMouseEvent *event, bool additive, const QVariant &details, bool *selectionStateChanged) {
+    Q_UNUSED(event)
+    Q_UNUSED(details)
+    if (mSelectable) {
+        bool selBefore = mSelected;
+        setSelected(additive ? !mSelected : true);
+        if (selectionStateChanged)
+            *selectionStateChanged = mSelected != selBefore;
     }
+}
 
 /* inherits documentation from base class */
-    void QCPAbstractItem::deselectEvent(bool *selectionStateChanged)
-    {
-        if (mSelectable)
-        {
-            bool selBefore = mSelected;
-            setSelected(false);
-            if (selectionStateChanged)
-                *selectionStateChanged = mSelected != selBefore;
-        }
+void QCPAbstractItem::deselectEvent(bool *selectionStateChanged) {
+    if (mSelectable) {
+        bool selBefore = mSelected;
+        setSelected(false);
+        if (selectionStateChanged)
+            *selectionStateChanged = mSelected != selBefore;
     }
+}
 
 /* inherits documentation from base class */
-    QCP::Interaction QCPAbstractItem::selectionCategory() const
-    {
-        return QCP::iSelectItems;
-    }
-} // QCP
+QCP::Interaction QCPAbstractItem::selectionCategory() const {
+    return QCP::iSelectItems;
+}
+

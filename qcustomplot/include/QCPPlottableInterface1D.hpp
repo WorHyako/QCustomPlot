@@ -31,5 +31,4 @@ namespace QCP {
         virtual int findEnd(double sortKey, bool expandedRange = true) const = 0;
     };
 }
-
 #endif

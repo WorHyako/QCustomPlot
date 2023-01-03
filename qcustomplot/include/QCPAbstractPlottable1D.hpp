@@ -14,53 +14,44 @@ namespace QCP {
     template<class DataType>
     class QCPAbstractPlottable1D
             : public QCPAbstractPlottable,
-              public QCPPlottableInterface1D // no QCP_LIB_DECL, template class ends up in header (cpp included below)
-    {
-        // No Q_OBJECT macro due to template class
+              public QCPPlottableInterface1D {// no QCP_LIB_DECL, template class ends up in header (cpp included below)
     public:
+        Q_DISABLE_COPY(QCPAbstractPlottable1D)
+
         QCPAbstractPlottable1D(QCPAxis *keyAxis, QCPAxis *valueAxis);
 
-        virtual ~QCPAbstractPlottable1D() Q_DECL_OVERRIDE;
+        ~QCPAbstractPlottable1D() override;
 
-        // virtual methods of 1d plottable interface:
-        virtual int dataCount() const Q_DECL_OVERRIDE;
+        int dataCount() const override;
 
-        virtual double dataMainKey(int index) const Q_DECL_OVERRIDE;
+        double dataMainKey(int index) const override;
 
-        virtual double dataSortKey(int index) const Q_DECL_OVERRIDE;
+        double dataSortKey(int index) const override;
 
-        virtual double dataMainValue(int index) const Q_DECL_OVERRIDE;
+        double dataMainValue(int index) const override;
 
-        virtual QCPRange dataValueRange(int index) const Q_DECL_OVERRIDE;
+        QCPRange dataValueRange(int index) const override;
 
-        virtual QPointF dataPixelPosition(int index) const Q_DECL_OVERRIDE;
+        QPointF dataPixelPosition(int index) const override;
 
-        virtual bool sortKeyIsMainKey() const Q_DECL_OVERRIDE;
+        bool sortKeyIsMainKey() const override;
 
-        virtual QCPDataSelection selectTestRect(const QRectF &rect, bool onlySelectable) const Q_DECL_OVERRIDE;
+        QCPDataSelection selectTestRect(const QRectF &rect, bool onlySelectable) const override;
 
-        virtual int findBegin(double sortKey, bool expandedRange = true) const Q_DECL_OVERRIDE;
+        int findBegin(double sortKey, bool expandedRange = true) const override;
 
-        virtual int findEnd(double sortKey, bool expandedRange = true) const Q_DECL_OVERRIDE;
+        int findEnd(double sortKey, bool expandedRange = true) const override;
 
-        // reimplemented virtual methods:
-        virtual double
-        selectTest(const QPointF &pos, bool onlySelectable, QVariant *details = nullptr) const Q_DECL_OVERRIDE;
+        double selectTest(const QPointF &pos, bool onlySelectable, QVariant *details = nullptr) const override;
 
-        virtual QCPPlottableInterface1D *interface1D() Q_DECL_OVERRIDE { return this; }
+        QCPPlottableInterface1D *interface1D() override { return this; }
 
     protected:
-        // property members:
         QSharedPointer<QCPDataContainer<DataType> > mDataContainer;
 
-        // helpers for subclasses:
         void getDataSegments(QList<QCPDataRange> &selectedSegments, QList<QCPDataRange> &unselectedSegments) const;
 
         void drawPolyline(QCPPainter *painter, const QVector<QPointF> &lineData) const;
-
-    private:
-        Q_DISABLE_COPY(QCPAbstractPlottable1D)
-
     };
 
 /*! \class QCPAbstractPlottable1D
@@ -415,8 +406,5 @@ namespace QCP {
             painter->drawPolyline(lineData.constData() + segmentStart, lineDataSize - segmentStart);
         }
     }
-
-
-} // QCP
-
-#endif //QCUSTOMPLOT_QCPABSTRACTPLOTTABLE1D_H
+}
+#endif

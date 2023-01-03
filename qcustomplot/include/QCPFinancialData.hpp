@@ -1,27 +1,36 @@
-#ifndef QCUSTOMPLOT_QCPFINANCIALDATA_H
-#define QCUSTOMPLOT_QCPFINANCIALDATA_H
+#ifndef QCUSTOMPLOT_QCPFINANCIALDATA_HPP
+#define QCUSTOMPLOT_QCPFINANCIALDATA_HPP
+
+#include "defs.hpp"
+#include "QCPRange.hpp"
+#include "QCPDataContainer.hpp"
+
+#include <QtCore>
 
 namespace QCP {
 
-    class QCP_LIB_DECL QCPFinancialData
-            {
-                    public:
-                    QCPFinancialData();
-                    QCPFinancialData(double key, double open, double high, double low, double close);
+    class QCP_LIB_DECL QCPFinancialData {
+    public:
+        QCPFinancialData();
 
-                    inline double sortKey() const { return key; }
-                    inline static QCPFinancialData fromSortKey(double sortKey) { return QCPFinancialData(sortKey, 0, 0, 0, 0); }
-                    inline static bool sortKeyIsMainKey() { return true; }
+        QCPFinancialData(double key, double open, double high, double low, double close);
 
-                    inline double mainKey() const { return key; }
-                    inline double mainValue() const { return open; }
+        inline double sortKey() const { return key; }
 
-                    inline QCPRange valueRange() const { return QCPRange(low, high); } // open and close must lie between low and high, so we don't need to check them
+        inline static QCPFinancialData fromSortKey(double sortKey) { return QCPFinancialData(sortKey, 0, 0, 0, 0); }
 
-                    double key, open, high, low, close;
-            };
-    Q_DECLARE_TYPEINFO(QCPFinancialData, Q_PRIMITIVE_TYPE);
+        inline static bool sortKeyIsMainKey() { return true; }
 
+        inline double mainKey() const { return key; }
+
+        inline double mainValue() const { return open; }
+
+        inline QCPRange valueRange() const {
+            return QCPRange(low, high);
+        } // open and close must lie between low and high, so we don't need to check them
+
+        double key, open, high, low, close;
+    };
 
 /*! \typedef QCPFinancialDataContainer
 
@@ -33,7 +42,7 @@ namespace QCP {
   \see QCPFinancialData, QCPFinancial::setData
 */
     typedef QCPDataContainer<QCPFinancialData> QCPFinancialDataContainer;
+}
+Q_DECLARE_TYPEINFO(QCP::QCPFinancialData, Q_PRIMITIVE_TYPE);
 
-} // QCP
-
-#endif //QCUSTOMPLOT_QCPFINANCIALDATA_H
+#endif

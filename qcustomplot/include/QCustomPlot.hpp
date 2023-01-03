@@ -28,18 +28,16 @@ namespace QCP {
 
     class QCP_LIB_DECL QCustomPlot : public QWidget {
     Q_OBJECT
-        /// \cond INCLUDE_QPROPERTIES
         Q_PROPERTY(QRect viewport READ viewport WRITE setViewport)
         Q_PROPERTY(QPixmap background READ background WRITE setBackground)
         Q_PROPERTY(bool backgroundScaled READ backgroundScaled WRITE setBackgroundScaled)
         Q_PROPERTY(Qt::AspectRatioMode backgroundScaledMode READ backgroundScaledMode WRITE setBackgroundScaledMode)
-        Q_PROPERTY(QCPLayoutGrid * plotLayout READ plotLayout)
+        Q_PROPERTY(QCPLayoutGrid *plotLayout READ plotLayout)
         Q_PROPERTY(bool autoAddPlottableToLegend READ autoAddPlottableToLegend WRITE setAutoAddPlottableToLegend)
         Q_PROPERTY(int selectionTolerance READ selectionTolerance WRITE setSelectionTolerance)
         Q_PROPERTY(bool noAntialiasingOnDrag READ noAntialiasingOnDrag WRITE setNoAntialiasingOnDrag)
         Q_PROPERTY(Qt::KeyboardModifier multiSelectModifier READ multiSelectModifier WRITE setMultiSelectModifier)
         Q_PROPERTY(bool openGl READ openGl WRITE setOpenGl)
-        /// \endcond
     public:
         /*!
         Defines how a layer should be inserted relative to an other layer.
@@ -50,6 +48,7 @@ namespace QCP {
             limBelow,  ///< Layer is inserted below other layer
             limAbove ///< Layer is inserted above other layer
         };
+
         Q_ENUM(LayerInsertMode)
 
         /*!
@@ -63,13 +62,13 @@ namespace QCP {
             rpRefreshHint,     ///< Whether to use immediate or queued refresh depends on whether the plotting hint \ref QCP::phImmediateRefresh is set, see \ref setPlottingHints.
             rpQueuedReplot    ///< Queues the entire replot for the next event loop iteration. This way multiple redundant replots can be avoided. The actual replot is then done with \ref rpRefreshHint priority.
         };
+
         Q_ENUM(RefreshPriority)
 
         explicit QCustomPlot(QWidget *parent = nullptr);
 
-        virtual ~QCustomPlot() Q_DECL_OVERRIDE;
+        ~QCustomPlot() override;
 
-        // getters:
         QRect viewport() const { return mViewport; }
 
         double bufferDevicePixelRatio() const { return mBufferDevicePixelRatio; }
@@ -104,7 +103,6 @@ namespace QCP {
 
         bool openGl() const { return mOpenGl; }
 
-        // setters:
         void setViewport(const QRect &rect);
 
         void setBufferDevicePixelRatio(double ratio);
@@ -149,7 +147,6 @@ namespace QCP {
 
         void setOpenGl(bool enabled, int multisampling = 16);
 
-        // non-property methods:
         // plottable interface:
         QCPAbstractPlottable *plottable(int index);
 
@@ -315,7 +312,6 @@ namespace QCP {
         void afterReplot();
 
     protected:
-        // property members:
         QRect mViewport;
         double mBufferDevicePixelRatio;
         QCPLayoutGrid *mPlotLayout;
@@ -360,25 +356,24 @@ namespace QCP {
       QSharedPointer<QOpenGLPaintDevice> mGlPaintDevice;
 #endif
 
-        virtual QSize minimumSizeHint() const Q_DECL_OVERRIDE;
+        QSize minimumSizeHint() const override;
 
-        virtual QSize sizeHint() const Q_DECL_OVERRIDE;
+        QSize sizeHint() const override;
 
-        virtual void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
+        void paintEvent(QPaintEvent *event) override;
 
-        virtual void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
+        void resizeEvent(QResizeEvent *event) override;
 
-        virtual void mouseDoubleClickEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+        void mouseDoubleClickEvent(QMouseEvent *event) override;
 
-        virtual void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+        void mousePressEvent(QMouseEvent *event) override;
 
-        virtual void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+        void mouseMoveEvent(QMouseEvent *event) override;
 
-        virtual void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+        void mouseReleaseEvent(QMouseEvent *event) override;
 
-        virtual void wheelEvent(QWheelEvent *event) Q_DECL_OVERRIDE;
+        void wheelEvent(QWheelEvent *event) override;
 
-        // introduced virtual methods:
         virtual void draw(QCPPainter *painter);
 
         virtual void updateLayout();
@@ -393,7 +388,6 @@ namespace QCP {
 
         Q_SLOT virtual void processPointSelection(QMouseEvent *event);
 
-        // non-virtual methods:
         bool registerPlottable(QCPAbstractPlottable *plottable);
 
         bool registerGraph(QCPGraph *graph);
@@ -433,6 +427,9 @@ namespace QCP {
 
         friend class QCPAbstractItem;
     };
+}
+
+using namespace QCP;
 
 /*!
   Returns the plottable at the pixel position \a pos. The plottable type (a QCPAbstractPlottable
@@ -452,37 +449,37 @@ namespace QCP {
 
   \see itemAt, layoutElementAt
 */
-    template<class PlottableType>
-    PlottableType *QCustomPlot::plottableAt(const QPointF &pos, bool onlySelectable, int *dataIndex) const {
-        PlottableType *resultPlottable = 0;
-        QVariant resultDetails;
-        double resultDistance = mSelectionTolerance; // only regard clicks with distances smaller than mSelectionTolerance as selections, so initialize with that value
+template<class PlottableType>
+PlottableType *QCustomPlot::plottableAt(const QPointF &pos, bool onlySelectable, int *dataIndex) const {
+    PlottableType *resultPlottable = 0;
+    QVariant resultDetails;
+    double resultDistance = mSelectionTolerance; // only regard clicks with distances smaller than mSelectionTolerance as selections, so initialize with that value
 
-                foreach (QCPAbstractPlottable * plottable, mPlottables) {
-                PlottableType *currentPlottable = qobject_cast<PlottableType *>(plottable);
-                if (!currentPlottable || (onlySelectable &&
-                                          !currentPlottable->selectable())) // we could have also passed onlySelectable to the selectTest function, but checking here is faster, because we have access to QCPAbstractPlottable::selectable
-                    continue;
-                if (currentPlottable->clipRect().contains(
-                        pos.toPoint())) // only consider clicks where the plottable is actually visible
-                {
-                    QVariant details;
-                    double currentDistance = currentPlottable->selectTest(pos, false, dataIndex ? &details : nullptr);
-                    if (currentDistance >= 0 && currentDistance < resultDistance) {
-                        resultPlottable = currentPlottable;
-                        resultDetails = details;
-                        resultDistance = currentDistance;
-                    }
+            foreach (QCPAbstractPlottable *plottable, mPlottables) {
+            PlottableType *currentPlottable = qobject_cast<PlottableType *>(plottable);
+            if (!currentPlottable || (onlySelectable &&
+                                      !currentPlottable->selectable())) // we could have also passed onlySelectable to the selectTest function, but checking here is faster, because we have access to QCPAbstractPlottable::selectable
+                continue;
+            if (currentPlottable->clipRect().contains(
+                    pos.toPoint())) // only consider clicks where the plottable is actually visible
+            {
+                QVariant details;
+                double currentDistance = currentPlottable->selectTest(pos, false, dataIndex ? &details : nullptr);
+                if (currentDistance >= 0 && currentDistance < resultDistance) {
+                    resultPlottable = currentPlottable;
+                    resultDetails = details;
+                    resultDistance = currentDistance;
                 }
             }
-
-        if (resultPlottable && dataIndex) {
-            QCPDataSelection sel = resultDetails.value<QCPDataSelection>();
-            if (!sel.isEmpty())
-                *dataIndex = sel.dataRange(0).begin();
         }
-        return resultPlottable;
+
+    if (resultPlottable && dataIndex) {
+        QCPDataSelection sel = resultDetails.value<QCPDataSelection>();
+        if (!sel.isEmpty())
+            *dataIndex = sel.dataRange(0).begin();
     }
+    return resultPlottable;
+}
 
 /*!
   Returns the item at the pixel position \a pos. The item type (a QCPAbstractItem subclass) that shall be
@@ -497,30 +494,30 @@ namespace QCP {
 
   \see plottableAt, layoutElementAt
 */
-    template<class ItemType>
-    ItemType *QCustomPlot::itemAt(const QPointF &pos, bool onlySelectable) const {
-        ItemType *resultItem = 0;
-        double resultDistance = mSelectionTolerance; // only regard clicks with distances smaller than mSelectionTolerance as selections, so initialize with that value
+template<class ItemType>
+ItemType *QCustomPlot::itemAt(const QPointF &pos, bool onlySelectable) const {
+    ItemType *resultItem = 0;
+    double resultDistance = mSelectionTolerance; // only regard clicks with distances smaller than mSelectionTolerance as selections, so initialize with that value
 
-                foreach (QCPAbstractItem *item, mItems) {
-                ItemType *currentItem = qobject_cast<ItemType *>(item);
-                if (!currentItem || (onlySelectable &&
-                                     !currentItem->selectable())) // we could have also passed onlySelectable to the selectTest function, but checking here is faster, because we have access to QCPAbstractItem::selectable
-                    continue;
-                if (!currentItem->clipToAxisRect() || currentItem->clipRect().contains(
-                        pos.toPoint())) // only consider clicks inside axis cliprect of the item if actually clipped to it
-                {
-                    double currentDistance = currentItem->selectTest(pos, false);
-                    if (currentDistance >= 0 && currentDistance < resultDistance) {
-                        resultItem = currentItem;
-                        resultDistance = currentDistance;
-                    }
+            foreach (QCPAbstractItem *item, mItems) {
+            ItemType *currentItem = qobject_cast<ItemType *>(item);
+            if (!currentItem || (onlySelectable &&
+                                 !currentItem->selectable())) // we could have also passed onlySelectable to the selectTest function, but checking here is faster, because we have access to QCPAbstractItem::selectable
+                continue;
+            if (!currentItem->clipToAxisRect() || currentItem->clipRect().contains(
+                    pos.toPoint())) // only consider clicks inside axis cliprect of the item if actually clipped to it
+            {
+                double currentDistance = currentItem->selectTest(pos, false);
+                if (currentDistance >= 0 && currentDistance < resultDistance) {
+                    resultItem = currentItem;
+                    resultDistance = currentDistance;
                 }
             }
+        }
 
-        return resultItem;
-    }
+    return resultItem;
 }
+
 Q_DECLARE_METATYPE(QCP::QCustomPlot::LayerInsertMode)
 
 Q_DECLARE_METATYPE(QCP::QCustomPlot::RefreshPriority)

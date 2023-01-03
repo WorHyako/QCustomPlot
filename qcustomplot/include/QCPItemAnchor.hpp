@@ -1,46 +1,41 @@
-#ifndef QCUSTOMPLOT_QCPITEMANCHOR_H
-#define QCUSTOMPLOT_QCPITEMANCHOR_H
+#ifndef QCUSTOMPLOT_QCPITEMANCHOR_HPP
+#define QCUSTOMPLOT_QCPITEMANCHOR_HPP
+
+#include "defs.hpp"
+#include "QCustomPlot.hpp"
+#include "QCPAbstractItem.hpp"
+
+#include <QtCore>
 
 namespace QCP {
 
-    class QCP_LIB_DECL QCPItemAnchor
-            {
-                    Q_GADGET
-                    public:
-                    QCPItemAnchor(QCustomPlot *parentPlot, QCPAbstractItem *parentItem, const QString &name, int anchorId=-1);
-                    virtual ~QCPItemAnchor();
+    class QCP_LIB_DECL QCPItemAnchor {
+    Q_GADGET
+    public:
+        Q_DISABLE_COPY(QCPItemAnchor)
 
-                    // getters:
-                    QString name() const { return mName; }
-                    virtual QPointF pixelPosition() const;
+        QCPItemAnchor(QCustomPlot *parentPlot, QCPAbstractItem *parentItem, const QString &name, int anchorId = -1);
 
-                    protected:
-                    // property members:
-                    QString mName;
+        virtual ~QCPItemAnchor();
 
-                    // non-property members:
-                    QCustomPlot *mParentPlot;
-                    QCPAbstractItem *mParentItem;
-                    int mAnchorId;
-                    QSet<QCPItemPosition*> mChildrenX, mChildrenY;
+        QString name() const { return mName; }
 
-                    // introduced virtual methods:
-                    virtual QCPItemPosition *toQCPItemPosition() { return nullptr; }
+        virtual QPointF pixelPosition() const;
 
-                    // non-virtual methods:
-                    void addChildX(QCPItemPosition* pos); // called from pos when this anchor is set as parent
-                    void removeChildX(QCPItemPosition *pos); // called from pos when its parent anchor is reset or pos deleted
-                    void addChildY(QCPItemPosition* pos); // called from pos when this anchor is set as parent
-                    void removeChildY(QCPItemPosition *pos); // called from pos when its parent anchor is reset or pos deleted
+    protected:
+        QString mName;
 
-                    private:
-                    Q_DISABLE_COPY(QCPItemAnchor)
+        QCustomPlot *mParentPlot;
+        QCPAbstractItem *mParentItem;
+        int mAnchorId;
+        QSet<QCPItemPosition *> mChildrenX, mChildrenY;
 
-                    friend class QCPItemPosition;
-            };
+        virtual QCPItemPosition *toQCPItemPosition() { return nullptr; }
 
-
-
-} // QCP
-
-#endif //QCUSTOMPLOT_QCPITEMANCHOR_H
+        void addChildX(QCPItemPosition *pos); // called from pos when this anchor is set as parent
+        void removeChildX(QCPItemPosition *pos); // called from pos when its parent anchor is reset or pos deleted
+        void addChildY(QCPItemPosition *pos); // called from pos when this anchor is set as parent
+        void removeChildY(QCPItemPosition *pos); // called from pos when its parent anchor is reset or pos deleted
+    };
+}
+#endif

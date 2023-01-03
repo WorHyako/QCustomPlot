@@ -1,100 +1,129 @@
-#ifndef QCUSTOMPLOT_QCPITEMTEXT_H
-#define QCUSTOMPLOT_QCPITEMTEXT_H
+#ifndef QCUSTOMPLOT_QCPITEMTEXT_HPP
+#define QCUSTOMPLOT_QCPITEMTEXT_HPP
+
+#include "QCPAbstractItem.hpp"
 
 namespace QCP {
 
-    class QCP_LIB_DECL QCPItemText : public QCPAbstractItem
-{
+    class QCP_LIB_DECL QCPItemText : public QCPAbstractItem {
     Q_OBJECT
-    /// \cond INCLUDE_QPROPERTIES
-    Q_PROPERTY(QColor color READ color WRITE setColor)
-    Q_PROPERTY(QColor selectedColor READ selectedColor WRITE setSelectedColor)
-    Q_PROPERTY(QPen pen READ pen WRITE setPen)
-    Q_PROPERTY(QPen selectedPen READ selectedPen WRITE setSelectedPen)
-    Q_PROPERTY(QBrush brush READ brush WRITE setBrush)
-    Q_PROPERTY(QBrush selectedBrush READ selectedBrush WRITE setSelectedBrush)
-    Q_PROPERTY(QFont font READ font WRITE setFont)
-    Q_PROPERTY(QFont selectedFont READ selectedFont WRITE setSelectedFont)
-    Q_PROPERTY(QString text READ text WRITE setText)
-    Q_PROPERTY(Qt::Alignment positionAlignment READ positionAlignment WRITE setPositionAlignment)
-    Q_PROPERTY(Qt::Alignment textAlignment READ textAlignment WRITE setTextAlignment)
-    Q_PROPERTY(double rotation READ rotation WRITE setRotation)
-    Q_PROPERTY(QMargins padding READ padding WRITE setPadding)
-    /// \endcond
+        Q_PROPERTY(QColor color READ color WRITE setColor)
+        Q_PROPERTY(QColor selectedColor READ selectedColor WRITE setSelectedColor)
+        Q_PROPERTY(QPen pen READ pen WRITE setPen)
+        Q_PROPERTY(QPen selectedPen READ selectedPen WRITE setSelectedPen)
+        Q_PROPERTY(QBrush brush READ brush WRITE setBrush)
+        Q_PROPERTY(QBrush selectedBrush READ selectedBrush WRITE setSelectedBrush)
+        Q_PROPERTY(QFont font READ font WRITE setFont)
+        Q_PROPERTY(QFont selectedFont READ selectedFont WRITE setSelectedFont)
+        Q_PROPERTY(QString text READ text WRITE setText)
+        Q_PROPERTY(Qt::Alignment positionAlignment READ positionAlignment WRITE setPositionAlignment)
+        Q_PROPERTY(Qt::Alignment textAlignment READ textAlignment WRITE setTextAlignment)
+        Q_PROPERTY(double rotation READ rotation WRITE setRotation)
+        Q_PROPERTY(QMargins padding READ padding WRITE setPadding)
     public:
-    explicit QCPItemText(QCustomPlot *parentPlot);
-    virtual ~QCPItemText() Q_DECL_OVERRIDE;
+        explicit QCPItemText(QCustomPlot *parentPlot);
 
-    // getters:
-    QColor color() const { return mColor; }
-    QColor selectedColor() const { return mSelectedColor; }
-    QPen pen() const { return mPen; }
-    QPen selectedPen() const { return mSelectedPen; }
-    QBrush brush() const { return mBrush; }
-    QBrush selectedBrush() const { return mSelectedBrush; }
-    QFont font() const { return mFont; }
-    QFont selectedFont() const { return mSelectedFont; }
-    QString text() const { return mText; }
-    Qt::Alignment positionAlignment() const { return mPositionAlignment; }
-    Qt::Alignment textAlignment() const { return mTextAlignment; }
-    double rotation() const { return mRotation; }
-    QMargins padding() const { return mPadding; }
+        ~QCPItemText() override;
 
-    // setters;
-    void setColor(const QColor &color);
-    void setSelectedColor(const QColor &color);
-    void setPen(const QPen &pen);
-    void setSelectedPen(const QPen &pen);
-    void setBrush(const QBrush &brush);
-    void setSelectedBrush(const QBrush &brush);
-    void setFont(const QFont &font);
-    void setSelectedFont(const QFont &font);
-    void setText(const QString &text);
-    void setPositionAlignment(Qt::Alignment alignment);
-    void setTextAlignment(Qt::Alignment alignment);
-    void setRotation(double degrees);
-    void setPadding(const QMargins &padding);
+        QColor color() const { return mColor; }
 
-    // reimplemented virtual methods:
-    virtual double selectTest(const QPointF &pos, bool onlySelectable, QVariant *details=nullptr) const Q_DECL_OVERRIDE;
+        QColor selectedColor() const { return mSelectedColor; }
 
-    QCPItemPosition * const position;
-    QCPItemAnchor * const topLeft;
-    QCPItemAnchor * const top;
-    QCPItemAnchor * const topRight;
-    QCPItemAnchor * const right;
-    QCPItemAnchor * const bottomRight;
-    QCPItemAnchor * const bottom;
-    QCPItemAnchor * const bottomLeft;
-    QCPItemAnchor * const left;
+        QPen pen() const { return mPen; }
+
+        QPen selectedPen() const { return mSelectedPen; }
+
+        QBrush brush() const { return mBrush; }
+
+        QBrush selectedBrush() const { return mSelectedBrush; }
+
+        QFont font() const { return mFont; }
+
+        QFont selectedFont() const { return mSelectedFont; }
+
+        QString text() const { return mText; }
+
+        Qt::Alignment positionAlignment() const { return mPositionAlignment; }
+
+        Qt::Alignment textAlignment() const { return mTextAlignment; }
+
+        double rotation() const { return mRotation; }
+
+        QMargins padding() const { return mPadding; }
+
+        void setColor(const QColor &color);
+
+        void setSelectedColor(const QColor &color);
+
+        void setPen(const QPen &pen);
+
+        void setSelectedPen(const QPen &pen);
+
+        void setBrush(const QBrush &brush);
+
+        void setSelectedBrush(const QBrush &brush);
+
+        void setFont(const QFont &font);
+
+        void setSelectedFont(const QFont &font);
+
+        void setText(const QString &text);
+
+        void setPositionAlignment(Qt::Alignment alignment);
+
+        void setTextAlignment(Qt::Alignment alignment);
+
+        void setRotation(double degrees);
+
+        void setPadding(const QMargins &padding);
+
+        double selectTest(const QPointF &pos, bool onlySelectable, QVariant *details = nullptr) const override;
+
+        QCPItemPosition *const position;
+        QCPItemAnchor *const topLeft;
+        QCPItemAnchor *const top;
+        QCPItemAnchor *const topRight;
+        QCPItemAnchor *const right;
+        QCPItemAnchor *const bottomRight;
+        QCPItemAnchor *const bottom;
+        QCPItemAnchor *const bottomLeft;
+        QCPItemAnchor *const left;
 
     protected:
-    enum AnchorIndex {aiTopLeft, aiTop, aiTopRight, aiRight, aiBottomRight, aiBottom, aiBottomLeft, aiLeft};
+        enum AnchorIndex {
+            aiTopLeft,
+            aiTop,
+            aiTopRight,
+            aiRight,
+            aiBottomRight,
+            aiBottom,
+            aiBottomLeft,
+            aiLeft
+        };
 
-    // property members:
-    QColor mColor, mSelectedColor;
-    QPen mPen, mSelectedPen;
-    QBrush mBrush, mSelectedBrush;
-    QFont mFont, mSelectedFont;
-    QString mText;
-    Qt::Alignment mPositionAlignment;
-    Qt::Alignment mTextAlignment;
-    double mRotation;
-    QMargins mPadding;
+        QColor mColor, mSelectedColor;
+        QPen mPen, mSelectedPen;
+        QBrush mBrush, mSelectedBrush;
+        QFont mFont, mSelectedFont;
+        QString mText;
+        Qt::Alignment mPositionAlignment;
+        Qt::Alignment mTextAlignment;
+        double mRotation;
+        QMargins mPadding;
 
-    // reimplemented virtual methods:
-    virtual void draw(QCPPainter *painter) Q_DECL_OVERRIDE;
-    virtual QPointF anchorPixelPosition(int anchorId) const Q_DECL_OVERRIDE;
+        void draw(QCPPainter *painter) override;
 
-    // non-virtual methods:
-    QPointF getTextDrawPoint(const QPointF &pos, const QRectF &rect, Qt::Alignment positionAlignment) const;
-    QFont mainFont() const;
-    QColor mainColor() const;
-    QPen mainPen() const;
-    QBrush mainBrush() const;
-};
+        QPointF anchorPixelPosition(int anchorId) const override;
 
+        QPointF getTextDrawPoint(const QPointF &pos, const QRectF &rect, Qt::Alignment positionAlignment) const;
 
-} // QCP
+        QFont mainFont() const;
 
-#endif //QCUSTOMPLOT_QCPITEMTEXT_H
+        QColor mainColor() const;
+
+        QPen mainPen() const;
+
+        QBrush mainBrush() const;
+    };
+}
+#endif

@@ -1,19 +1,23 @@
-#ifndef QCUSTOMPLOT_QCPERRORBARSDATA_H
-#define QCUSTOMPLOT_QCPERRORBARSDATA_H
+#ifndef QCUSTOMPLOT_QCPERRORBARSDATA_HPP
+#define QCUSTOMPLOT_QCPERRORBARSDATA_HPP
+
+#include "defs.hpp"
+
+#include <QtCore>
+#include <QVector>
 
 namespace QCP {
 
-    class QCP_LIB_DECL QCPErrorBarsData
-            {
-                    public:
-                    QCPErrorBarsData();
-                    explicit QCPErrorBarsData(double error);
-                    QCPErrorBarsData(double errorMinus, double errorPlus);
+    class QCP_LIB_DECL QCPErrorBarsData {
+    public:
+        QCPErrorBarsData();
 
-                    double errorMinus, errorPlus;
-            };
-    Q_DECLARE_TYPEINFO(QCPErrorBarsData, Q_PRIMITIVE_TYPE);
+        explicit QCPErrorBarsData(double error);
 
+        QCPErrorBarsData(double errorMinus, double errorPlus);
+
+        double errorMinus, errorPlus;
+    };
 
 /*! \typedef QCPErrorBarsDataContainer
 
@@ -31,7 +35,7 @@ namespace QCP {
   \see QCPErrorBarsData, QCPErrorBars::setData
 */
     typedef QVector<QCPErrorBarsData> QCPErrorBarsDataContainer;
+}
+Q_DECLARE_TYPEINFO(QCP::QCPErrorBarsData, Q_PRIMITIVE_TYPE);
 
-} // QCP
-
-#endif //QCUSTOMPLOT_QCPERRORBARSDATA_H
+#endif
