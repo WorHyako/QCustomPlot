@@ -1,4 +1,4 @@
-#include "include/QCPAbstractPaintBuffer.hpp"
+#include "QCPAbstractPaintBuffer.hpp"
 
 #include <QDebug>
 
@@ -85,7 +85,6 @@ QCPAbstractPaintBuffer::QCPAbstractPaintBuffer(const QSize &size, double deviceP
         mDevicePixelRatio(devicePixelRatio),
         mInvalidated(true) {
 }
-
 
 /*!
   Sets the paint buffer size.

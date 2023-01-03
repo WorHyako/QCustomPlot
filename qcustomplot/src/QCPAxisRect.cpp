@@ -1,4 +1,4 @@
-#include "include/QCPAxisRect.hpp"
+#include "QCPAxisRect.hpp"
 
 using namespace QCP;
 
@@ -123,86 +123,78 @@ using namespace QCP;
   Creates a QCPAxisRect instance and sets default values. An axis is added for each of the four
   sides, the top and right axes are set invisible initially.
 */
-    QCPAxisRect::QCPAxisRect(QCustomPlot *parentPlot, bool setupDefaultAxes) :
-            QCPLayoutElement(parentPlot),
-            mBackgroundBrush(Qt::NoBrush),
-            mBackgroundScaled(true),
-            mBackgroundScaledMode(Qt::KeepAspectRatioByExpanding),
-            mInsetLayout(new QCPLayoutInset),
-            mRangeDrag(Qt::Horizontal|Qt::Vertical),
-            mRangeZoom(Qt::Horizontal|Qt::Vertical),
-            mRangeZoomFactorHorz(0.85),
-            mRangeZoomFactorVert(0.85),
-            mDragging(false)
-    {
-        mInsetLayout->initializeParentPlot(mParentPlot);
-        mInsetLayout->setParentLayerable(this);
-        mInsetLayout->setParent(this);
+QCPAxisRect::QCPAxisRect(QCustomPlot *parentPlot, bool setupDefaultAxes) :
+        QCPLayoutElement(parentPlot),
+        mBackgroundBrush(Qt::NoBrush),
+        mBackgroundScaled(true),
+        mBackgroundScaledMode(Qt::KeepAspectRatioByExpanding),
+        mInsetLayout(new QCPLayoutInset()),
+        mRangeDrag(Qt::Horizontal | Qt::Vertical),
+        mRangeZoom(Qt::Horizontal | Qt::Vertical),
+        mRangeZoomFactorHorz(0.85),
+        mRangeZoomFactorVert(0.85),
+        mDragging(false) {
+    reinterpret_cast<QCPLayerable *>(mInsetLayout)->initializeParentPlot(mParentPlot);
+    reinterpret_cast<QCPLayerable *>(mInsetLayout)->setParentLayerable(this);
+    reinterpret_cast<QCPLayerable *>(mInsetLayout)->setParent(this);
 
-        setMinimumSize(50, 50);
-        setMinimumMargins(QMargins(15, 15, 15, 15));
-        mAxes.insert(QCPAxis::atLeft, QList<QCPAxis*>());
-        mAxes.insert(QCPAxis::atRight, QList<QCPAxis*>());
-        mAxes.insert(QCPAxis::atTop, QList<QCPAxis*>());
-        mAxes.insert(QCPAxis::atBottom, QList<QCPAxis*>());
+    setMinimumSize(50, 50);
+    setMinimumMargins(QMargins(15, 15, 15, 15));
+    mAxes.insert(QCPAxis::atLeft, QList<QCPAxis *>());
+    mAxes.insert(QCPAxis::atRight, QList<QCPAxis *>());
+    mAxes.insert(QCPAxis::atTop, QList<QCPAxis *>());
+    mAxes.insert(QCPAxis::atBottom, QList<QCPAxis *>());
 
-        if (setupDefaultAxes)
-        {
-            QCPAxis *xAxis = addAxis(QCPAxis::atBottom);
-            QCPAxis *yAxis = addAxis(QCPAxis::atLeft);
-            QCPAxis *xAxis2 = addAxis(QCPAxis::atTop);
-            QCPAxis *yAxis2 = addAxis(QCPAxis::atRight);
-            setRangeDragAxes(xAxis, yAxis);
-            setRangeZoomAxes(xAxis, yAxis);
-            xAxis2->setVisible(false);
-            yAxis2->setVisible(false);
-            xAxis->grid()->setVisible(true);
-            yAxis->grid()->setVisible(true);
-            xAxis2->grid()->setVisible(false);
-            yAxis2->grid()->setVisible(false);
-            xAxis2->grid()->setZeroLinePen(Qt::NoPen);
-            yAxis2->grid()->setZeroLinePen(Qt::NoPen);
-            xAxis2->grid()->setVisible(false);
-            yAxis2->grid()->setVisible(false);
-        }
+    if (setupDefaultAxes) {
+        QCPAxis *xAxis = addAxis(QCPAxis::atBottom);
+        QCPAxis *yAxis = addAxis(QCPAxis::atLeft);
+        QCPAxis *xAxis2 = addAxis(QCPAxis::atTop);
+        QCPAxis *yAxis2 = addAxis(QCPAxis::atRight);
+        setRangeDragAxes(xAxis, yAxis);
+        setRangeZoomAxes(xAxis, yAxis);
+        xAxis2->setVisible(false);
+        yAxis2->setVisible(false);
+        xAxis->grid()->setVisible(true);
+        yAxis->grid()->setVisible(true);
+        xAxis2->grid()->setVisible(false);
+        yAxis2->grid()->setVisible(false);
+        xAxis2->grid()->setZeroLinePen(Qt::NoPen);
+        yAxis2->grid()->setZeroLinePen(Qt::NoPen);
+        xAxis2->grid()->setVisible(false);
+        yAxis2->grid()->setVisible(false);
     }
+}
 
-    QCPAxisRect::~QCPAxisRect()
-    {
-        delete mInsetLayout;
-        mInsetLayout = nullptr;
+QCPAxisRect::~QCPAxisRect() {
+    delete mInsetLayout;
+    mInsetLayout = nullptr;
 
-        foreach (QCPAxis *axis, axes())
-        removeAxis(axis);
-    }
+            foreach (QCPAxis *axis, axes())removeAxis(axis);
+}
 
 /*!
   Returns the number of axes on the axis rect side specified with \a type.
 
   \see axis
 */
-    int QCPAxisRect::axisCount(QCPAxis::AxisType type) const
-    {
-        return mAxes.value(type).size();
-    }
+int QCPAxisRect::axisCount(QCPAxis::AxisType type) const {
+    return mAxes.value(type).size();
+}
 
 /*!
   Returns the axis with the given \a index on the axis rect side specified with \a type.
 
   \see axisCount, axes
 */
-    QCPAxis *QCPAxisRect::axis(QCPAxis::AxisType type, int index) const
-    {
-        QList<QCPAxis*> ax(mAxes.value(type));
-        if (index >= 0 && index < ax.size())
-        {
-            return ax.at(index);
-        } else
-        {
-            qDebug() << Q_FUNC_INFO << "Axis index out of bounds:" << index;
-            return nullptr;
-        }
+QCPAxis *QCPAxisRect::axis(QCPAxis::AxisType type, int index) const {
+    QList<QCPAxis *> ax(mAxes.value(type));
+    if (index >= 0 && index < ax.size()) {
+        return ax.at(index);
+    } else {
+        qDebug() << Q_FUNC_INFO << "Axis index out of bounds:" << index;
+        return nullptr;
     }
+}
 
 /*!
   Returns all axes on the axis rect sides specified with \a types.
@@ -212,35 +204,32 @@ using namespace QCP;
 
   \see axis
 */
-    QList<QCPAxis*> QCPAxisRect::axes(QCPAxis::AxisTypes types) const
-    {
-        QList<QCPAxis*> result;
-        if (types.testFlag(QCPAxis::atLeft))
-            result << mAxes.value(QCPAxis::atLeft);
-        if (types.testFlag(QCPAxis::atRight))
-            result << mAxes.value(QCPAxis::atRight);
-        if (types.testFlag(QCPAxis::atTop))
-            result << mAxes.value(QCPAxis::atTop);
-        if (types.testFlag(QCPAxis::atBottom))
-            result << mAxes.value(QCPAxis::atBottom);
-        return result;
-    }
+QList<QCPAxis *> QCPAxisRect::axes(QCPAxis::AxisTypes types) const {
+    QList<QCPAxis *> result;
+    if (types.testFlag(QCPAxis::atLeft))
+        result << mAxes.value(QCPAxis::atLeft);
+    if (types.testFlag(QCPAxis::atRight))
+        result << mAxes.value(QCPAxis::atRight);
+    if (types.testFlag(QCPAxis::atTop))
+        result << mAxes.value(QCPAxis::atTop);
+    if (types.testFlag(QCPAxis::atBottom))
+        result << mAxes.value(QCPAxis::atBottom);
+    return result;
+}
 
 /*! \overload
 
   Returns all axes of this axis rect.
 */
-    QList<QCPAxis*> QCPAxisRect::axes() const
-    {
-        QList<QCPAxis*> result;
-        QHashIterator<QCPAxis::AxisType, QList<QCPAxis*> > it(mAxes);
-        while (it.hasNext())
-        {
-            it.next();
-            result << it.value();
-        }
-        return result;
+QList<QCPAxis *> QCPAxisRect::axes() const {
+    QList<QCPAxis *> result;
+    QHashIterator<QCPAxis::AxisType, QList<QCPAxis *> > it(mAxes);
+    while (it.hasNext()) {
+        it.next();
+        result << it.value();
     }
+    return result;
+}
 
 /*!
   Adds a new axis to the axis rect side specified with \a type, and returns it. If \a axis is 0, a
@@ -262,52 +251,57 @@ using namespace QCP;
 
   \see addAxes, setupFullAxesBox
 */
-    QCPAxis *QCPAxisRect::addAxis(QCPAxis::AxisType type, QCPAxis *axis)
+QCPAxis *QCPAxisRect::addAxis(QCPAxis::AxisType type, QCPAxis *axis) {
+    QCPAxis *newAxis = axis;
+    if (!newAxis) {
+        newAxis = new QCPAxis(this, type);
+    } else // user provided existing axis instance, do some sanity checks
     {
-        QCPAxis *newAxis = axis;
-        if (!newAxis)
-        {
-            newAxis = new QCPAxis(this, type);
-        } else // user provided existing axis instance, do some sanity checks
-        {
-            if (newAxis->axisType() != type)
-            {
-                qDebug() << Q_FUNC_INFO << "passed axis has different axis type than specified in type parameter";
-                return nullptr;
-            }
-            if (newAxis->axisRect() != this)
-            {
-                qDebug() << Q_FUNC_INFO << "passed axis doesn't have this axis rect as parent axis rect";
-                return nullptr;
-            }
-            if (axes().contains(newAxis))
-            {
-                qDebug() << Q_FUNC_INFO << "passed axis is already owned by this axis rect";
-                return nullptr;
-            }
+        if (newAxis->axisType() != type) {
+            qDebug() << Q_FUNC_INFO << "passed axis has different axis type than specified in type parameter";
+            return nullptr;
         }
-        if (!mAxes[type].isEmpty()) // multiple axes on one side, add half-bar axis ending to additional axes with offset
-        {
-            bool invert = (type == QCPAxis::atRight) || (type == QCPAxis::atBottom);
-            newAxis->setLowerEnding(QCPLineEnding(QCPLineEnding::esHalfBar, 6, 10, !invert));
-            newAxis->setUpperEnding(QCPLineEnding(QCPLineEnding::esHalfBar, 6, 10, invert));
+        if (newAxis->axisRect() != this) {
+            qDebug() << Q_FUNC_INFO << "passed axis doesn't have this axis rect as parent axis rect";
+            return nullptr;
         }
-        mAxes[type].append(newAxis);
+        if (axes().contains(newAxis)) {
+            qDebug() << Q_FUNC_INFO << "passed axis is already owned by this axis rect";
+            return nullptr;
+        }
+    }
+    if (!mAxes[type].isEmpty()) // multiple axes on one side, add half-bar axis ending to additional axes with offset
+    {
+        bool invert = (type == QCPAxis::atRight) || (type == QCPAxis::atBottom);
+        newAxis->setLowerEnding(QCPLineEnding(QCPLineEnding::esHalfBar, 6, 10, !invert));
+        newAxis->setUpperEnding(QCPLineEnding(QCPLineEnding::esHalfBar, 6, 10, invert));
+    }
+    mAxes[type].append(newAxis);
 
 // reset convenience axis pointers on parent QCustomPlot if they are unset:
-        if (mParentPlot && mParentPlot->axisRectCount() > 0 && mParentPlot->axisRect(0) == this)
-        {
-            switch (type)
-            {
-                case QCPAxis::atBottom: { if (!mParentPlot->xAxis) mParentPlot->xAxis = newAxis; break; }
-                case QCPAxis::atLeft: { if (!mParentPlot->yAxis) mParentPlot->yAxis = newAxis; break; }
-                case QCPAxis::atTop: { if (!mParentPlot->xAxis2) mParentPlot->xAxis2 = newAxis; break; }
-                case QCPAxis::atRight: { if (!mParentPlot->yAxis2) mParentPlot->yAxis2 = newAxis; break; }
+    if (mParentPlot && mParentPlot->axisRectCount() > 0 && mParentPlot->axisRect(0) == this) {
+        switch (type) {
+            case QCPAxis::atBottom: {
+                if (!mParentPlot->xAxis) mParentPlot->xAxis = newAxis;
+                break;
+            }
+            case QCPAxis::atLeft: {
+                if (!mParentPlot->yAxis) mParentPlot->yAxis = newAxis;
+                break;
+            }
+            case QCPAxis::atTop: {
+                if (!mParentPlot->xAxis2) mParentPlot->xAxis2 = newAxis;
+                break;
+            }
+            case QCPAxis::atRight: {
+                if (!mParentPlot->yAxis2) mParentPlot->yAxis2 = newAxis;
+                break;
             }
         }
-
-        return newAxis;
     }
+
+    return newAxis;
+}
 
 /*!
   Adds a new axis with \ref addAxis to each axis rect side specified in \a types. This may be an
@@ -317,19 +311,18 @@ using namespace QCP;
 
   \see addAxis, setupFullAxesBox
 */
-    QList<QCPAxis*> QCPAxisRect::addAxes(QCPAxis::AxisTypes types)
-    {
-        QList<QCPAxis*> result;
-        if (types.testFlag(QCPAxis::atLeft))
-            result << addAxis(QCPAxis::atLeft);
-        if (types.testFlag(QCPAxis::atRight))
-            result << addAxis(QCPAxis::atRight);
-        if (types.testFlag(QCPAxis::atTop))
-            result << addAxis(QCPAxis::atTop);
-        if (types.testFlag(QCPAxis::atBottom))
-            result << addAxis(QCPAxis::atBottom);
-        return result;
-    }
+QList<QCPAxis *> QCPAxisRect::addAxes(QCPAxis::AxisTypes types) {
+    QList<QCPAxis *> result;
+    if (types.testFlag(QCPAxis::atLeft))
+        result << addAxis(QCPAxis::atLeft);
+    if (types.testFlag(QCPAxis::atRight))
+        result << addAxis(QCPAxis::atRight);
+    if (types.testFlag(QCPAxis::atTop))
+        result << addAxis(QCPAxis::atTop);
+    if (types.testFlag(QCPAxis::atBottom))
+        result << addAxis(QCPAxis::atBottom);
+    return result;
+}
 
 /*!
   Removes the specified \a axis from the axis rect and deletes it.
@@ -338,27 +331,26 @@ using namespace QCP;
 
   \see addAxis
 */
-    bool QCPAxisRect::removeAxis(QCPAxis *axis)
-    {
+bool QCPAxisRect::removeAxis(QCPAxis *axis) {
 // don't access axis->axisType() to provide safety when axis is an invalid pointer, rather go through all axis containers:
-        QHashIterator<QCPAxis::AxisType, QList<QCPAxis*> > it(mAxes);
-        while (it.hasNext())
-        {
-            it.next();
-            if (it.value().contains(axis))
-            {
-                if (it.value().first() == axis && it.value().size() > 1) // if removing first axis, transfer axis offset to the new first axis (which at this point is the second axis, if it exists)
-                    it.value()[1]->setOffset(axis->offset());
-                mAxes[it.key()].removeOne(axis);
-                if (qobject_cast<QCustomPlot*>(parentPlot())) // make sure this isn't called from QObject dtor when QCustomPlot is already destructed (happens when the axis rect is not in any layout and thus QObject-child of QCustomPlot)
-                    parentPlot()->axisRemoved(axis);
-                delete axis;
-                return true;
-            }
+    QHashIterator<QCPAxis::AxisType, QList<QCPAxis *> > it(mAxes);
+    while (it.hasNext()) {
+        it.next();
+        if (it.value().contains(axis)) {
+            if (it.value().first() == axis && it.value().size() >
+                                              1) // if removing first axis, transfer axis offset to the new first axis (which at this point is the second axis, if it exists)
+                it.value()[1]->setOffset(axis->offset());
+            mAxes[it.key()].removeOne(axis);
+            if (qobject_cast<QCustomPlot *>(
+                    parentPlot())) // make sure this isn't called from QObject dtor when QCustomPlot is already destructed (happens when the axis rect is not in any layout and thus QObject-child of QCustomPlot)
+                parentPlot()->axisRemoved(axis);
+            delete axis;
+            return true;
         }
-        qDebug() << Q_FUNC_INFO << "Axis isn't in axis rect:" << reinterpret_cast<quintptr>(axis);
-        return false;
     }
+    qDebug() << Q_FUNC_INFO << "Axis isn't in axis rect:" << reinterpret_cast<quintptr>(axis);
+    return false;
+}
 
 /*!
   Zooms in (or out) to the passed rectangular region \a pixelRect, given in pixel coordinates.
@@ -368,10 +360,9 @@ using namespace QCP;
 
   \see QCustomPlot::setSelectionRectMode
 */
-    void QCPAxisRect::zoom(const QRectF &pixelRect)
-    {
-        zoom(pixelRect, axes());
-    }
+void QCPAxisRect::zoom(const QRectF &pixelRect) {
+    zoom(pixelRect, axes());
+}
 
 /*! \overload
 
@@ -381,12 +372,9 @@ using namespace QCP;
 
   \see QCustomPlot::setSelectionRectMode
 */
-    void QCPAxisRect::zoom(const QRectF &pixelRect, const QList<QCPAxis*> &affectedAxes)
-    {
-        foreach (QCPAxis *axis, affectedAxes)
-        {
-            if (!axis)
-            {
+void QCPAxisRect::zoom(const QRectF &pixelRect, const QList<QCPAxis *> &affectedAxes) {
+            foreach (QCPAxis *axis, affectedAxes) {
+            if (!axis) {
                 qDebug() << Q_FUNC_INFO << "a passed axis was zero";
                 continue;
             }
@@ -397,7 +385,7 @@ using namespace QCP;
                 pixelRange = QCPRange(pixelRect.top(), pixelRect.bottom());
             axis->setRange(axis->pixelToCoord(pixelRange.lower), axis->pixelToCoord(pixelRange.upper));
         }
-    }
+}
 
 /*!
   Convenience function to create an axis on each side that doesn't have any axes yet and set their
@@ -418,60 +406,58 @@ using namespace QCP;
   If \a connectRanges is true, the \ref QCPAxis::rangeChanged "rangeChanged" signals of the bottom
   and left axes are connected to the \ref QCPAxis::setRange slots of the top and right axes.
 */
-    void QCPAxisRect::setupFullAxesBox(bool connectRanges)
-    {
-        QCPAxis *xAxis, *yAxis, *xAxis2, *yAxis2;
-        if (axisCount(QCPAxis::atBottom) == 0)
-            xAxis = addAxis(QCPAxis::atBottom);
-        else
-            xAxis = axis(QCPAxis::atBottom);
+void QCPAxisRect::setupFullAxesBox(bool connectRanges) {
+    QCPAxis *xAxis, *yAxis, *xAxis2, *yAxis2;
+    if (axisCount(QCPAxis::atBottom) == 0)
+        xAxis = addAxis(QCPAxis::atBottom);
+    else
+        xAxis = axis(QCPAxis::atBottom);
 
-        if (axisCount(QCPAxis::atLeft) == 0)
-            yAxis = addAxis(QCPAxis::atLeft);
-        else
-            yAxis = axis(QCPAxis::atLeft);
+    if (axisCount(QCPAxis::atLeft) == 0)
+        yAxis = addAxis(QCPAxis::atLeft);
+    else
+        yAxis = axis(QCPAxis::atLeft);
 
-        if (axisCount(QCPAxis::atTop) == 0)
-            xAxis2 = addAxis(QCPAxis::atTop);
-        else
-            xAxis2 = axis(QCPAxis::atTop);
+    if (axisCount(QCPAxis::atTop) == 0)
+        xAxis2 = addAxis(QCPAxis::atTop);
+    else
+        xAxis2 = axis(QCPAxis::atTop);
 
-        if (axisCount(QCPAxis::atRight) == 0)
-            yAxis2 = addAxis(QCPAxis::atRight);
-        else
-            yAxis2 = axis(QCPAxis::atRight);
+    if (axisCount(QCPAxis::atRight) == 0)
+        yAxis2 = addAxis(QCPAxis::atRight);
+    else
+        yAxis2 = axis(QCPAxis::atRight);
 
-        xAxis->setVisible(true);
-        yAxis->setVisible(true);
-        xAxis2->setVisible(true);
-        yAxis2->setVisible(true);
-        xAxis2->setTickLabels(false);
-        yAxis2->setTickLabels(false);
+    xAxis->setVisible(true);
+    yAxis->setVisible(true);
+    xAxis2->setVisible(true);
+    yAxis2->setVisible(true);
+    xAxis2->setTickLabels(false);
+    yAxis2->setTickLabels(false);
 
-        xAxis2->setRange(xAxis->range());
-        xAxis2->setRangeReversed(xAxis->rangeReversed());
-        xAxis2->setScaleType(xAxis->scaleType());
-        xAxis2->setTicks(xAxis->ticks());
-        xAxis2->setNumberFormat(xAxis->numberFormat());
-        xAxis2->setNumberPrecision(xAxis->numberPrecision());
-        xAxis2->ticker()->setTickCount(xAxis->ticker()->tickCount());
-        xAxis2->ticker()->setTickOrigin(xAxis->ticker()->tickOrigin());
+    xAxis2->setRange(xAxis->range());
+    xAxis2->setRangeReversed(xAxis->rangeReversed());
+    xAxis2->setScaleType(xAxis->scaleType());
+    xAxis2->setTicks(xAxis->ticks());
+    xAxis2->setNumberFormat(xAxis->numberFormat());
+    xAxis2->setNumberPrecision(xAxis->numberPrecision());
+    xAxis2->ticker()->setTickCount(xAxis->ticker()->tickCount());
+    xAxis2->ticker()->setTickOrigin(xAxis->ticker()->tickOrigin());
 
-        yAxis2->setRange(yAxis->range());
-        yAxis2->setRangeReversed(yAxis->rangeReversed());
-        yAxis2->setScaleType(yAxis->scaleType());
-        yAxis2->setTicks(yAxis->ticks());
-        yAxis2->setNumberFormat(yAxis->numberFormat());
-        yAxis2->setNumberPrecision(yAxis->numberPrecision());
-        yAxis2->ticker()->setTickCount(yAxis->ticker()->tickCount());
-        yAxis2->ticker()->setTickOrigin(yAxis->ticker()->tickOrigin());
+    yAxis2->setRange(yAxis->range());
+    yAxis2->setRangeReversed(yAxis->rangeReversed());
+    yAxis2->setScaleType(yAxis->scaleType());
+    yAxis2->setTicks(yAxis->ticks());
+    yAxis2->setNumberFormat(yAxis->numberFormat());
+    yAxis2->setNumberPrecision(yAxis->numberPrecision());
+    yAxis2->ticker()->setTickCount(yAxis->ticker()->tickCount());
+    yAxis2->ticker()->setTickOrigin(yAxis->ticker()->tickOrigin());
 
-        if (connectRanges)
-        {
-            connect(xAxis, SIGNAL(rangeChanged(QCPRange)), xAxis2, SLOT(setRange(QCPRange)));
-            connect(yAxis, SIGNAL(rangeChanged(QCPRange)), yAxis2, SLOT(setRange(QCPRange)));
-        }
+    if (connectRanges) {
+        connect(xAxis, SIGNAL(rangeChanged(QCPRange)), xAxis2, SLOT(setRange(QCPRange)));
+        connect(yAxis, SIGNAL(rangeChanged(QCPRange)), yAxis2, SLOT(setRange(QCPRange)));
     }
+}
 
 /*!
   Returns a list of all the plottables that are associated with this axis rect.
@@ -481,17 +467,15 @@ using namespace QCP;
 
   \see graphs, items
 */
-    QList<QCPAbstractPlottable*> QCPAxisRect::plottables() const
-    {
+QList<QCPAbstractPlottable *> QCPAxisRect::plottables() const {
 // Note: don't append all QCPAxis::plottables() into a list, because we might get duplicate entries
-        QList<QCPAbstractPlottable*> result;
-        foreach (QCPAbstractPlottable *plottable, mParentPlot->mPlottables)
-        {
+    QList<QCPAbstractPlottable *> result;
+            foreach (QCPAbstractPlottable *plottable, mParentPlot->mPlottables) {
             if (plottable->keyAxis()->axisRect() == this || plottable->valueAxis()->axisRect() == this)
                 result.append(plottable);
         }
-        return result;
-    }
+    return result;
+}
 
 /*!
   Returns a list of all the graphs that are associated with this axis rect.
@@ -501,17 +485,15 @@ using namespace QCP;
 
   \see plottables, items
 */
-    QList<QCPGraph*> QCPAxisRect::graphs() const
-    {
+QList<QCPGraph *> QCPAxisRect::graphs() const {
 // Note: don't append all QCPAxis::graphs() into a list, because we might get duplicate entries
-        QList<QCPGraph*> result;
-        foreach (QCPGraph *graph, mParentPlot->mGraphs)
-        {
+    QList<QCPGraph *> result;
+            foreach (QCPGraph *graph, mParentPlot->mGraphs) {
             if (graph->keyAxis()->axisRect() == this || graph->valueAxis()->axisRect() == this)
                 result.append(graph);
         }
-        return result;
-    }
+    return result;
+}
 
 /*!
   Returns a list of all the items that are associated with this axis rect.
@@ -523,31 +505,26 @@ using namespace QCP;
 
   \see plottables, graphs
 */
-    QList<QCPAbstractItem *> QCPAxisRect::items() const
-    {
+QList<QCPAbstractItem *> QCPAxisRect::items() const {
 // Note: don't just append all QCPAxis::items() into a list, because we might get duplicate entries
 //       and miss those items that have this axis rect as clipAxisRect.
-        QList<QCPAbstractItem*> result;
-        foreach (QCPAbstractItem *item, mParentPlot->mItems)
-        {
-            if (item->clipAxisRect() == this)
-            {
+    QList<QCPAbstractItem *> result;
+            foreach (QCPAbstractItem *item, mParentPlot->mItems) {
+            if (item->clipAxisRect() == this) {
                 result.append(item);
                 continue;
             }
-            foreach (QCPItemPosition *position, item->positions())
-            {
-                if (position->axisRect() == this ||
-                    position->keyAxis()->axisRect() == this ||
-                    position->valueAxis()->axisRect() == this)
-                {
-                    result.append(item);
-                    break;
+                    foreach (QCPItemPosition *position, item->positions()) {
+                    if (position->axisRect() == this ||
+                        position->keyAxis()->axisRect() == this ||
+                        position->valueAxis()->axisRect() == this) {
+                        result.append(item);
+                        break;
+                    }
                 }
-            }
         }
-        return result;
-    }
+    return result;
+}
 
 /*!
   This method is called automatically upon replot and doesn't need to be called by users of
@@ -559,54 +536,46 @@ using namespace QCP;
 
   \seebaseclassmethod
 */
-    void QCPAxisRect::update(UpdatePhase phase)
-    {
-        QCPLayoutElement::update(phase);
+void QCPAxisRect::update(UpdatePhase phase) {
+    QCPLayoutElement::update(phase);
 
-        switch (phase)
-        {
-            case upPreparation:
-            {
-                foreach (QCPAxis *axis, axes())
-                axis->setupTickVectors();
-                break;
-            }
-            case upLayout:
-            {
-                mInsetLayout->setOuterRect(rect());
-                break;
-            }
-            default: break;
+    switch (phase) {
+        case upPreparation: {
+                    foreach (QCPAxis *axis, axes())axis->setupTickVectors();
+            break;
         }
+        case upLayout: {
+            mInsetLayout->setOuterRect(rect());
+            break;
+        }
+        default:
+            break;
+    }
 
 // pass update call on to inset layout (doesn't happen automatically, because QCPAxisRect doesn't derive from QCPLayout):
-        mInsetLayout->update(phase);
-    }
+    mInsetLayout->update(phase);
+}
 
 /* inherits documentation from base class */
-    QList<QCPLayoutElement*> QCPAxisRect::elements(bool recursive) const
-    {
-        QList<QCPLayoutElement*> result;
-        if (mInsetLayout)
-        {
-            result << mInsetLayout;
-            if (recursive)
-                result << mInsetLayout->elements(recursive);
-        }
-        return result;
+QList<QCPLayoutElement *> QCPAxisRect::elements(bool recursive) const {
+    QList<QCPLayoutElement *> result;
+    if (mInsetLayout) {
+        result << mInsetLayout;
+        if (recursive)
+            result << mInsetLayout->elements(recursive);
     }
+    return result;
+}
 
 /* inherits documentation from base class */
-    void QCPAxisRect::applyDefaultAntialiasingHint(QCPPainter *painter) const
-    {
-        painter->setAntialiasing(false);
-    }
+void QCPAxisRect::applyDefaultAntialiasingHint(QCPPainter *painter) const {
+    painter->setAntialiasing(false);
+}
 
 /* inherits documentation from base class */
-    void QCPAxisRect::draw(QCPPainter *painter)
-    {
-        drawBackground(painter);
-    }
+void QCPAxisRect::draw(QCPPainter *painter) {
+    drawBackground(painter);
+}
 
 /*!
   Sets \a pm as the axis background pixmap. The axis background pixmap will be drawn inside the
@@ -623,11 +592,10 @@ using namespace QCP;
 
   \see setBackgroundScaled, setBackgroundScaledMode, setBackground(const QBrush &brush)
 */
-    void QCPAxisRect::setBackground(const QPixmap &pm)
-    {
-        mBackgroundPixmap = pm;
-        mScaledBackgroundPixmap = QPixmap();
-    }
+void QCPAxisRect::setBackground(const QPixmap &pm) {
+    mBackgroundPixmap = pm;
+    mScaledBackgroundPixmap = QPixmap();
+}
 
 /*! \overload
 
@@ -642,10 +610,9 @@ using namespace QCP;
 
   \see setBackground(const QPixmap &pm)
 */
-    void QCPAxisRect::setBackground(const QBrush &brush)
-    {
-        mBackgroundBrush = brush;
-    }
+void QCPAxisRect::setBackground(const QBrush &brush) {
+    mBackgroundBrush = brush;
+}
 
 /*! \overload
 
@@ -654,13 +621,12 @@ using namespace QCP;
 
   \see setBackground(const QPixmap &pm), setBackgroundScaled, setBackgroundScaledMode
 */
-    void QCPAxisRect::setBackground(const QPixmap &pm, bool scaled, Qt::AspectRatioMode mode)
-    {
-        mBackgroundPixmap = pm;
-        mScaledBackgroundPixmap = QPixmap();
-        mBackgroundScaled = scaled;
-        mBackgroundScaledMode = mode;
-    }
+void QCPAxisRect::setBackground(const QPixmap &pm, bool scaled, Qt::AspectRatioMode mode) {
+    mBackgroundPixmap = pm;
+    mScaledBackgroundPixmap = QPixmap();
+    mBackgroundScaled = scaled;
+    mBackgroundScaledMode = mode;
+}
 
 /*!
   Sets whether the axis background pixmap shall be scaled to fit the axis rect or not. If \a scaled
@@ -672,20 +638,18 @@ using namespace QCP;
 
   \see setBackground, setBackgroundScaledMode
 */
-    void QCPAxisRect::setBackgroundScaled(bool scaled)
-    {
-        mBackgroundScaled = scaled;
-    }
+void QCPAxisRect::setBackgroundScaled(bool scaled) {
+    mBackgroundScaled = scaled;
+}
 
 /*!
   If scaling of the axis background pixmap is enabled (\ref setBackgroundScaled), use this function to
   define whether and how the aspect ratio of the original pixmap passed to \ref setBackground is preserved.
   \see setBackground, setBackgroundScaled
 */
-    void QCPAxisRect::setBackgroundScaledMode(Qt::AspectRatioMode mode)
-    {
-        mBackgroundScaledMode = mode;
-    }
+void QCPAxisRect::setBackgroundScaledMode(Qt::AspectRatioMode mode) {
+    mBackgroundScaledMode = mode;
+}
 
 /*!
   Returns the range drag axis of the \a orientation provided. If multiple axes were set, returns
@@ -693,13 +657,12 @@ using namespace QCP;
 
   \see setRangeDragAxes
 */
-    QCPAxis *QCPAxisRect::rangeDragAxis(Qt::Orientation orientation)
-    {
-        if (orientation == Qt::Horizontal)
-            return mRangeDragHorzAxis.isEmpty() ? nullptr : mRangeDragHorzAxis.first().data();
-        else
-            return mRangeDragVertAxis.isEmpty() ? nullptr : mRangeDragVertAxis.first().data();
-    }
+QCPAxis *QCPAxisRect::rangeDragAxis(Qt::Orientation orientation) {
+    if (orientation == Qt::Horizontal)
+        return mRangeDragHorzAxis.isEmpty() ? nullptr : mRangeDragHorzAxis.first().data();
+    else
+        return mRangeDragVertAxis.isEmpty() ? nullptr : mRangeDragVertAxis.first().data();
+}
 
 /*!
   Returns the range zoom axis of the \a orientation provided. If multiple axes were set, returns
@@ -707,75 +670,63 @@ using namespace QCP;
 
   \see setRangeZoomAxes
 */
-    QCPAxis *QCPAxisRect::rangeZoomAxis(Qt::Orientation orientation)
-    {
-        if (orientation == Qt::Horizontal)
-            return mRangeZoomHorzAxis.isEmpty() ? nullptr : mRangeZoomHorzAxis.first().data();
-        else
-            return mRangeZoomVertAxis.isEmpty() ? nullptr : mRangeZoomVertAxis.first().data();
-    }
+QCPAxis *QCPAxisRect::rangeZoomAxis(Qt::Orientation orientation) {
+    if (orientation == Qt::Horizontal)
+        return mRangeZoomHorzAxis.isEmpty() ? nullptr : mRangeZoomHorzAxis.first().data();
+    else
+        return mRangeZoomVertAxis.isEmpty() ? nullptr : mRangeZoomVertAxis.first().data();
+}
 
 /*!
   Returns all range drag axes of the \a orientation provided.
 
   \see rangeZoomAxis, setRangeZoomAxes
 */
-    QList<QCPAxis*> QCPAxisRect::rangeDragAxes(Qt::Orientation orientation)
-    {
-        QList<QCPAxis*> result;
-        if (orientation == Qt::Horizontal)
-        {
-            foreach (QPointer<QCPAxis> axis, mRangeDragHorzAxis)
-            {
+QList<QCPAxis *> QCPAxisRect::rangeDragAxes(Qt::Orientation orientation) {
+    QList<QCPAxis *> result;
+    if (orientation == Qt::Horizontal) {
+                foreach (QPointer<QCPAxis> axis, mRangeDragHorzAxis) {
                 if (!axis.isNull())
                     result.append(axis.data());
             }
-        } else
-        {
-            foreach (QPointer<QCPAxis> axis, mRangeDragVertAxis)
-            {
+    } else {
+                foreach (QPointer<QCPAxis> axis, mRangeDragVertAxis) {
                 if (!axis.isNull())
                     result.append(axis.data());
             }
-        }
-        return result;
     }
+    return result;
+}
 
 /*!
   Returns all range zoom axes of the \a orientation provided.
 
   \see rangeDragAxis, setRangeDragAxes
 */
-    QList<QCPAxis*> QCPAxisRect::rangeZoomAxes(Qt::Orientation orientation)
-    {
-        QList<QCPAxis*> result;
-        if (orientation == Qt::Horizontal)
-        {
-            foreach (QPointer<QCPAxis> axis, mRangeZoomHorzAxis)
-            {
+QList<QCPAxis *> QCPAxisRect::rangeZoomAxes(Qt::Orientation orientation) {
+    QList<QCPAxis *> result;
+    if (orientation == Qt::Horizontal) {
+                foreach (QPointer<QCPAxis> axis, mRangeZoomHorzAxis) {
                 if (!axis.isNull())
                     result.append(axis.data());
             }
-        } else
-        {
-            foreach (QPointer<QCPAxis> axis, mRangeZoomVertAxis)
-            {
+    } else {
+                foreach (QPointer<QCPAxis> axis, mRangeZoomVertAxis) {
                 if (!axis.isNull())
                     result.append(axis.data());
             }
-        }
-        return result;
     }
+    return result;
+}
 
 /*!
   Returns the range zoom factor of the \a orientation provided.
 
   \see setRangeZoomFactor
 */
-    double QCPAxisRect::rangeZoomFactor(Qt::Orientation orientation)
-    {
-        return (orientation == Qt::Horizontal ? mRangeZoomFactorHorz : mRangeZoomFactorVert);
-    }
+double QCPAxisRect::rangeZoomFactor(Qt::Orientation orientation) {
+    return (orientation == Qt::Horizontal ? mRangeZoomFactorHorz : mRangeZoomFactorVert);
+}
 
 /*!
   Sets which axis orientation may be range dragged by the user with mouse interaction.
@@ -793,10 +744,9 @@ using namespace QCP;
 
   \see setRangeZoom, setRangeDragAxes, QCustomPlot::setNoAntialiasingOnDrag
 */
-    void QCPAxisRect::setRangeDrag(Qt::Orientations orientations)
-    {
-        mRangeDrag = orientations;
-    }
+void QCPAxisRect::setRangeDrag(Qt::Orientations orientations) {
+    mRangeDrag = orientations;
+}
 
 /*!
   Sets which axis orientation may be zoomed by the user with the mouse wheel. What orientation
@@ -813,10 +763,9 @@ using namespace QCP;
 
   \see setRangeZoomFactor, setRangeZoomAxes, setRangeDrag
 */
-    void QCPAxisRect::setRangeZoom(Qt::Orientations orientations)
-    {
-        mRangeZoom = orientations;
-    }
+void QCPAxisRect::setRangeZoom(Qt::Orientations orientations) {
+    mRangeZoom = orientations;
+}
 
 /*! \overload
 
@@ -829,15 +778,14 @@ using namespace QCP;
 
   \see setRangeZoomAxes
 */
-    void QCPAxisRect::setRangeDragAxes(QCPAxis *horizontal, QCPAxis *vertical)
-    {
-        QList<QCPAxis*> horz, vert;
-        if (horizontal)
-            horz.append(horizontal);
-        if (vertical)
-            vert.append(vertical);
-        setRangeDragAxes(horz, vert);
-    }
+void QCPAxisRect::setRangeDragAxes(QCPAxis *horizontal, QCPAxis *vertical) {
+    QList<QCPAxis *> horz, vert;
+    if (horizontal)
+        horz.append(horizontal);
+    if (vertical)
+        vert.append(vertical);
+    setRangeDragAxes(horz, vert);
+}
 
 /*! \overload
 
@@ -848,18 +796,16 @@ using namespace QCP;
   In the unusual case that you wish to e.g. drag a vertically oriented axis with a horizontal drag
   motion, use the overload taking two separate lists for horizontal and vertical dragging.
 */
-    void QCPAxisRect::setRangeDragAxes(QList<QCPAxis*> axes)
-    {
-        QList<QCPAxis*> horz, vert;
-        foreach (QCPAxis *ax, axes)
-        {
+void QCPAxisRect::setRangeDragAxes(QList<QCPAxis *> axes) {
+    QList<QCPAxis *> horz, vert;
+            foreach (QCPAxis *ax, axes) {
             if (ax->orientation() == Qt::Horizontal)
                 horz.append(ax);
             else
                 vert.append(ax);
         }
-        setRangeDragAxes(horz, vert);
-    }
+    setRangeDragAxes(horz, vert);
+}
 
 /*! \overload
 
@@ -867,27 +813,24 @@ using namespace QCP;
   define specifically which axis reacts to which drag orientation (irrespective of the axis
   orientation).
 */
-    void QCPAxisRect::setRangeDragAxes(QList<QCPAxis*> horizontal, QList<QCPAxis*> vertical)
-    {
-        mRangeDragHorzAxis.clear();
-        foreach (QCPAxis *ax, horizontal)
-        {
+void QCPAxisRect::setRangeDragAxes(QList<QCPAxis *> horizontal, QList<QCPAxis *> vertical) {
+    mRangeDragHorzAxis.clear();
+            foreach (QCPAxis *ax, horizontal) {
             QPointer<QCPAxis> axPointer(ax);
             if (!axPointer.isNull())
                 mRangeDragHorzAxis.append(axPointer);
             else
                 qDebug() << Q_FUNC_INFO << "invalid axis passed in horizontal list:" << reinterpret_cast<quintptr>(ax);
         }
-        mRangeDragVertAxis.clear();
-        foreach (QCPAxis *ax, vertical)
-        {
+    mRangeDragVertAxis.clear();
+            foreach (QCPAxis *ax, vertical) {
             QPointer<QCPAxis> axPointer(ax);
             if (!axPointer.isNull())
                 mRangeDragVertAxis.append(axPointer);
             else
                 qDebug() << Q_FUNC_INFO << "invalid axis passed in vertical list:" << reinterpret_cast<quintptr>(ax);
         }
-    }
+}
 
 /*!
   Sets the axes whose range will be zoomed when \ref setRangeZoom enables mouse wheel zooming on
@@ -901,15 +844,14 @@ using namespace QCP;
 
   \see setRangeDragAxes
 */
-    void QCPAxisRect::setRangeZoomAxes(QCPAxis *horizontal, QCPAxis *vertical)
-    {
-        QList<QCPAxis*> horz, vert;
-        if (horizontal)
-            horz.append(horizontal);
-        if (vertical)
-            vert.append(vertical);
-        setRangeZoomAxes(horz, vert);
-    }
+void QCPAxisRect::setRangeZoomAxes(QCPAxis *horizontal, QCPAxis *vertical) {
+    QList<QCPAxis *> horz, vert;
+    if (horizontal)
+        horz.append(horizontal);
+    if (vertical)
+        vert.append(vertical);
+    setRangeZoomAxes(horz, vert);
+}
 
 /*! \overload
 
@@ -920,18 +862,16 @@ using namespace QCP;
   In the unusual case that you wish to e.g. zoom a vertically oriented axis with a horizontal zoom
   interaction, use the overload taking two separate lists for horizontal and vertical zooming.
 */
-    void QCPAxisRect::setRangeZoomAxes(QList<QCPAxis*> axes)
-    {
-        QList<QCPAxis*> horz, vert;
-        foreach (QCPAxis *ax, axes)
-        {
+void QCPAxisRect::setRangeZoomAxes(QList<QCPAxis *> axes) {
+    QList<QCPAxis *> horz, vert;
+            foreach (QCPAxis *ax, axes) {
             if (ax->orientation() == Qt::Horizontal)
                 horz.append(ax);
             else
                 vert.append(ax);
         }
-        setRangeZoomAxes(horz, vert);
-    }
+    setRangeZoomAxes(horz, vert);
+}
 
 /*! \overload
 
@@ -939,27 +879,24 @@ using namespace QCP;
   define specifically which axis reacts to which zoom orientation (irrespective of the axis
   orientation).
 */
-    void QCPAxisRect::setRangeZoomAxes(QList<QCPAxis*> horizontal, QList<QCPAxis*> vertical)
-    {
-        mRangeZoomHorzAxis.clear();
-        foreach (QCPAxis *ax, horizontal)
-        {
+void QCPAxisRect::setRangeZoomAxes(QList<QCPAxis *> horizontal, QList<QCPAxis *> vertical) {
+    mRangeZoomHorzAxis.clear();
+            foreach (QCPAxis *ax, horizontal) {
             QPointer<QCPAxis> axPointer(ax);
             if (!axPointer.isNull())
                 mRangeZoomHorzAxis.append(axPointer);
             else
                 qDebug() << Q_FUNC_INFO << "invalid axis passed in horizontal list:" << reinterpret_cast<quintptr>(ax);
         }
-        mRangeZoomVertAxis.clear();
-        foreach (QCPAxis *ax, vertical)
-        {
+    mRangeZoomVertAxis.clear();
+            foreach (QCPAxis *ax, vertical) {
             QPointer<QCPAxis> axPointer(ax);
             if (!axPointer.isNull())
                 mRangeZoomVertAxis.append(axPointer);
             else
                 qDebug() << Q_FUNC_INFO << "invalid axis passed in vertical list:" << reinterpret_cast<quintptr>(ax);
         }
-    }
+}
 
 /*!
   Sets how strong one rotation step of the mouse wheel zooms, when range zoom was activated with
@@ -971,21 +908,19 @@ using namespace QCP;
   will zoom in (make the currently visible range smaller). For zoom factors smaller than one, the
   same scrolling direction will zoom out.
 */
-    void QCPAxisRect::setRangeZoomFactor(double horizontalFactor, double verticalFactor)
-    {
-        mRangeZoomFactorHorz = horizontalFactor;
-        mRangeZoomFactorVert = verticalFactor;
-    }
+void QCPAxisRect::setRangeZoomFactor(double horizontalFactor, double verticalFactor) {
+    mRangeZoomFactorHorz = horizontalFactor;
+    mRangeZoomFactorVert = verticalFactor;
+}
 
 /*! \overload
 
   Sets both the horizontal and vertical zoom \a factor.
 */
-    void QCPAxisRect::setRangeZoomFactor(double factor)
-    {
-        mRangeZoomFactorHorz = factor;
-        mRangeZoomFactorVert = factor;
-    }
+void QCPAxisRect::setRangeZoomFactor(double factor) {
+    mRangeZoomFactorHorz = factor;
+    mRangeZoomFactorVert = factor;
+}
 
 /*! \internal
 
@@ -1005,29 +940,27 @@ using namespace QCP;
 
   \see setBackground, setBackgroundScaled, setBackgroundScaledMode
 */
-    void QCPAxisRect::drawBackground(QCPPainter *painter)
-    {
+void QCPAxisRect::drawBackground(QCPPainter *painter) {
 // draw background fill:
-        if (mBackgroundBrush != Qt::NoBrush)
-            painter->fillRect(mRect, mBackgroundBrush);
+    if (mBackgroundBrush != Qt::NoBrush)
+        painter->fillRect(mRect, mBackgroundBrush);
 
 // draw background pixmap (on top of fill, if brush specified):
-        if (!mBackgroundPixmap.isNull())
-        {
-            if (mBackgroundScaled)
-            {
-// check whether mScaledBackground needs to be updated:
-                QSize scaledSize(mBackgroundPixmap.size());
-                scaledSize.scale(mRect.size(), mBackgroundScaledMode);
-                if (mScaledBackgroundPixmap.size() != scaledSize)
-                    mScaledBackgroundPixmap = mBackgroundPixmap.scaled(mRect.size(), mBackgroundScaledMode, Qt::SmoothTransformation);
-                painter->drawPixmap(mRect.topLeft()+QPoint(0, -1), mScaledBackgroundPixmap, QRect(0, 0, mRect.width(), mRect.height()) & mScaledBackgroundPixmap.rect());
-            } else
-            {
-                painter->drawPixmap(mRect.topLeft()+QPoint(0, -1), mBackgroundPixmap, QRect(0, 0, mRect.width(), mRect.height()));
-            }
+    if (!mBackgroundPixmap.isNull()) {
+        if (mBackgroundScaled) {// check whether mScaledBackground needs to be updated:
+            QSize scaledSize(mBackgroundPixmap.size());
+            scaledSize.scale(mRect.size(), mBackgroundScaledMode);
+            if (mScaledBackgroundPixmap.size() != scaledSize)
+                mScaledBackgroundPixmap = mBackgroundPixmap.scaled(mRect.size(), mBackgroundScaledMode,
+                                                                   Qt::SmoothTransformation);
+            painter->drawPixmap(mRect.topLeft() + QPoint(0, -1), mScaledBackgroundPixmap,
+                                QRect(0, 0, mRect.width(), mRect.height()) & mScaledBackgroundPixmap.rect());
+        } else {
+            painter->drawPixmap(mRect.topLeft() + QPoint(0, -1), mBackgroundPixmap,
+                                QRect(0, 0, mRect.width(), mRect.height()));
         }
     }
+}
 
 /*! \internal
 
@@ -1039,41 +972,38 @@ using namespace QCP;
 
   This function is called by \ref calculateAutoMargin.
 */
-    void QCPAxisRect::updateAxesOffset(QCPAxis::AxisType type)
-    {
-        const QList<QCPAxis*> axesList = mAxes.value(type);
-        if (axesList.isEmpty())
-            return;
+void QCPAxisRect::updateAxesOffset(QCPAxis::AxisType type) {
+    const QList<QCPAxis *> axesList = mAxes.value(type);
+    if (axesList.isEmpty())
+        return;
 
-        bool isFirstVisible = !axesList.first()->visible(); // if the first axis is visible, the second axis (which is where the loop starts) isn't the first visible axis, so initialize with false
-        for (int i=1; i<axesList.size(); ++i)
-        {
-            int offset = axesList.at(i-1)->offset() + axesList.at(i-1)->calculateMargin();
-            if (axesList.at(i)->visible()) // only add inner tick length to offset if this axis is visible and it's not the first visible one (might happen if true first axis is invisible)
-            {
-                if (!isFirstVisible)
-                    offset += axesList.at(i)->tickLengthIn();
-                isFirstVisible = false;
-            }
-            axesList.at(i)->setOffset(offset);
+    bool isFirstVisible = !axesList.first()->visible(); // if the first axis is visible, the second axis (which is where the loop starts) isn't the first visible axis, so initialize with false
+    for (int i = 1; i < axesList.size(); ++i) {
+        int offset = axesList.at(i - 1)->offset() + axesList.at(i - 1)->calculateMargin();
+        if (axesList.at(i)->visible()) {
+            // only add inner tick length to offset if this axis is visible and it's not the first visible one (might happen if true first axis is invisible)
+            if (!isFirstVisible)
+                offset += axesList.at(i)->tickLengthIn();
+            isFirstVisible = false;
         }
+        axesList.at(i)->setOffset(offset);
     }
+}
 
 /* inherits documentation from base class */
-    int QCPAxisRect::calculateAutoMargin(QCP::MarginSide side)
-    {
-        if (!mAutoMargins.testFlag(side))
-            qDebug() << Q_FUNC_INFO << "Called with side that isn't specified as auto margin";
+int QCPAxisRect::calculateAutoMargin(QCP::MarginSide side) {
+    if (!mAutoMargins.testFlag(side))
+        qDebug() << Q_FUNC_INFO << "Called with side that isn't specified as auto margin";
 
-        updateAxesOffset(QCPAxis::marginSideToAxisType(side));
+    updateAxesOffset(QCPAxis::marginSideToAxisType(side));
 
 // note: only need to look at the last (outer most) axis to determine the total margin, due to updateAxisOffset call
-        const QList<QCPAxis*> axesList = mAxes.value(QCPAxis::marginSideToAxisType(side));
-        if (!axesList.isEmpty())
-            return axesList.last()->offset() + axesList.last()->calculateMargin();
-        else
-            return 0;
-    }
+    const QList<QCPAxis *> axesList = mAxes.value(QCPAxis::marginSideToAxisType(side));
+    if (!axesList.isEmpty())
+        return axesList.last()->offset() + axesList.last()->calculateMargin();
+    else
+        return 0;
+}
 
 /*! \internal
 
@@ -1085,20 +1015,18 @@ using namespace QCP;
   This automation makes it simpler to replace the main axis rect with a newly created one, without
   the need to manually reset the convenience pointers.
 */
-    void QCPAxisRect::layoutChanged()
-    {
-        if (mParentPlot && mParentPlot->axisRectCount() > 0 && mParentPlot->axisRect(0) == this)
-        {
-            if (axisCount(QCPAxis::atBottom) > 0 && !mParentPlot->xAxis)
-                mParentPlot->xAxis = axis(QCPAxis::atBottom);
-            if (axisCount(QCPAxis::atLeft) > 0 && !mParentPlot->yAxis)
-                mParentPlot->yAxis = axis(QCPAxis::atLeft);
-            if (axisCount(QCPAxis::atTop) > 0 && !mParentPlot->xAxis2)
-                mParentPlot->xAxis2 = axis(QCPAxis::atTop);
-            if (axisCount(QCPAxis::atRight) > 0 && !mParentPlot->yAxis2)
-                mParentPlot->yAxis2 = axis(QCPAxis::atRight);
-        }
+void QCPAxisRect::layoutChanged() {
+    if (mParentPlot && mParentPlot->axisRectCount() > 0 && mParentPlot->axisRect(0) == this) {
+        if (axisCount(QCPAxis::atBottom) > 0 && !mParentPlot->xAxis)
+            mParentPlot->xAxis = axis(QCPAxis::atBottom);
+        if (axisCount(QCPAxis::atLeft) > 0 && !mParentPlot->yAxis)
+            mParentPlot->yAxis = axis(QCPAxis::atLeft);
+        if (axisCount(QCPAxis::atTop) > 0 && !mParentPlot->xAxis2)
+            mParentPlot->xAxis2 = axis(QCPAxis::atTop);
+        if (axisCount(QCPAxis::atRight) > 0 && !mParentPlot->yAxis2)
+            mParentPlot->yAxis2 = axis(QCPAxis::atRight);
     }
+}
 
 /*! \internal
 
@@ -1111,30 +1039,28 @@ using namespace QCP;
 
   \see mouseMoveEvent, mouseReleaseEvent
 */
-    void QCPAxisRect::mousePressEvent(QMouseEvent *event, const QVariant &details)
-    {
-        Q_UNUSED(details)
-        if (event->buttons() & Qt::LeftButton)
-        {
-            mDragging = true;
+void QCPAxisRect::mousePressEvent(QMouseEvent *event, const QVariant &details) {
+    Q_UNUSED(details)
+    if (event->buttons() & Qt::LeftButton) {
+        mDragging = true;
 // initialize antialiasing backup in case we start dragging:
-            if (mParentPlot->noAntialiasingOnDrag())
-            {
-                mAADragBackup = mParentPlot->antialiasedElements();
-                mNotAADragBackup = mParentPlot->notAntialiasedElements();
-            }
+        if (mParentPlot->noAntialiasingOnDrag()) {
+            mAADragBackup = mParentPlot->antialiasedElements();
+            mNotAADragBackup = mParentPlot->notAntialiasedElements();
+        }
 // Mouse range dragging interaction:
-            if (mParentPlot->interactions().testFlag(QCP::iRangeDrag))
-            {
-                mDragStartHorzRange.clear();
-                foreach (QPointer<QCPAxis> axis, mRangeDragHorzAxis)
-                mDragStartHorzRange.append(axis.isNull() ? QCPRange() : axis->range());
-                mDragStartVertRange.clear();
-                foreach (QPointer<QCPAxis> axis, mRangeDragVertAxis)
-                mDragStartVertRange.append(axis.isNull() ? QCPRange() : axis->range());
-            }
+        if (mParentPlot->interactions().testFlag(QCP::iRangeDrag)) {
+            mDragStartHorzRange.clear();
+                    foreach (QPointer<QCPAxis> axis, mRangeDragHorzAxis)
+                    mDragStartHorzRange.append(
+                            axis.isNull() ? QCPRange() : axis->range());
+            mDragStartVertRange.clear();
+                    foreach (QPointer<QCPAxis> axis, mRangeDragVertAxis)
+                    mDragStartVertRange.append(
+                            axis.isNull() ? QCPRange() : axis->range());
         }
     }
+}
 
 /*! \internal
 
@@ -1143,77 +1069,63 @@ using namespace QCP;
 
   \see mousePressEvent, mouseReleaseEvent
 */
-    void QCPAxisRect::mouseMoveEvent(QMouseEvent *event, const QPointF &startPos)
-    {
-        Q_UNUSED(startPos)
+void QCPAxisRect::mouseMoveEvent(QMouseEvent *event, const QPointF &startPos) {
+    Q_UNUSED(startPos)
 // Mouse range dragging interaction:
-        if (mDragging && mParentPlot->interactions().testFlag(QCP::iRangeDrag))
-        {
-
-            if (mRangeDrag.testFlag(Qt::Horizontal))
-            {
-                for (int i=0; i<mRangeDragHorzAxis.size(); ++i)
-                {
-                    QCPAxis *ax = mRangeDragHorzAxis.at(i).data();
-                    if (!ax)
-                        continue;
-                    if (i >= mDragStartHorzRange.size())
-                        break;
-                    if (ax->mScaleType == QCPAxis::stLinear)
-                    {
-                        double diff = ax->pixelToCoord(startPos.x()) - ax->pixelToCoord(event->pos().x());
-                        ax->setRange(mDragStartHorzRange.at(i).lower+diff, mDragStartHorzRange.at(i).upper+diff);
-                    } else if (ax->mScaleType == QCPAxis::stLogarithmic)
-                    {
-                        double diff = ax->pixelToCoord(startPos.x()) / ax->pixelToCoord(event->pos().x());
-                        ax->setRange(mDragStartHorzRange.at(i).lower*diff, mDragStartHorzRange.at(i).upper*diff);
-                    }
+    if (mDragging && mParentPlot->interactions().testFlag(QCP::iRangeDrag)) {
+        if (mRangeDrag.testFlag(Qt::Horizontal)) {
+            for (int i = 0; i < mRangeDragHorzAxis.size(); ++i) {
+                QCPAxis *ax = mRangeDragHorzAxis.at(i).data();
+                if (!ax)
+                    continue;
+                if (i >= mDragStartHorzRange.size())
+                    break;
+                if (ax->mScaleType == QCPAxis::stLinear) {
+                    double diff = ax->pixelToCoord(startPos.x()) - ax->pixelToCoord(event->pos().x());
+                    ax->setRange(mDragStartHorzRange.at(i).lower + diff, mDragStartHorzRange.at(i).upper + diff);
+                } else if (ax->mScaleType == QCPAxis::stLogarithmic) {
+                    double diff = ax->pixelToCoord(startPos.x()) / ax->pixelToCoord(event->pos().x());
+                    ax->setRange(mDragStartHorzRange.at(i).lower * diff, mDragStartHorzRange.at(i).upper * diff);
                 }
             }
-
-            if (mRangeDrag.testFlag(Qt::Vertical))
-            {
-                for (int i=0; i<mRangeDragVertAxis.size(); ++i)
-                {
-                    QCPAxis *ax = mRangeDragVertAxis.at(i).data();
-                    if (!ax)
-                        continue;
-                    if (i >= mDragStartVertRange.size())
-                        break;
-                    if (ax->mScaleType == QCPAxis::stLinear)
-                    {
-                        double diff = ax->pixelToCoord(startPos.y()) - ax->pixelToCoord(event->pos().y());
-                        ax->setRange(mDragStartVertRange.at(i).lower+diff, mDragStartVertRange.at(i).upper+diff);
-                    } else if (ax->mScaleType == QCPAxis::stLogarithmic)
-                    {
-                        double diff = ax->pixelToCoord(startPos.y()) / ax->pixelToCoord(event->pos().y());
-                        ax->setRange(mDragStartVertRange.at(i).lower*diff, mDragStartVertRange.at(i).upper*diff);
-                    }
-                }
-            }
-
-            if (mRangeDrag != 0) // if either vertical or horizontal drag was enabled, do a replot
-            {
-                if (mParentPlot->noAntialiasingOnDrag())
-                    mParentPlot->setNotAntialiasedElements(QCP::aeAll);
-                mParentPlot->replot(QCustomPlot::rpQueuedReplot);
-            }
-
         }
+
+        if (mRangeDrag.testFlag(Qt::Vertical)) {
+            for (int i = 0; i < mRangeDragVertAxis.size(); ++i) {
+                QCPAxis *ax = mRangeDragVertAxis.at(i).data();
+                if (!ax)
+                    continue;
+                if (i >= mDragStartVertRange.size())
+                    break;
+                if (ax->mScaleType == QCPAxis::stLinear) {
+                    double diff = ax->pixelToCoord(startPos.y()) - ax->pixelToCoord(event->pos().y());
+                    ax->setRange(mDragStartVertRange.at(i).lower + diff, mDragStartVertRange.at(i).upper + diff);
+                } else if (ax->mScaleType == QCPAxis::stLogarithmic) {
+                    double diff = ax->pixelToCoord(startPos.y()) / ax->pixelToCoord(event->pos().y());
+                    ax->setRange(mDragStartVertRange.at(i).lower * diff, mDragStartVertRange.at(i).upper * diff);
+                }
+            }
+        }
+
+        if (mRangeDrag != 0) { // if either vertical or horizontal drag was enabled, do a replot
+            if (mParentPlot->noAntialiasingOnDrag())
+                mParentPlot->setNotAntialiasedElements(QCP::aeAll);
+            mParentPlot->replot(QCustomPlot::rpQueuedReplot);
+        }
+
     }
+}
 
 /* inherits documentation from base class */
-    void QCPAxisRect::mouseReleaseEvent(QMouseEvent *event, const QPointF &startPos)
-    {
-        Q_UNUSED(event)
-        Q_UNUSED(startPos)
-        mDragging = false;
-        if (mParentPlot->noAntialiasingOnDrag())
-        {
-            mParentPlot->setAntialiasedElements(mAADragBackup);
-            mParentPlot->setNotAntialiasedElements(mNotAADragBackup);
-        }
+void QCPAxisRect::mouseReleaseEvent(QMouseEvent *event, const QPointF &startPos) {
+    Q_UNUSED(event)
+    Q_UNUSED(startPos)
+    mDragging = false;
+    if (mParentPlot->noAntialiasingOnDrag()) {
+        mParentPlot->setAntialiasedElements(mAADragBackup);
+        mParentPlot->setNotAntialiasedElements(mNotAADragBackup);
     }
+}
 
 /*! \internal
 
@@ -1229,46 +1141,39 @@ using namespace QCP;
   the range zoom factor. This takes care of the wheel direction automatically, by inverting the
   factor, when the wheel step is negative (f^-1 = 1/f).
 */
-    void QCPAxisRect::wheelEvent(QWheelEvent *event)
-    {
+void QCPAxisRect::wheelEvent(QWheelEvent *event) {
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-        const double delta = event->delta();
+    const double delta = event->delta();
 #else
-        const double delta = event->angleDelta().y();
+    const double delta = event->angleDelta().y();
 #endif
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
-        const QPointF pos = event->pos();
+    const QPointF pos = event->pos();
 #else
-        const QPointF pos = event->position();
+    const QPointF pos = event->position();
 #endif
 
 // Mouse range zooming interaction:
-        if (mParentPlot->interactions().testFlag(QCP::iRangeZoom))
-        {
-            if (mRangeZoom != 0)
-            {
-                double factor;
-                double wheelSteps = delta/120.0; // a single step delta is +/-120 usually
-                if (mRangeZoom.testFlag(Qt::Horizontal))
-                {
-                    factor = qPow(mRangeZoomFactorHorz, wheelSteps);
-                    foreach (QPointer<QCPAxis> axis, mRangeZoomHorzAxis)
-                    {
+    if (mParentPlot->interactions().testFlag(QCP::iRangeZoom)) {
+        if (mRangeZoom != 0) {
+            double factor;
+            double wheelSteps = delta / 120.0; // a single step delta is +/-120 usually
+            if (mRangeZoom.testFlag(Qt::Horizontal)) {
+                factor = qPow(mRangeZoomFactorHorz, wheelSteps);
+                        foreach (QPointer<QCPAxis> axis, mRangeZoomHorzAxis) {
                         if (!axis.isNull())
                             axis->scaleRange(factor, axis->pixelToCoord(pos.x()));
                     }
-                }
-                if (mRangeZoom.testFlag(Qt::Vertical))
-                {
-                    factor = qPow(mRangeZoomFactorVert, wheelSteps);
-                    foreach (QPointer<QCPAxis> axis, mRangeZoomVertAxis)
-                    {
+            }
+            if (mRangeZoom.testFlag(Qt::Vertical)) {
+                factor = qPow(mRangeZoomFactorVert, wheelSteps);
+                        foreach (QPointer<QCPAxis> axis, mRangeZoomVertAxis) {
                         if (!axis.isNull())
                             axis->scaleRange(factor, axis->pixelToCoord(pos.y()));
                     }
-                }
-                mParentPlot->replot();
             }
+            mParentPlot->replot();
         }
     }
+}

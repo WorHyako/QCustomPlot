@@ -12,7 +12,7 @@ namespace QCP {
     public:
         explicit QCPAxisPainterPrivate(QCustomPlot *parentPlot);
 
-        virtual ~QCPAxisPainterPrivate();
+        virtual ~QCPAxisPainterPrivate() = default;
 
         virtual void draw(QCPPainter *painter);
 

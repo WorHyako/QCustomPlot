@@ -1,4 +1,4 @@
-#include "include/QCPAbstractPlottable.hpp"
+#include "QCPAbstractPlottable.hpp"
 
 #include "QCPPlottableLegendItem.hpp"
 
@@ -205,29 +205,19 @@ using namespace QCP;
 
   You probably want one of the subclasses like \ref QCPGraph or \ref QCPCurve instead.
 */
-QCPAbstractPlottable::QCPAbstractPlottable(QCPAxis * keyAxis, QCPAxis * valueAxis)
-:
-QCPLayerable(keyAxis
-->
-
-parentPlot(), QString(), keyAxis
-
-->
-
-axisRect()
-
-),
-
-mName(),
-mAntialiasedFill(true),
-mAntialiasedScatters(true),
-mPen(Qt::black),
-mBrush(Qt::NoBrush),
-mKeyAxis(keyAxis),
-mValueAxis(valueAxis),
-mSelectable(QCP::stWhole),
-mSelectionDecorator(nullptr) {
-    if (keyAxis->parentPlot() != valueAxis->parentPlot())
+QCPAbstractPlottable::QCPAbstractPlottable(QCPAxis *keyAxis, QCPAxis *valueAxis)
+        : QCPLayerable(reinterpret_cast<QCPLayerable *>(keyAxis)->parentPlot(), QString(), keyAxis->axisRect()),
+          mName(),
+          mAntialiasedFill(true),
+          mAntialiasedScatters(true),
+          mPen(Qt::black),
+          mBrush(Qt::NoBrush),
+          mKeyAxis(keyAxis),
+          mValueAxis(valueAxis),
+          mSelectable(QCP::stWhole),
+          mSelectionDecorator(nullptr) {
+    if (reinterpret_cast<QCPLayerable *>(keyAxis)->parentPlot() !=
+        reinterpret_cast<QCPLayerable *>(valueAxis)->parentPlot())
         qDebug() << Q_FUNC_INFO << "Parent plot of keyAxis is not the same as that of valueAxis.";
     if (keyAxis->orientation() == valueAxis->orientation())
         qDebug() << Q_FUNC_INFO << "keyAxis and valueAxis must be orthogonal to each other.";
@@ -307,8 +297,8 @@ void QCPAbstractPlottable::setBrush(const QBrush &brush) {
 
   \see setValueAxis
 */
-void QCPAbstractPlottable::setKeyAxis(QCPAxis * axis) {
-    mKeyAxis = axis;
+void QCPAbstractPlottable::setKeyAxis(QCPAxis *axis) {
+    mKeyAxis = std::make_shared<QCPAxis>(axis);
 }
 
 /*!
@@ -322,10 +312,9 @@ void QCPAbstractPlottable::setKeyAxis(QCPAxis * axis) {
 
   \see setKeyAxis
 */
-void QCPAbstractPlottable::setValueAxis(QCPAxis * axis) {
-    mValueAxis = axis;
+void QCPAbstractPlottable::setValueAxis(QCPAxis *axis) {
+    mValueAxis = std::make_shared<QCPAxis>(axis);
 }
-
 
 /*!
   Sets which data ranges of this plottable are selected. Selected data ranges are drawn differently
@@ -345,18 +334,14 @@ void QCPAbstractPlottable::setValueAxis(QCPAxis * axis) {
 
   \see setSelectable, selectTest
 */
-void QCPAbstractPlottable::setSelection(QCPDataSelection
-selection)
-{
-selection.
-enforceType(mSelectable);
-if (mSelection != selection)
-{
-mSelection = selection;
-emit selectionChanged (selected());
+void QCPAbstractPlottable::setSelection(QCPDataSelection selection) {
+    selection.enforceType(mSelectable);
+    if (mSelection != selection) {
+        mSelection = selection;
+        emit selectionChanged(selected());
 
-emit selectionChanged(mSelection);
-}
+        emit selectionChanged(mSelection);
+    }
 }
 
 /*!
@@ -368,7 +353,7 @@ emit selectionChanged(mSelection);
 
   The currently set decorator can be accessed via \ref selectionDecorator.
 */
-void QCPAbstractPlottable::setSelectionDecorator(QCPSelectionDecorator * decorator) {
+void QCPAbstractPlottable::setSelectionDecorator(QCPSelectionDecorator *decorator) {
     if (decorator) {
         if (decorator->registerWithPlottable(this)) {
             delete mSelectionDecorator; // delete old decorator if necessary
@@ -404,7 +389,6 @@ void QCPAbstractPlottable::setSelectable(QCP::SelectionType selectable) {
     }
 }
 
-
 /*!
   Convenience function for transforming a key/value pair to pixels on the QCustomPlot surface,
   taking the orientations of the axes associated with this plottable into account (e.g. whether key
@@ -415,19 +399,17 @@ void QCPAbstractPlottable::setSelectable(QCP::SelectionType selectable) {
   \see pixelsToCoords, QCPAxis::coordToPixel
 */
 void QCPAbstractPlottable::coordsToPixels(double key, double value, double &x, double &y) const {
-    QCPAxis * keyAxis = mKeyAxis.data();
-    QCPAxis * valueAxis = mValueAxis.data();
-    if (!keyAxis || !valueAxis) {
+    if (!mKeyAxis || !mValueAxis) {
         qDebug() << Q_FUNC_INFO << "invalid key or value axis";
         return;
     }
 
-    if (keyAxis->orientation() == Qt::Horizontal) {
-        x = keyAxis->coordToPixel(key);
-        y = valueAxis->coordToPixel(value);
+    if (mKeyAxis->orientation() == Qt::Horizontal) {
+        x = mKeyAxis->coordToPixel(key);
+        y = mValueAxis->coordToPixel(value);
     } else {
-        y = keyAxis->coordToPixel(key);
-        x = valueAxis->coordToPixel(value);
+        y = mKeyAxis->coordToPixel(key);
+        x = mValueAxis->coordToPixel(value);
     }
 }
 
@@ -436,17 +418,15 @@ void QCPAbstractPlottable::coordsToPixels(double key, double value, double &x, d
   Transforms the given \a key and \a value to pixel coordinates and returns them in a QPointF.
 */
 const QPointF QCPAbstractPlottable::coordsToPixels(double key, double value) const {
-    QCPAxis * keyAxis = mKeyAxis.data();
-    QCPAxis * valueAxis = mValueAxis.data();
-    if (!keyAxis || !valueAxis) {
+    if (!mKeyAxis || !mValueAxis) {
         qDebug() << Q_FUNC_INFO << "invalid key or value axis";
         return QPointF();
     }
 
-    if (keyAxis->orientation() == Qt::Horizontal)
-        return QPointF(keyAxis->coordToPixel(key), valueAxis->coordToPixel(value));
+    if (mKeyAxis->orientation() == Qt::Horizontal)
+        return QPointF(mKeyAxis->coordToPixel(key), mValueAxis->coordToPixel(value));
     else
-        return QPointF(valueAxis->coordToPixel(value), keyAxis->coordToPixel(key));
+        return QPointF(mValueAxis->coordToPixel(value), mKeyAxis->coordToPixel(key));
 }
 
 /*!
@@ -459,19 +439,17 @@ const QPointF QCPAbstractPlottable::coordsToPixels(double key, double value) con
   \see coordsToPixels, QCPAxis::coordToPixel
 */
 void QCPAbstractPlottable::pixelsToCoords(double x, double y, double &key, double &value) const {
-    QCPAxis * keyAxis = mKeyAxis.data();
-    QCPAxis * valueAxis = mValueAxis.data();
-    if (!keyAxis || !valueAxis) {
+    if (!mKeyAxis || !mValueAxis) {
         qDebug() << Q_FUNC_INFO << "invalid key or value axis";
         return;
     }
 
-    if (keyAxis->orientation() == Qt::Horizontal) {
-        key = keyAxis->pixelToCoord(x);
-        value = valueAxis->pixelToCoord(y);
+    if (mKeyAxis->orientation() == Qt::Horizontal) {
+        key = mKeyAxis->pixelToCoord(x);
+        value = mValueAxis->pixelToCoord(y);
     } else {
-        key = keyAxis->pixelToCoord(y);
-        value = valueAxis->pixelToCoord(x);
+        key = mKeyAxis->pixelToCoord(y);
+        value = mValueAxis->pixelToCoord(x);
     }
 }
 
@@ -507,36 +485,35 @@ void QCPAbstractPlottable::rescaleAxes(bool onlyEnlarge) const {
   See \ref rescaleAxes for detailed behaviour.
 */
 void QCPAbstractPlottable::rescaleKeyAxis(bool onlyEnlarge) const {
-    QCPAxis * keyAxis = mKeyAxis.data();
-    if (!keyAxis) {
+    if (!mKeyAxis) {
         qDebug() << Q_FUNC_INFO << "invalid key axis";
         return;
     }
 
-    QCP::SignDomain signDomain = QCP::sdBoth;
-    if (keyAxis->scaleType() == QCPAxis::stLogarithmic)
-        signDomain = (keyAxis->range().upper < 0 ? QCP::sdNegative : QCP::sdPositive);
+    SignDomain signDomain = QCP::sdBoth;
+    if (mKeyAxis->scaleType() == QCPAxis::stLogarithmic)
+        signDomain = (mKeyAxis->range().upper < 0 ? QCP::sdNegative : QCP::sdPositive);
 
     bool foundRange;
     QCPRange newRange = getKeyRange(foundRange, signDomain);
     if (foundRange) {
         if (onlyEnlarge)
-            newRange.expand(keyAxis->range());
+            newRange.expand(mKeyAxis->range());
         if (!QCPRange::validRange(
                 newRange)) // likely due to range being zero (plottable has only constant data in this axis dimension), shift current range to at least center the plottable
         {
             double center = (newRange.lower + newRange.upper) *
                             0.5; // upper and lower should be equal anyway, but just to make sure, incase validRange returned false for other reason
-            if (keyAxis->scaleType() == QCPAxis::stLinear) {
-                newRange.lower = center - keyAxis->range().size() / 2.0;
-                newRange.upper = center + keyAxis->range().size() / 2.0;
+            if (mKeyAxis->scaleType() == QCPAxis::stLinear) {
+                newRange.lower = center - mKeyAxis->range().size() / 2.0;
+                newRange.upper = center + mKeyAxis->range().size() / 2.0;
             } else // scaleType() == stLogarithmic
             {
-                newRange.lower = center / qSqrt(keyAxis->range().upper / keyAxis->range().lower);
-                newRange.upper = center * qSqrt(keyAxis->range().upper / keyAxis->range().lower);
+                newRange.lower = center / qSqrt(mKeyAxis->range().upper / mKeyAxis->range().lower);
+                newRange.upper = center * qSqrt(mKeyAxis->range().upper / mKeyAxis->range().lower);
             }
         }
-        keyAxis->setRange(newRange);
+        mKeyAxis->setRange(newRange);
     }
 }
 
@@ -551,37 +528,35 @@ void QCPAbstractPlottable::rescaleKeyAxis(bool onlyEnlarge) const {
   See \ref rescaleAxes for detailed behaviour.
 */
 void QCPAbstractPlottable::rescaleValueAxis(bool onlyEnlarge, bool inKeyRange) const {
-    QCPAxis * keyAxis = mKeyAxis.data();
-    QCPAxis * valueAxis = mValueAxis.data();
-    if (!keyAxis || !valueAxis) {
+    if (!mKeyAxis || !mValueAxis) {
         qDebug() << Q_FUNC_INFO << "invalid key or value axis";
         return;
     }
 
-    QCP::SignDomain signDomain = QCP::sdBoth;
-    if (valueAxis->scaleType() == QCPAxis::stLogarithmic)
-        signDomain = (valueAxis->range().upper < 0 ? QCP::sdNegative : QCP::sdPositive);
+    SignDomain signDomain = QCP::sdBoth;
+    if (mValueAxis->scaleType() == QCPAxis::stLogarithmic)
+        signDomain = (mValueAxis->range().upper < 0 ? QCP::sdNegative : QCP::sdPositive);
 
     bool foundRange;
-    QCPRange newRange = getValueRange(foundRange, signDomain, inKeyRange ? keyAxis->range() : QCPRange());
+    QCPRange newRange = getValueRange(foundRange, signDomain, inKeyRange ? mKeyAxis->range() : QCPRange());
     if (foundRange) {
         if (onlyEnlarge)
-            newRange.expand(valueAxis->range());
+            newRange.expand(mValueAxis->range());
         if (!QCPRange::validRange(
                 newRange)) // likely due to range being zero (plottable has only constant data in this axis dimension), shift current range to at least center the plottable
         {
             double center = (newRange.lower + newRange.upper) *
                             0.5; // upper and lower should be equal anyway, but just to make sure, incase validRange returned false for other reason
-            if (valueAxis->scaleType() == QCPAxis::stLinear) {
-                newRange.lower = center - valueAxis->range().size() / 2.0;
-                newRange.upper = center + valueAxis->range().size() / 2.0;
+            if (mValueAxis->scaleType() == QCPAxis::stLinear) {
+                newRange.lower = center - mValueAxis->range().size() / 2.0;
+                newRange.upper = center + mValueAxis->range().size() / 2.0;
             } else // scaleType() == stLogarithmic
             {
-                newRange.lower = center / qSqrt(valueAxis->range().upper / valueAxis->range().lower);
-                newRange.upper = center * qSqrt(valueAxis->range().upper / valueAxis->range().lower);
+                newRange.lower = center / qSqrt(mValueAxis->range().upper / mValueAxis->range().lower);
+                newRange.upper = center * qSqrt(mValueAxis->range().upper / mValueAxis->range().lower);
             }
         }
-        valueAxis->setRange(newRange);
+        mValueAxis->setRange(newRange);
     }
 }
 
@@ -604,13 +579,13 @@ bool QCPAbstractPlottable::addToLegend(QCPLegend *legend) {
         qDebug() << Q_FUNC_INFO << "passed legend is null";
         return false;
     }
-    if (legend->parentPlot() != mParentPlot) {
+    if (reinterpret_cast<QCPLayerable *>(legend)->parentPlot() != mParentPlot) {
         qDebug() << Q_FUNC_INFO << "passed legend isn't in the same QCustomPlot as this plottable";
         return false;
     }
 
     if (!legend->hasItemWithPlottable(this)) {
-        legend->addItem(new QCPPlottableLegendItem(legend, this));
+        legend->addItem({legend, this});
         return true;
     } else
         return false;
@@ -645,7 +620,7 @@ bool QCPAbstractPlottable::removeFromLegend(QCPLegend *legend) const {
         return false;
     }
 
-    if (QCPPlottableLegendItem * lip = legend->itemWithPlottable(this))
+    if (QCPPlottableLegendItem *lip = legend->itemWithPlottable(this))
         return legend->removeItem(lip);
     else
         return false;
@@ -667,7 +642,7 @@ bool QCPAbstractPlottable::removeFromLegend() const {
 /* inherits documentation from base class */
 QRect QCPAbstractPlottable::clipRect() const {
     if (mKeyAxis && mValueAxis)
-        return mKeyAxis.data()->axisRect()->rect() & mValueAxis.data()->axisRect()->rect();
+        return mKeyAxis->axisRect()->rect() & mValueAxis->axisRect()->rect();
     else
         return {};
 }
@@ -693,7 +668,7 @@ QCP::Interaction QCPAbstractPlottable::selectionCategory() const {
   \see setAntialiased, applyFillAntialiasingHint, applyScattersAntialiasingHint
 */
 void QCPAbstractPlottable::applyDefaultAntialiasingHint(QCPPainter *painter) const {
-    applyAntialiasingHint(painter, mAntialiased, QCP::aePlottables);
+    applyAntialiasingHint(painter, mAntialiased, aePlottables);
 }
 
 /*! \internal
@@ -708,7 +683,7 @@ void QCPAbstractPlottable::applyDefaultAntialiasingHint(QCPPainter *painter) con
   \see setAntialiased, applyDefaultAntialiasingHint, applyScattersAntialiasingHint
 */
 void QCPAbstractPlottable::applyFillAntialiasingHint(QCPPainter *painter) const {
-    applyAntialiasingHint(painter, mAntialiasedFill, QCP::aeFills);
+    applyAntialiasingHint(painter, mAntialiasedFill, aeFills);
 }
 
 /*! \internal
@@ -723,7 +698,7 @@ void QCPAbstractPlottable::applyFillAntialiasingHint(QCPPainter *painter) const 
   \see setAntialiased, applyFillAntialiasingHint, applyDefaultAntialiasingHint
 */
 void QCPAbstractPlottable::applyScattersAntialiasingHint(QCPPainter *painter) const {
-    applyAntialiasingHint(painter, mAntialiasedScatters, QCP::aeScatters);
+    applyAntialiasingHint(painter, mAntialiasedScatters, aeScatters);
 }
 
 /* inherits documentation from base class */

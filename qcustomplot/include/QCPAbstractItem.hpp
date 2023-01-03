@@ -68,12 +68,12 @@ namespace QCP {
 
     protected:
         bool mClipToAxisRect;
-        QPointer<QCPAxisRect> mClipAxisRect;
+        std::shared_ptr<QCPAxisRect> mClipAxisRect;
         QList<QCPItemPosition *> mPositions;
         QList<QCPItemAnchor *> mAnchors;
         bool mSelectable, mSelected;
 
-        QCP::Interaction selectionCategory() const override;
+        Interaction selectionCategory() const override;
 
         QRect clipRect() const override;
 
@@ -81,8 +81,8 @@ namespace QCP {
 
         void draw(QCPPainter *painter) override = 0;
 
-        void selectEvent(QMouseEvent *event, bool additive, const QVariant &details,
-                         bool *selectionStateChanged) override;
+        void
+        selectEvent(QMouseEvent *event, bool additive, const QVariant &details, bool *selectionStateChanged) override;
 
         void deselectEvent(bool *selectionStateChanged) override;
 

@@ -1,4 +1,4 @@
-#include "include/QCPAxis.hpp"
+#include "QCPAxis.hpp"
 
 using namespace QCP;
 
@@ -125,160 +125,143 @@ using namespace QCP;
   them for you with \ref QCPAxisRect::addAxis. If you want to use own QCPAxis-subclasses however,
   create them manually and then inject them also via \ref QCPAxisRect::addAxis.
 */
-    QCPAxis::QCPAxis(QCPAxisRect *parent, AxisType type) :
-            QCPLayerable(parent->parentPlot(), QString(), parent),
+QCPAxis::QCPAxis(QCPAxisRect *parent, AxisType type) :
+        QCPLayerable(reinterpret_cast<QCPLayerable *>(parent)->parentPlot(), QString(),
+                     reinterpret_cast<QCPLayerable *>(parent)),
 // axis base:
-            mAxisType(type),
-            mAxisRect(parent),
-            mPadding(5),
-            mOrientation(orientation(type)),
-            mSelectableParts(spAxis | spTickLabels | spAxisLabel),
-            mSelectedParts(spNone),
-            mBasePen(QPen(Qt::black, 0, Qt::SolidLine, Qt::SquareCap)),
-            mSelectedBasePen(QPen(Qt::blue, 2)),
+        mAxisType(type),
+        mAxisRect(parent),
+        mPadding(5),
+        mOrientation(orientation(type)),
+        mSelectableParts(spAxis | spTickLabels | spAxisLabel),
+        mSelectedParts(spNone),
+        mBasePen(QPen(Qt::black, 0, Qt::SolidLine, Qt::SquareCap)),
+        mSelectedBasePen(QPen(Qt::blue, 2)),
 // axis label:
-            mLabel(),
-            mLabelFont(mParentPlot->font()),
-            mSelectedLabelFont(QFont(mLabelFont.family(), mLabelFont.pointSize(), QFont::Bold)),
-            mLabelColor(Qt::black),
-            mSelectedLabelColor(Qt::blue),
+        mLabel(),
+        mLabelFont(reinterpret_cast<QWidget *>(mParentPlot)->font()),
+        mSelectedLabelFont(QFont(mLabelFont.family(), mLabelFont.pointSize(), QFont::Bold)),
+        mLabelColor(Qt::black),
+        mSelectedLabelColor(Qt::blue),
 // tick labels:
-            mTickLabels(true),
-            mTickLabelFont(mParentPlot->font()),
-            mSelectedTickLabelFont(QFont(mTickLabelFont.family(), mTickLabelFont.pointSize(), QFont::Bold)),
-            mTickLabelColor(Qt::black),
-            mSelectedTickLabelColor(Qt::blue),
-            mNumberPrecision(6),
-            mNumberFormatChar('g'),
-            mNumberBeautifulPowers(true),
+        mTickLabels(true),
+        mTickLabelFont(reinterpret_cast<QWidget *>(mParentPlot)->font()),
+        mSelectedTickLabelFont(QFont(mTickLabelFont.family(), mTickLabelFont.pointSize(), QFont::Bold)),
+        mTickLabelColor(Qt::black),
+        mSelectedTickLabelColor(Qt::blue),
+        mNumberPrecision(6),
+        mNumberFormatChar('g'),
+        mNumberBeautifulPowers(true),
 // ticks and subticks:
-            mTicks(true),
-            mSubTicks(true),
-            mTickPen(QPen(Qt::black, 0, Qt::SolidLine, Qt::SquareCap)),
-            mSelectedTickPen(QPen(Qt::blue, 2)),
-            mSubTickPen(QPen(Qt::black, 0, Qt::SolidLine, Qt::SquareCap)),
-            mSelectedSubTickPen(QPen(Qt::blue, 2)),
+        mTicks(true),
+        mSubTicks(true),
+        mTickPen(QPen(Qt::black, 0, Qt::SolidLine, Qt::SquareCap)),
+        mSelectedTickPen(QPen(Qt::blue, 2)),
+        mSubTickPen(QPen(Qt::black, 0, Qt::SolidLine, Qt::SquareCap)),
+        mSelectedSubTickPen(QPen(Qt::blue, 2)),
 // scale and range:
-            mRange(0, 5),
-            mRangeReversed(false),
-            mScaleType(stLinear),
+        mRange(0, 5),
+        mRangeReversed(false),
+        mScaleType(stLinear),
 // internal members:
-            mGrid(new QCPGrid(this)),
-            mAxisPainter(new QCPAxisPainterPrivate(parent->parentPlot())),
-            mTicker(new QCPAxisTicker),
-            mCachedMarginValid(false),
-            mCachedMargin(0),
-            mDragging(false)
-    {
-        setParent(parent);
-        mGrid->setVisible(false);
-        setAntialiased(false);
-        setLayer(mParentPlot->currentLayer()); // it's actually on that layer already, but we want it in front of the grid, so we place it on there again
+        mGrid(new QCPGrid(this)),
+        mAxisPainter(new QCPAxisPainterPrivate(reinterpret_cast<QCPLayerable *>(parent)->parentPlot())),
+        mTicker(new QCPAxisTicker),
+        mCachedMarginValid(false),
+        mCachedMargin(0),
+        mDragging(false) {
+    setParent(reinterpret_cast<QObject *>(parent));
+    mGrid->setVisible(false);
+    setAntialiased(false);
+    setLayer(
+            mParentPlot->currentLayer()); // it's actually on that layer already, but we want it in front of the grid, so we place it on there again
 
-        if (type == atTop)
-        {
-            setTickLabelPadding(3);
-            setLabelPadding(6);
-        } else if (type == atRight)
-        {
-            setTickLabelPadding(7);
-            setLabelPadding(12);
-        } else if (type == atBottom)
-        {
-            setTickLabelPadding(3);
-            setLabelPadding(3);
-        } else if (type == atLeft)
-        {
-            setTickLabelPadding(5);
-            setLabelPadding(10);
-        }
+    if (type == atTop) {
+        setTickLabelPadding(3);
+        setLabelPadding(6);
+    } else if (type == atRight) {
+        setTickLabelPadding(7);
+        setLabelPadding(12);
+    } else if (type == atBottom) {
+        setTickLabelPadding(3);
+        setLabelPadding(3);
+    } else if (type == atLeft) {
+        setTickLabelPadding(5);
+        setLabelPadding(10);
     }
+}
 
-    QCPAxis::~QCPAxis()
-    {
-        delete mAxisPainter;
-        delete mGrid; // delete grid here instead of via parent ~QObject for better defined deletion order
-    }
+QCPAxis::~QCPAxis() {
+    delete mAxisPainter;
+    delete mGrid; // delete grid here instead of via parent ~QObject for better defined deletion order
+}
 
 /* No documentation as it is a property getter */
-    int QCPAxis::tickLabelPadding() const
-    {
-        return mAxisPainter->tickLabelPadding;
-    }
+int QCPAxis::tickLabelPadding() const {
+    return mAxisPainter->tickLabelPadding;
+}
 
 /* No documentation as it is a property getter */
-    double QCPAxis::tickLabelRotation() const
-    {
-        return mAxisPainter->tickLabelRotation;
-    }
+double QCPAxis::tickLabelRotation() const {
+    return mAxisPainter->tickLabelRotation;
+}
 
 /* No documentation as it is a property getter */
-    QCPAxis::LabelSide QCPAxis::tickLabelSide() const
-    {
-        return mAxisPainter->tickLabelSide;
-    }
+QCPAxis::LabelSide QCPAxis::tickLabelSide() const {
+    return mAxisPainter->tickLabelSide;
+}
 
 /* No documentation as it is a property getter */
-    QString QCPAxis::numberFormat() const
-    {
-        QString result;
-        result.append(mNumberFormatChar);
-        if (mNumberBeautifulPowers)
-        {
-            result.append(QLatin1Char('b'));
-            if (mAxisPainter->numberMultiplyCross)
-                result.append(QLatin1Char('c'));
-        }
-        return result;
+QString QCPAxis::numberFormat() const {
+    QString result;
+    result.append(mNumberFormatChar);
+    if (mNumberBeautifulPowers) {
+        result.append(QLatin1Char('b'));
+        if (mAxisPainter->numberMultiplyCross)
+            result.append(QLatin1Char('c'));
     }
+    return result;
+}
 
 /* No documentation as it is a property getter */
-    int QCPAxis::tickLengthIn() const
-    {
-        return mAxisPainter->tickLengthIn;
-    }
+int QCPAxis::tickLengthIn() const {
+    return mAxisPainter->tickLengthIn;
+}
 
 /* No documentation as it is a property getter */
-    int QCPAxis::tickLengthOut() const
-    {
-        return mAxisPainter->tickLengthOut;
-    }
+int QCPAxis::tickLengthOut() const {
+    return mAxisPainter->tickLengthOut;
+}
 
 /* No documentation as it is a property getter */
-    int QCPAxis::subTickLengthIn() const
-    {
-        return mAxisPainter->subTickLengthIn;
-    }
+int QCPAxis::subTickLengthIn() const {
+    return mAxisPainter->subTickLengthIn;
+}
 
 /* No documentation as it is a property getter */
-    int QCPAxis::subTickLengthOut() const
-    {
-        return mAxisPainter->subTickLengthOut;
-    }
+int QCPAxis::subTickLengthOut() const {
+    return mAxisPainter->subTickLengthOut;
+}
 
 /* No documentation as it is a property getter */
-    int QCPAxis::labelPadding() const
-    {
-        return mAxisPainter->labelPadding;
-    }
+int QCPAxis::labelPadding() const {
+    return mAxisPainter->labelPadding;
+}
 
 /* No documentation as it is a property getter */
-    int QCPAxis::offset() const
-    {
-        return mAxisPainter->offset;
-    }
+int QCPAxis::offset() const {
+    return mAxisPainter->offset;
+}
 
 /* No documentation as it is a property getter */
-    QCPLineEnding QCPAxis::lowerEnding() const
-    {
-        return mAxisPainter->lowerEnding;
-    }
+QCPLineEnding QCPAxis::lowerEnding() const {
+    return mAxisPainter->lowerEnding;
+}
 
 /* No documentation as it is a property getter */
-    QCPLineEnding QCPAxis::upperEnding() const
-    {
-        return mAxisPainter->upperEnding;
-    }
+QCPLineEnding QCPAxis::upperEnding() const {
+    return mAxisPainter->upperEnding;
+}
 
 /*!
   Sets whether the axis uses a linear scale or a logarithmic scale.
@@ -294,17 +277,15 @@ using namespace QCP;
 
   \ref setNumberPrecision
 */
-    void QCPAxis::setScaleType(QCPAxis::ScaleType type)
-    {
-        if (mScaleType != type)
-        {
-            mScaleType = type;
-            if (mScaleType == stLogarithmic)
-                setRange(mRange.sanitizedForLogScale());
-            mCachedMarginValid = false;
-            emit scaleTypeChanged(mScaleType);
-        }
+void QCPAxis::setScaleType(QCPAxis::ScaleType type) {
+    if (mScaleType != type) {
+        mScaleType = type;
+        if (mScaleType == stLogarithmic)
+            setRange(mRange.sanitizedForLogScale());
+        mCachedMarginValid = false;
+        emit scaleTypeChanged(mScaleType);
     }
+}
 
 /*!
   Sets the range of the axis.
@@ -314,23 +295,20 @@ using namespace QCP;
 
   To invert the direction of an axis, use \ref setRangeReversed.
 */
-    void QCPAxis::setRange(const QCPRange &range)
-    {
-        if (range.lower == mRange.lower && range.upper == mRange.upper)
-            return;
+void QCPAxis::setRange(const QCPRange &range) {
+    if (range.lower == mRange.lower && range.upper == mRange.upper)
+        return;
 
-        if (!QCPRange::validRange(range)) return;
-        QCPRange oldRange = mRange;
-        if (mScaleType == stLogarithmic)
-        {
-            mRange = range.sanitizedForLogScale();
-        } else
-        {
-            mRange = range.sanitizedForLinScale();
-        }
-        emit rangeChanged(mRange);
-        emit rangeChanged(mRange, oldRange);
+    if (!QCPRange::validRange(range)) return;
+    QCPRange oldRange = mRange;
+    if (mScaleType == stLogarithmic) {
+        mRange = range.sanitizedForLogScale();
+    } else {
+        mRange = range.sanitizedForLinScale();
     }
+    emit rangeChanged(mRange);
+    emit rangeChanged(mRange, oldRange);
+}
 
 /*!
   Sets whether the user can (de-)select the parts in \a selectable by clicking on the QCustomPlot surface.
@@ -342,14 +320,12 @@ using namespace QCP;
 
   \see SelectablePart, setSelectedParts
 */
-    void QCPAxis::setSelectableParts(const SelectableParts &selectable)
-    {
-        if (mSelectableParts != selectable)
-        {
-            mSelectableParts = selectable;
-            emit selectableChanged(mSelectableParts);
-        }
+void QCPAxis::setSelectableParts(const SelectableParts &selectable) {
+    if (mSelectableParts != selectable) {
+        mSelectableParts = selectable;
+        emit selectableChanged(mSelectableParts);
     }
+}
 
 /*!
   Sets the selected state of the respective axis parts described by \ref SelectablePart. When a part
@@ -366,14 +342,12 @@ using namespace QCP;
   \see SelectablePart, setSelectableParts, selectTest, setSelectedBasePen, setSelectedTickPen, setSelectedSubTickPen,
   setSelectedTickLabelFont, setSelectedLabelFont, setSelectedTickLabelColor, setSelectedLabelColor
 */
-    void QCPAxis::setSelectedParts(const SelectableParts &selected)
-    {
-        if (mSelectedParts != selected)
-        {
-            mSelectedParts = selected;
-            emit selectionChanged(mSelectedParts);
-        }
+void QCPAxis::setSelectedParts(const SelectableParts &selected) {
+    if (mSelectedParts != selected) {
+        mSelectedParts = selected;
+        emit selectionChanged(mSelectedParts);
     }
+}
 
 /*!
   \overload
@@ -384,25 +358,22 @@ using namespace QCP;
 
   There is also a slot to set a range, see \ref setRange(const QCPRange &range).
 */
-    void QCPAxis::setRange(double lower, double upper)
-    {
-        if (lower == mRange.lower && upper == mRange.upper)
-            return;
+void QCPAxis::setRange(double lower, double upper) {
+    if (lower == mRange.lower && upper == mRange.upper)
+        return;
 
-        if (!QCPRange::validRange(lower, upper)) return;
-        QCPRange oldRange = mRange;
-        mRange.lower = lower;
-        mRange.upper = upper;
-        if (mScaleType == stLogarithmic)
-        {
-            mRange = mRange.sanitizedForLogScale();
-        } else
-        {
-            mRange = mRange.sanitizedForLinScale();
-        }
-        emit rangeChanged(mRange);
-        emit rangeChanged(mRange, oldRange);
+    if (!QCPRange::validRange(lower, upper)) return;
+    QCPRange oldRange = mRange;
+    mRange.lower = lower;
+    mRange.upper = upper;
+    if (mScaleType == stLogarithmic) {
+        mRange = mRange.sanitizedForLogScale();
+    } else {
+        mRange = mRange.sanitizedForLinScale();
     }
+    emit rangeChanged(mRange);
+    emit rangeChanged(mRange, oldRange);
+}
 
 /*!
   \overload
@@ -415,59 +386,52 @@ using namespace QCP;
   or center of the range to be aligned with \a position. Any other values of \a alignment will
   default to Qt::AlignCenter.
 */
-    void QCPAxis::setRange(double position, double size, Qt::AlignmentFlag alignment)
-    {
-        if (alignment == Qt::AlignLeft)
-            setRange(position, position+size);
-        else if (alignment == Qt::AlignRight)
-            setRange(position-size, position);
-        else // alignment == Qt::AlignCenter
-            setRange(position-size/2.0, position+size/2.0);
-    }
+void QCPAxis::setRange(double position, double size, Qt::AlignmentFlag alignment) {
+    if (alignment == Qt::AlignLeft)
+        setRange(position, position + size);
+    else if (alignment == Qt::AlignRight)
+        setRange(position - size, position);
+    else // alignment == Qt::AlignCenter
+        setRange(position - size / 2.0, position + size / 2.0);
+}
 
 /*!
   Sets the lower bound of the axis range. The upper bound is not changed.
   \see setRange
 */
-    void QCPAxis::setRangeLower(double lower)
-    {
-        if (mRange.lower == lower)
-            return;
+void QCPAxis::setRangeLower(double lower) {
+    if (mRange.lower == lower)
+        return;
 
-        QCPRange oldRange = mRange;
-        mRange.lower = lower;
-        if (mScaleType == stLogarithmic)
-        {
-            mRange = mRange.sanitizedForLogScale();
-        } else
-        {
-            mRange = mRange.sanitizedForLinScale();
-        }
-        emit rangeChanged(mRange);
-        emit rangeChanged(mRange, oldRange);
+    QCPRange oldRange = mRange;
+    mRange.lower = lower;
+    if (mScaleType == stLogarithmic) {
+        mRange = mRange.sanitizedForLogScale();
+    } else {
+        mRange = mRange.sanitizedForLinScale();
     }
+    emit rangeChanged(mRange);
+    emit rangeChanged(mRange, oldRange);
+}
 
 /*!
   Sets the upper bound of the axis range. The lower bound is not changed.
   \see setRange
 */
-    void QCPAxis::setRangeUpper(double upper)
-    {
-        if (mRange.upper == upper)
-            return;
+void QCPAxis::setRangeUpper(double upper) {
+    if (mRange.upper == upper)
+        return;
 
-        QCPRange oldRange = mRange;
-        mRange.upper = upper;
-        if (mScaleType == stLogarithmic)
-        {
-            mRange = mRange.sanitizedForLogScale();
-        } else
-        {
-            mRange = mRange.sanitizedForLinScale();
-        }
-        emit rangeChanged(mRange);
-        emit rangeChanged(mRange, oldRange);
+    QCPRange oldRange = mRange;
+    mRange.upper = upper;
+    if (mScaleType == stLogarithmic) {
+        mRange = mRange.sanitizedForLogScale();
+    } else {
+        mRange = mRange.sanitizedForLinScale();
     }
+    emit rangeChanged(mRange);
+    emit rangeChanged(mRange, oldRange);
+}
 
 /*!
   Sets whether the axis range (direction) is displayed reversed. Normally, the values on horizontal
@@ -478,10 +442,9 @@ using namespace QCP;
   of the \ref setRange interface will still reference the mathematically smaller number than the \a
   upper part.
 */
-    void QCPAxis::setRangeReversed(bool reversed)
-    {
-        mRangeReversed = reversed;
-    }
+void QCPAxis::setRangeReversed(bool reversed) {
+    mRangeReversed = reversed;
+}
 
 /*!
   The axis ticker is responsible for generating the tick positions and tick labels. See the
@@ -496,12 +459,11 @@ using namespace QCP;
 
   \see ticker
 */
-    void QCPAxis::setTicker(QSharedPointer<QCPAxisTicker> ticker)
-{
+void QCPAxis::setTicker(QSharedPointer<QCPAxisTicker> ticker) {
     if (ticker)
-    mTicker = ticker;
+        mTicker = ticker;
     else
-    qDebug() << Q_FUNC_INFO << "can not set nullptr as axis ticker";
+        qDebug() << Q_FUNC_INFO << "can not set nullptr as axis ticker";
 // no need to invalidate margin cache here because produced tick labels are checked for changes in setupTickVector
 }
 
@@ -513,10 +475,8 @@ using namespace QCP;
 
   \see setSubTicks
 */
-void QCPAxis::setTicks(bool show)
-{
-    if (mTicks != show)
-    {
+void QCPAxis::setTicks(bool show) {
+    if (mTicks != show) {
         mTicks = show;
         mCachedMarginValid = false;
     }
@@ -525,10 +485,8 @@ void QCPAxis::setTicks(bool show)
 /*!
   Sets whether tick labels are displayed. Tick labels are the numbers drawn next to tick marks.
 */
-void QCPAxis::setTickLabels(bool show)
-{
-    if (mTickLabels != show)
-    {
+void QCPAxis::setTickLabels(bool show) {
+    if (mTickLabels != show) {
         mTickLabels = show;
         mCachedMarginValid = false;
         if (!mTickLabels)
@@ -540,10 +498,8 @@ void QCPAxis::setTickLabels(bool show)
   Sets the distance between the axis base line (including any outward ticks) and the tick labels.
   \see setLabelPadding, setPadding
 */
-void QCPAxis::setTickLabelPadding(int padding)
-{
-    if (mAxisPainter->tickLabelPadding != padding)
-    {
+void QCPAxis::setTickLabelPadding(int padding) {
+    if (mAxisPainter->tickLabelPadding != padding) {
         mAxisPainter->tickLabelPadding = padding;
         mCachedMarginValid = false;
     }
@@ -554,10 +510,8 @@ void QCPAxis::setTickLabelPadding(int padding)
 
   \see setTickLabels, setTickLabelColor
 */
-void QCPAxis::setTickLabelFont(const QFont &font)
-{
-    if (font != mTickLabelFont)
-    {
+void QCPAxis::setTickLabelFont(const QFont &font) {
+    if (font != mTickLabelFont) {
         mTickLabelFont = font;
         mCachedMarginValid = false;
     }
@@ -568,8 +522,7 @@ void QCPAxis::setTickLabelFont(const QFont &font)
 
   \see setTickLabels, setTickLabelFont
 */
-void QCPAxis::setTickLabelColor(const QColor &color)
-{
+void QCPAxis::setTickLabelColor(const QColor &color) {
     mTickLabelColor = color;
 }
 
@@ -582,10 +535,8 @@ void QCPAxis::setTickLabelColor(const QColor &color)
   other angles, the label is drawn with an offset such that it seems to point toward or away from
   the tick mark.
 */
-void QCPAxis::setTickLabelRotation(double degrees)
-{
-    if (!qFuzzyIsNull(degrees-mAxisPainter->tickLabelRotation))
-    {
+void QCPAxis::setTickLabelRotation(double degrees) {
+    if (!qFuzzyIsNull(degrees - mAxisPainter->tickLabelRotation)) {
         mAxisPainter->tickLabelRotation = qBound(-90.0, degrees, 90.0);
         mCachedMarginValid = false;
     }
@@ -598,8 +549,7 @@ void QCPAxis::setTickLabelRotation(double degrees)
   to be inside the axis rect, to save space. If \a side is set to \ref lsInside, the tick labels
   appear on the inside are additionally clipped to the axis rect.
 */
-void QCPAxis::setTickLabelSide(LabelSide side)
-{
+void QCPAxis::setTickLabelSide(LabelSide side) {
     mAxisPainter->tickLabelSide = side;
     mCachedMarginValid = false;
 }
@@ -639,10 +589,8 @@ void QCPAxis::setTickLabelSide(LabelSide side)
   \li \c hello illegal format code, since first char is not 'e', 'E', 'f', 'g' or 'G'. Current format
   code will not be changed.
 */
-void QCPAxis::setNumberFormat(const QString &formatCode)
-{
-    if (formatCode.isEmpty())
-    {
+void QCPAxis::setNumberFormat(const QString &formatCode) {
+    if (formatCode.isEmpty()) {
         qDebug() << Q_FUNC_INFO << "Passed formatCode is empty";
         return;
     }
@@ -650,45 +598,38 @@ void QCPAxis::setNumberFormat(const QString &formatCode)
 
 // interpret first char as number format char:
     QString allowedFormatChars(QLatin1String("eEfgG"));
-    if (allowedFormatChars.contains(formatCode.at(0)))
-    {
+    if (allowedFormatChars.contains(formatCode.at(0))) {
         mNumberFormatChar = QLatin1Char(formatCode.at(0).toLatin1());
-    } else
-    {
+    } else {
         qDebug() << Q_FUNC_INFO << "Invalid number format code (first char not in 'eEfgG'):" << formatCode;
         return;
     }
-    if (formatCode.length() < 2)
-    {
+    if (formatCode.length() < 2) {
         mNumberBeautifulPowers = false;
         mAxisPainter->numberMultiplyCross = false;
         return;
     }
 
 // interpret second char as indicator for beautiful decimal powers:
-    if (formatCode.at(1) == QLatin1Char('b') && (mNumberFormatChar == QLatin1Char('e') || mNumberFormatChar == QLatin1Char('g')))
-    {
+    if (formatCode.at(1) == QLatin1Char('b') &&
+        (mNumberFormatChar == QLatin1Char('e') || mNumberFormatChar == QLatin1Char('g'))) {
         mNumberBeautifulPowers = true;
-    } else
-    {
-        qDebug() << Q_FUNC_INFO << "Invalid number format code (second char not 'b' or first char neither 'e' nor 'g'):" << formatCode;
+    } else {
+        qDebug() << Q_FUNC_INFO << "Invalid number format code (second char not 'b' or first char neither 'e' nor 'g'):"
+                 << formatCode;
         return;
     }
-    if (formatCode.length() < 3)
-    {
+    if (formatCode.length() < 3) {
         mAxisPainter->numberMultiplyCross = false;
         return;
     }
 
 // interpret third char as indicator for dot or cross multiplication symbol:
-    if (formatCode.at(2) == QLatin1Char('c'))
-    {
+    if (formatCode.at(2) == QLatin1Char('c')) {
         mAxisPainter->numberMultiplyCross = true;
-    } else if (formatCode.at(2) == QLatin1Char('d'))
-    {
+    } else if (formatCode.at(2) == QLatin1Char('d')) {
         mAxisPainter->numberMultiplyCross = false;
-    } else
-    {
+    } else {
         qDebug() << Q_FUNC_INFO << "Invalid number format code (third char neither 'c' nor 'd'):" << formatCode;
         return;
     }
@@ -699,10 +640,8 @@ void QCPAxis::setNumberFormat(const QString &formatCode)
   for details. The effect of precisions are most notably for number Formats starting with 'e', see
   \ref setNumberFormat
 */
-void QCPAxis::setNumberPrecision(int precision)
-{
-    if (mNumberPrecision != precision)
-    {
+void QCPAxis::setNumberPrecision(int precision) {
+    if (mNumberPrecision != precision) {
         mNumberPrecision = precision;
         mCachedMarginValid = false;
     }
@@ -716,8 +655,7 @@ void QCPAxis::setNumberPrecision(int precision)
 
   \see setSubTickLength, setTickLengthIn, setTickLengthOut
 */
-void QCPAxis::setTickLength(int inside, int outside)
-{
+void QCPAxis::setTickLength(int inside, int outside) {
     setTickLengthIn(inside);
     setTickLengthOut(outside);
 }
@@ -728,10 +666,8 @@ void QCPAxis::setTickLength(int inside, int outside)
 
   \see setTickLengthOut, setTickLength, setSubTickLength
 */
-void QCPAxis::setTickLengthIn(int inside)
-{
-    if (mAxisPainter->tickLengthIn != inside)
-    {
+void QCPAxis::setTickLengthIn(int inside) {
+    if (mAxisPainter->tickLengthIn != inside) {
         mAxisPainter->tickLengthIn = inside;
     }
 }
@@ -743,10 +679,8 @@ void QCPAxis::setTickLengthIn(int inside)
 
   \see setTickLengthIn, setTickLength, setSubTickLength
 */
-void QCPAxis::setTickLengthOut(int outside)
-{
-    if (mAxisPainter->tickLengthOut != outside)
-    {
+void QCPAxis::setTickLengthOut(int outside) {
+    if (mAxisPainter->tickLengthOut != outside) {
         mAxisPainter->tickLengthOut = outside;
         mCachedMarginValid = false; // only outside tick length can change margin
     }
@@ -759,10 +693,8 @@ void QCPAxis::setTickLengthOut(int outside)
 
   \see setTicks
 */
-void QCPAxis::setSubTicks(bool show)
-{
-    if (mSubTicks != show)
-    {
+void QCPAxis::setSubTicks(bool show) {
+    if (mSubTicks != show) {
         mSubTicks = show;
         mCachedMarginValid = false;
     }
@@ -776,8 +708,7 @@ void QCPAxis::setSubTicks(bool show)
 
   \see setTickLength, setSubTickLengthIn, setSubTickLengthOut
 */
-void QCPAxis::setSubTickLength(int inside, int outside)
-{
+void QCPAxis::setSubTickLength(int inside, int outside) {
     setSubTickLengthIn(inside);
     setSubTickLengthOut(outside);
 }
@@ -788,10 +719,8 @@ void QCPAxis::setSubTickLength(int inside, int outside)
 
   \see setSubTickLengthOut, setSubTickLength, setTickLength
 */
-void QCPAxis::setSubTickLengthIn(int inside)
-{
-    if (mAxisPainter->subTickLengthIn != inside)
-    {
+void QCPAxis::setSubTickLengthIn(int inside) {
+    if (mAxisPainter->subTickLengthIn != inside) {
         mAxisPainter->subTickLengthIn = inside;
     }
 }
@@ -803,10 +732,8 @@ void QCPAxis::setSubTickLengthIn(int inside)
 
   \see setSubTickLengthIn, setSubTickLength, setTickLength
 */
-void QCPAxis::setSubTickLengthOut(int outside)
-{
-    if (mAxisPainter->subTickLengthOut != outside)
-    {
+void QCPAxis::setSubTickLengthOut(int outside) {
+    if (mAxisPainter->subTickLengthOut != outside) {
         mAxisPainter->subTickLengthOut = outside;
         mCachedMarginValid = false; // only outside tick length can change margin
     }
@@ -817,8 +744,7 @@ void QCPAxis::setSubTickLengthOut(int outside)
 
   \see setTickPen, setSubTickPen
 */
-void QCPAxis::setBasePen(const QPen &pen)
-{
+void QCPAxis::setBasePen(const QPen &pen) {
     mBasePen = pen;
 }
 
@@ -827,8 +753,7 @@ void QCPAxis::setBasePen(const QPen &pen)
 
   \see setTickLength, setBasePen
 */
-void QCPAxis::setTickPen(const QPen &pen)
-{
+void QCPAxis::setTickPen(const QPen &pen) {
     mTickPen = pen;
 }
 
@@ -837,8 +762,7 @@ void QCPAxis::setTickPen(const QPen &pen)
 
   \see setSubTickCount, setSubTickLength, setBasePen
 */
-void QCPAxis::setSubTickPen(const QPen &pen)
-{
+void QCPAxis::setSubTickPen(const QPen &pen) {
     mSubTickPen = pen;
 }
 
@@ -847,10 +771,8 @@ void QCPAxis::setSubTickPen(const QPen &pen)
 
   \see setLabelColor
 */
-void QCPAxis::setLabelFont(const QFont &font)
-{
-    if (mLabelFont != font)
-    {
+void QCPAxis::setLabelFont(const QFont &font) {
+    if (mLabelFont != font) {
         mLabelFont = font;
         mCachedMarginValid = false;
     }
@@ -861,8 +783,7 @@ void QCPAxis::setLabelFont(const QFont &font)
 
   \see setLabelFont
 */
-void QCPAxis::setLabelColor(const QColor &color)
-{
+void QCPAxis::setLabelColor(const QColor &color) {
     mLabelColor = color;
 }
 
@@ -870,10 +791,8 @@ void QCPAxis::setLabelColor(const QColor &color)
   Sets the text of the axis label that will be shown below/above or next to the axis, depending on
   its orientation. To disable axis labels, pass an empty string as \a str.
 */
-void QCPAxis::setLabel(const QString &str)
-{
-    if (mLabel != str)
-    {
+void QCPAxis::setLabel(const QString &str) {
+    if (mLabel != str) {
         mLabel = str;
         mCachedMarginValid = false;
     }
@@ -884,10 +803,8 @@ void QCPAxis::setLabel(const QString &str)
 
   \see setTickLabelPadding, setPadding
 */
-void QCPAxis::setLabelPadding(int padding)
-{
-    if (mAxisPainter->labelPadding != padding)
-    {
+void QCPAxis::setLabelPadding(int padding) {
+    if (mAxisPainter->labelPadding != padding) {
         mAxisPainter->labelPadding = padding;
         mCachedMarginValid = false;
     }
@@ -903,10 +820,8 @@ void QCPAxis::setLabelPadding(int padding)
 
   \see setLabelPadding, setTickLabelPadding
 */
-void QCPAxis::setPadding(int padding)
-{
-    if (mPadding != padding)
-    {
+void QCPAxis::setPadding(int padding) {
+    if (mPadding != padding) {
         mPadding = padding;
         mCachedMarginValid = false;
     }
@@ -920,8 +835,7 @@ void QCPAxis::setPadding(int padding)
   offset of the other, outer axes is controlled automatically, to place them at appropriate
   positions.
 */
-void QCPAxis::setOffset(int offset)
-{
+void QCPAxis::setOffset(int offset) {
     mAxisPainter->offset = offset;
 }
 
@@ -930,10 +844,8 @@ void QCPAxis::setOffset(int offset)
 
   \see setTickLabelFont, setSelectableParts, setSelectedParts, QCustomPlot::setInteractions
 */
-void QCPAxis::setSelectedTickLabelFont(const QFont &font)
-{
-    if (font != mSelectedTickLabelFont)
-    {
+void QCPAxis::setSelectedTickLabelFont(const QFont &font) {
+    if (font != mSelectedTickLabelFont) {
         mSelectedTickLabelFont = font;
 // don't set mCachedMarginValid to false here because margin calculation is always done with non-selected fonts
     }
@@ -944,8 +856,7 @@ void QCPAxis::setSelectedTickLabelFont(const QFont &font)
 
   \see setLabelFont, setSelectableParts, setSelectedParts, QCustomPlot::setInteractions
 */
-void QCPAxis::setSelectedLabelFont(const QFont &font)
-{
+void QCPAxis::setSelectedLabelFont(const QFont &font) {
     mSelectedLabelFont = font;
 // don't set mCachedMarginValid to false here because margin calculation is always done with non-selected fonts
 }
@@ -955,10 +866,8 @@ void QCPAxis::setSelectedLabelFont(const QFont &font)
 
   \see setTickLabelColor, setSelectableParts, setSelectedParts, QCustomPlot::setInteractions
 */
-void QCPAxis::setSelectedTickLabelColor(const QColor &color)
-{
-    if (color != mSelectedTickLabelColor)
-    {
+void QCPAxis::setSelectedTickLabelColor(const QColor &color) {
+    if (color != mSelectedTickLabelColor) {
         mSelectedTickLabelColor = color;
     }
 }
@@ -968,8 +877,7 @@ void QCPAxis::setSelectedTickLabelColor(const QColor &color)
 
   \see setLabelColor, setSelectableParts, setSelectedParts, QCustomPlot::setInteractions
 */
-void QCPAxis::setSelectedLabelColor(const QColor &color)
-{
+void QCPAxis::setSelectedLabelColor(const QColor &color) {
     mSelectedLabelColor = color;
 }
 
@@ -978,8 +886,7 @@ void QCPAxis::setSelectedLabelColor(const QColor &color)
 
   \see setBasePen, setSelectableParts, setSelectedParts, QCustomPlot::setInteractions
 */
-void QCPAxis::setSelectedBasePen(const QPen &pen)
-{
+void QCPAxis::setSelectedBasePen(const QPen &pen) {
     mSelectedBasePen = pen;
 }
 
@@ -988,8 +895,7 @@ void QCPAxis::setSelectedBasePen(const QPen &pen)
 
   \see setTickPen, setSelectableParts, setSelectedParts, QCustomPlot::setInteractions
 */
-void QCPAxis::setSelectedTickPen(const QPen &pen)
-{
+void QCPAxis::setSelectedTickPen(const QPen &pen) {
     mSelectedTickPen = pen;
 }
 
@@ -998,8 +904,7 @@ void QCPAxis::setSelectedTickPen(const QPen &pen)
 
   \see setSubTickPen, setSelectableParts, setSelectedParts, QCustomPlot::setInteractions
 */
-void QCPAxis::setSelectedSubTickPen(const QPen &pen)
-{
+void QCPAxis::setSelectedSubTickPen(const QPen &pen) {
     mSelectedSubTickPen = pen;
 }
 
@@ -1013,8 +918,7 @@ void QCPAxis::setSelectedSubTickPen(const QPen &pen)
 
   \see setUpperEnding
 */
-void QCPAxis::setLowerEnding(const QCPLineEnding &ending)
-{
+void QCPAxis::setLowerEnding(const QCPLineEnding &ending) {
     mAxisPainter->lowerEnding = ending;
 }
 
@@ -1028,8 +932,7 @@ void QCPAxis::setLowerEnding(const QCPLineEnding &ending)
 
   \see setLowerEnding
 */
-void QCPAxis::setUpperEnding(const QCPLineEnding &ending)
-{
+void QCPAxis::setUpperEnding(const QCPLineEnding &ending) {
     mAxisPainter->upperEnding = ending;
 }
 
@@ -1040,11 +943,9 @@ void QCPAxis::setUpperEnding(const QCPLineEnding &ending)
   If the scale type is \ref stLogarithmic, the range bounds are multiplied by \a diff. This
   corresponds to an apparent "linear" move in logarithmic scaling by a distance of log(diff).
 */
-void QCPAxis::moveRange(double diff)
-{
+void QCPAxis::moveRange(double diff) {
     QCPRange oldRange = mRange;
-    if (mScaleType == stLinear)
-    {
+    if (mScaleType == stLinear) {
         mRange.lower += diff;
         mRange.upper += diff;
     } else // mScaleType == stLogarithmic
@@ -1065,8 +966,7 @@ void QCPAxis::moveRange(double diff)
   If you wish to scale around a different coordinate than the current axis range center, use the
   overload \ref scaleRange(double factor, double center).
 */
-void QCPAxis::scaleRange(double factor)
-{
+void QCPAxis::scaleRange(double factor) {
     scaleRange(factor, range().center());
 }
 
@@ -1079,27 +979,27 @@ void QCPAxis::scaleRange(double factor)
 
   \see scaleRange(double factor)
 */
-void QCPAxis::scaleRange(double factor, double center)
-{
+void QCPAxis::scaleRange(double factor, double center) {
     QCPRange oldRange = mRange;
-    if (mScaleType == stLinear)
-    {
+    if (mScaleType == stLinear) {
         QCPRange newRange;
-        newRange.lower = (mRange.lower-center)*factor + center;
-        newRange.upper = (mRange.upper-center)*factor + center;
+        newRange.lower = (mRange.lower - center) * factor + center;
+        newRange.upper = (mRange.upper - center) * factor + center;
         if (QCPRange::validRange(newRange))
             mRange = newRange.sanitizedForLinScale();
     } else // mScaleType == stLogarithmic
     {
-        if ((mRange.upper < 0 && center < 0) || (mRange.upper > 0 && center > 0)) // make sure center has same sign as range
+        if ((mRange.upper < 0 && center < 0) ||
+            (mRange.upper > 0 && center > 0)) // make sure center has same sign as range
         {
             QCPRange newRange;
-            newRange.lower = qPow(mRange.lower/center, factor)*center;
-            newRange.upper = qPow(mRange.upper/center, factor)*center;
+            newRange.lower = qPow(mRange.lower / center, factor) * center;
+            newRange.upper = qPow(mRange.upper / center, factor) * center;
             if (QCPRange::validRange(newRange))
                 mRange = newRange.sanitizedForLogScale();
         } else
-            qDebug() << Q_FUNC_INFO << "Center of scaling operation doesn't lie in same logarithmic sign domain as range:" << center;
+            qDebug() << Q_FUNC_INFO
+                     << "Center of scaling operation doesn't lie in same logarithmic sign domain as range:" << center;
     }
     emit rangeChanged(mRange);
     emit rangeChanged(mRange, oldRange);
@@ -1118,8 +1018,7 @@ void QCPAxis::scaleRange(double factor, double center)
   won't have the desired effect, since the widget dimensions aren't defined yet, and a resizeEvent
   will follow.
 */
-void QCPAxis::setScaleRatio(const QCPAxis *otherAxis, double ratio)
-{
+void QCPAxis::setScaleRatio(const QCPAxis *otherAxis, double ratio) {
     int otherPixelSize, ownPixelSize;
 
     if (otherAxis->orientation() == Qt::Horizontal)
@@ -1132,7 +1031,7 @@ void QCPAxis::setScaleRatio(const QCPAxis *otherAxis, double ratio)
     else
         ownPixelSize = axisRect()->height();
 
-    double newRangeSize = ratio*otherAxis->range().size()*ownPixelSize/double(otherPixelSize);
+    double newRangeSize = ratio * otherAxis->range().size() * ownPixelSize / double(otherPixelSize);
     setRange(range().center(), newRangeSize, Qt::AlignCenter);
 }
 
@@ -1142,45 +1041,41 @@ void QCPAxis::setScaleRatio(const QCPAxis *otherAxis, double ratio)
 
   \see QCPAbstractPlottable::rescaleAxes, QCustomPlot::rescaleAxes
 */
-void QCPAxis::rescale(bool onlyVisiblePlottables)
-{
+void QCPAxis::rescale(bool onlyVisiblePlottables) {
     QCPRange newRange;
     bool haveRange = false;
-    foreach (QCPAbstractPlottable *plottable, plottables())
-    {
-        if (!plottable->realVisibility() && onlyVisiblePlottables)
-            continue;
-        QCPRange plottableRange;
-        bool currentFoundRange;
-        QCP::SignDomain signDomain = QCP::sdBoth;
-        if (mScaleType == stLogarithmic)
-            signDomain = (mRange.upper < 0 ? QCP::sdNegative : QCP::sdPositive);
-        if (plottable->keyAxis() == this)
-            plottableRange = plottable->getKeyRange(currentFoundRange, signDomain);
-        else
-            plottableRange = plottable->getValueRange(currentFoundRange, signDomain);
-        if (currentFoundRange)
-        {
-            if (!haveRange)
-                newRange = plottableRange;
+            foreach (QCPAbstractPlottable *plottable, plottables()) {
+            if (!reinterpret_cast<QCPLayerable*>(plottable)->realVisibility() && onlyVisiblePlottables)
+                continue;
+            QCPRange plottableRange;
+            bool currentFoundRange;
+            QCP::SignDomain signDomain = QCP::sdBoth;
+            if (mScaleType == stLogarithmic)
+                signDomain = (mRange.upper < 0 ? QCP::sdNegative : QCP::sdPositive);
+            if (plottable->keyAxis() == this)
+                plottableRange = plottable->getKeyRange(currentFoundRange, signDomain);
             else
-                newRange.expand(plottableRange);
-            haveRange = true;
+                plottableRange = plottable->getValueRange(currentFoundRange, signDomain);
+            if (currentFoundRange) {
+                if (!haveRange)
+                    newRange = plottableRange;
+                else
+                    newRange.expand(plottableRange);
+                haveRange = true;
+            }
         }
-    }
-    if (haveRange)
-    {
-        if (!QCPRange::validRange(newRange)) // likely due to range being zero (plottable has only constant data in this axis dimension), shift current range to at least center the plottable
+    if (haveRange) {
+        if (!QCPRange::validRange(newRange))
+            // likely due to range being zero (plottable has only constant data in this axis dimension), shift current range to at least center the plottable
         {
-            double center = (newRange.lower+newRange.upper)*0.5; // upper and lower should be equal anyway, but just to make sure, incase validRange returned false for other reason
-            if (mScaleType == stLinear)
-            {
-                newRange.lower = center-mRange.size()/2.0;
-                newRange.upper = center+mRange.size()/2.0;
-            } else // mScaleType == stLogarithmic
-            {
-                newRange.lower = center/qSqrt(mRange.upper/mRange.lower);
-                newRange.upper = center*qSqrt(mRange.upper/mRange.lower);
+            double center = (newRange.lower + newRange.upper) *
+                            0.5; // upper and lower should be equal anyway, but just to make sure, incase validRange returned false for other reason
+            if (mScaleType == stLinear) {
+                newRange.lower = center - mRange.size() / 2.0;
+                newRange.upper = center + mRange.size() / 2.0;
+            } else {// mScaleType == stLogarithmic
+                newRange.lower = center / qSqrt(mRange.upper / mRange.lower);
+                newRange.upper = center * qSqrt(mRange.upper / mRange.lower);
             }
         }
         setRange(newRange);
@@ -1190,37 +1085,34 @@ void QCPAxis::rescale(bool onlyVisiblePlottables)
 /*!
   Transforms \a value, in pixel coordinates of the QCustomPlot widget, to axis coordinates.
 */
-double QCPAxis::pixelToCoord(double value) const
-{
-    if (orientation() == Qt::Horizontal)
-    {
-        if (mScaleType == stLinear)
-        {
+double QCPAxis::pixelToCoord(double value) const {
+    if (orientation() == Qt::Horizontal) {
+        if (mScaleType == stLinear) {
             if (!mRangeReversed)
-                return (value-mAxisRect->left())/double(mAxisRect->width())*mRange.size()+mRange.lower;
+                return (value - mAxisRect->left()) / double(mAxisRect->width()) * mRange.size() + mRange.lower;
             else
-                return -(value-mAxisRect->left())/double(mAxisRect->width())*mRange.size()+mRange.upper;
-        } else // mScaleType == stLogarithmic
-        {
+                return -(value - mAxisRect->left()) / double(mAxisRect->width()) * mRange.size() + mRange.upper;
+        } else { // mScaleType == stLogarithmic
             if (!mRangeReversed)
-                return qPow(mRange.upper/mRange.lower, (value-mAxisRect->left())/double(mAxisRect->width()))*mRange.lower;
+                return qPow(mRange.upper / mRange.lower, (value - mAxisRect->left()) / double(mAxisRect->width())) *
+                       mRange.lower;
             else
-                return qPow(mRange.upper/mRange.lower, (mAxisRect->left()-value)/double(mAxisRect->width()))*mRange.upper;
+                return qPow(mRange.upper / mRange.lower, (mAxisRect->left() - value) / double(mAxisRect->width())) *
+                       mRange.upper;
         }
-    } else // orientation() == Qt::Vertical
-    {
-        if (mScaleType == stLinear)
-        {
+    } else { // orientation() == Qt::Vertical
+        if (mScaleType == stLinear) {
             if (!mRangeReversed)
-                return (mAxisRect->bottom()-value)/double(mAxisRect->height())*mRange.size()+mRange.lower;
+                return (mAxisRect->bottom() - value) / double(mAxisRect->height()) * mRange.size() + mRange.lower;
             else
-                return -(mAxisRect->bottom()-value)/double(mAxisRect->height())*mRange.size()+mRange.upper;
-        } else // mScaleType == stLogarithmic
-        {
+                return -(mAxisRect->bottom() - value) / double(mAxisRect->height()) * mRange.size() + mRange.upper;
+        } else {// mScaleType == stLogarithmic
             if (!mRangeReversed)
-                return qPow(mRange.upper/mRange.lower, (mAxisRect->bottom()-value)/double(mAxisRect->height()))*mRange.lower;
+                return qPow(mRange.upper / mRange.lower, (mAxisRect->bottom() - value) / double(mAxisRect->height())) *
+                       mRange.lower;
             else
-                return qPow(mRange.upper/mRange.lower, (value-mAxisRect->bottom())/double(mAxisRect->height()))*mRange.upper;
+                return qPow(mRange.upper / mRange.lower, (value - mAxisRect->bottom()) / double(mAxisRect->height())) *
+                       mRange.upper;
         }
     }
 }
@@ -1228,50 +1120,51 @@ double QCPAxis::pixelToCoord(double value) const
 /*!
   Transforms \a value, in coordinates of the axis, to pixel coordinates of the QCustomPlot widget.
 */
-double QCPAxis::coordToPixel(double value) const
-{
-    if (orientation() == Qt::Horizontal)
-    {
-        if (mScaleType == stLinear)
-        {
+double QCPAxis::coordToPixel(double value) const {
+    if (orientation() == Qt::Horizontal) {
+        if (mScaleType == stLinear) {
             if (!mRangeReversed)
-                return (value-mRange.lower)/mRange.size()*mAxisRect->width()+mAxisRect->left();
+                return (value - mRange.lower) / mRange.size() * mAxisRect->width() + mAxisRect->left();
             else
-                return (mRange.upper-value)/mRange.size()*mAxisRect->width()+mAxisRect->left();
-        } else // mScaleType == stLogarithmic
-        {
-            if (value >= 0.0 && mRange.upper < 0.0) // invalid value for logarithmic scale, just draw it outside visible range
-                return !mRangeReversed ? mAxisRect->right()+200 : mAxisRect->left()-200;
-            else if (value <= 0.0 && mRange.upper >= 0.0) // invalid value for logarithmic scale, just draw it outside visible range
-                return !mRangeReversed ? mAxisRect->left()-200 : mAxisRect->right()+200;
-            else
-            {
+                return (mRange.upper - value) / mRange.size() * mAxisRect->width() + mAxisRect->left();
+        } else {// mScaleType == stLogarithmic
+            if (value >= 0.0 &&
+                mRange.upper < 0.0) // invalid value for logarithmic scale, just draw it outside visible range
+                return !mRangeReversed ? mAxisRect->right() + 200 : mAxisRect->left() - 200;
+            else if (value <= 0.0 &&
+                     mRange.upper >= 0.0) // invalid value for logarithmic scale, just draw it outside visible range
+                return !mRangeReversed ? mAxisRect->left() - 200 : mAxisRect->right() + 200;
+            else {
                 if (!mRangeReversed)
-                    return qLn(value/mRange.lower)/qLn(mRange.upper/mRange.lower)*mAxisRect->width()+mAxisRect->left();
+                    return qLn(value / mRange.lower) / qLn(mRange.upper / mRange.lower) * mAxisRect->width() +
+                           mAxisRect->left();
                 else
-                    return qLn(mRange.upper/value)/qLn(mRange.upper/mRange.lower)*mAxisRect->width()+mAxisRect->left();
+                    return qLn(mRange.upper / value) / qLn(mRange.upper / mRange.lower) * mAxisRect->width() +
+                           mAxisRect->left();
             }
         }
     } else // orientation() == Qt::Vertical
     {
-        if (mScaleType == stLinear)
-        {
+        if (mScaleType == stLinear) {
             if (!mRangeReversed)
-                return mAxisRect->bottom()-(value-mRange.lower)/mRange.size()*mAxisRect->height();
+                return mAxisRect->bottom() - (value - mRange.lower) / mRange.size() * mAxisRect->height();
             else
-                return mAxisRect->bottom()-(mRange.upper-value)/mRange.size()*mAxisRect->height();
+                return mAxisRect->bottom() - (mRange.upper - value) / mRange.size() * mAxisRect->height();
         } else // mScaleType == stLogarithmic
         {
-            if (value >= 0.0 && mRange.upper < 0.0) // invalid value for logarithmic scale, just draw it outside visible range
-                return !mRangeReversed ? mAxisRect->top()-200 : mAxisRect->bottom()+200;
-            else if (value <= 0.0 && mRange.upper >= 0.0) // invalid value for logarithmic scale, just draw it outside visible range
-                return !mRangeReversed ? mAxisRect->bottom()+200 : mAxisRect->top()-200;
-            else
-            {
+            if (value >= 0.0 &&
+                mRange.upper < 0.0) // invalid value for logarithmic scale, just draw it outside visible range
+                return !mRangeReversed ? mAxisRect->top() - 200 : mAxisRect->bottom() + 200;
+            else if (value <= 0.0 &&
+                     mRange.upper >= 0.0) // invalid value for logarithmic scale, just draw it outside visible range
+                return !mRangeReversed ? mAxisRect->bottom() + 200 : mAxisRect->top() - 200;
+            else {
                 if (!mRangeReversed)
-                    return mAxisRect->bottom()-qLn(value/mRange.lower)/qLn(mRange.upper/mRange.lower)*mAxisRect->height();
+                    return mAxisRect->bottom() -
+                           qLn(value / mRange.lower) / qLn(mRange.upper / mRange.lower) * mAxisRect->height();
                 else
-                    return mAxisRect->bottom()-qLn(mRange.upper/value)/qLn(mRange.upper/mRange.lower)*mAxisRect->height();
+                    return mAxisRect->bottom() -
+                           qLn(mRange.upper / value) / qLn(mRange.upper / mRange.lower) * mAxisRect->height();
             }
         }
     }
@@ -1286,8 +1179,7 @@ double QCPAxis::coordToPixel(double value) const
 
   \see setSelectedParts, setSelectableParts, QCustomPlot::setInteractions
 */
-QCPAxis::SelectablePart QCPAxis::getPartAt(const QPointF &pos) const
-{
+QCPAxis::SelectablePart QCPAxis::getPartAt(const QPointF &pos) const {
     if (!mVisible)
         return spNone;
 
@@ -1302,8 +1194,7 @@ QCPAxis::SelectablePart QCPAxis::getPartAt(const QPointF &pos) const
 }
 
 /* inherits documentation from base class */
-double QCPAxis::selectTest(const QPointF &pos, bool onlySelectable, QVariant *details) const
-{
+double QCPAxis::selectTest(const QPointF &pos, bool onlySelectable, QVariant *details) const {
     if (!mParentPlot) return -1;
     SelectablePart part = getPartAt(pos);
     if ((onlySelectable && !mSelectableParts.testFlag(part)) || part == spNone)
@@ -1311,7 +1202,7 @@ double QCPAxis::selectTest(const QPointF &pos, bool onlySelectable, QVariant *de
 
     if (details)
         details->setValue(part);
-    return mParentPlot->selectionTolerance()*0.99;
+    return mParentPlot->selectionTolerance() * 0.99;
 }
 
 /*!
@@ -1321,16 +1212,13 @@ double QCPAxis::selectTest(const QPointF &pos, bool onlySelectable, QVariant *de
 
   \see graphs, items
 */
-QList<QCPAbstractPlottable*> QCPAxis::plottables() const
-{
-    QList<QCPAbstractPlottable*> result;
+QList<QCPAbstractPlottable *> QCPAxis::plottables() const {
+    QList<QCPAbstractPlottable *> result;
     if (!mParentPlot) return result;
-
-    foreach (QCPAbstractPlottable *plottable, mParentPlot->mPlottables)
-    {
-        if (plottable->keyAxis() == this || plottable->valueAxis() == this)
-            result.append(plottable);
-    }
+            foreach (QCPAbstractPlottable *plottable, mParentPlot->mPlottables) {
+            if (plottable->keyAxis() == this || plottable->valueAxis() == this)
+                result.append(plottable);
+        }
     return result;
 }
 
@@ -1339,16 +1227,14 @@ QList<QCPAbstractPlottable*> QCPAxis::plottables() const
 
   \see plottables, items
 */
-QList<QCPGraph*> QCPAxis::graphs() const
-{
-    QList<QCPGraph*> result;
+QList<QCPGraph *> QCPAxis::graphs() const {
+    QList<QCPGraph *> result;
     if (!mParentPlot) return result;
-
-    foreach (QCPGraph *graph, mParentPlot->mGraphs)
-    {
-        if (graph->keyAxis() == this || graph->valueAxis() == this)
-            result.append(graph);
-    }
+            foreach (QCPGraph *graph, mParentPlot->mGraphs) {
+            if (reinterpret_cast<QCPItemPosition *>(graph)->keyAxis() == this ||
+                reinterpret_cast<QCPItemPosition *>(graph)->valueAxis() == this)
+                result.append(graph);
+        }
     return result;
 }
 
@@ -1358,22 +1244,17 @@ QList<QCPGraph*> QCPAxis::graphs() const
 
   \see plottables, graphs
 */
-QList<QCPAbstractItem*> QCPAxis::items() const
-{
-    QList<QCPAbstractItem*> result;
+QList<QCPAbstractItem *> QCPAxis::items() const {
+    QList<QCPAbstractItem *> result;
     if (!mParentPlot) return result;
-
-    foreach (QCPAbstractItem *item, mParentPlot->mItems)
-    {
-        foreach (QCPItemPosition *position, item->positions())
-        {
-            if (position->keyAxis() == this || position->valueAxis() == this)
-            {
-                result.append(item);
-                break;
-            }
+            foreach (QCPAbstractItem *item, mParentPlot->mItems) {
+                    foreach (QCPItemPosition *position, item->positions()) {
+                    if (position->keyAxis() == this || position->valueAxis() == this) {
+                        result.append(item);
+                        break;
+                    }
+                }
         }
-    }
     return result;
 }
 
@@ -1381,15 +1262,18 @@ QList<QCPAbstractItem*> QCPAxis::items() const
   Transforms a margin side to the logically corresponding axis type. (QCP::msLeft to
   QCPAxis::atLeft, QCP::msRight to QCPAxis::atRight, etc.)
 */
-QCPAxis::AxisType QCPAxis::marginSideToAxisType(QCP::MarginSide side)
-{
-    switch (side)
-    {
-        case QCP::msLeft: return atLeft;
-        case QCP::msRight: return atRight;
-        case QCP::msTop: return atTop;
-        case QCP::msBottom: return atBottom;
-        default: break;
+QCPAxis::AxisType QCPAxis::marginSideToAxisType(QCP::MarginSide side) {
+    switch (side) {
+        case QCP::msLeft:
+            return atLeft;
+        case QCP::msRight:
+            return atRight;
+        case QCP::msTop:
+            return atTop;
+        case QCP::msBottom:
+            return atBottom;
+        default:
+            break;
     }
     qDebug() << Q_FUNC_INFO << "Invalid margin side passed:" << static_cast<int>(side);
     return atLeft;
@@ -1398,36 +1282,35 @@ QCPAxis::AxisType QCPAxis::marginSideToAxisType(QCP::MarginSide side)
 /*!
   Returns the axis type that describes the opposite axis of an axis with the specified \a type.
 */
-QCPAxis::AxisType QCPAxis::opposite(QCPAxis::AxisType type)
-{
-    switch (type)
-    {
-        case atLeft: return atRight;
-        case atRight: return atLeft;
-        case atBottom: return atTop;
-        case atTop: return atBottom;
+QCPAxis::AxisType QCPAxis::opposite(QCPAxis::AxisType type) {
+    switch (type) {
+        case atLeft:
+            return atRight;
+        case atRight:
+            return atLeft;
+        case atBottom:
+            return atTop;
+        case atTop:
+            return atBottom;
     }
     qDebug() << Q_FUNC_INFO << "invalid axis type";
     return atLeft;
 }
 
 /* inherits documentation from base class */
-void QCPAxis::selectEvent(QMouseEvent *event, bool additive, const QVariant &details, bool *selectionStateChanged)
-{
+void QCPAxis::selectEvent(QMouseEvent *event, bool additive, const QVariant &details, bool *selectionStateChanged) {
     Q_UNUSED(event)
     SelectablePart part = details.value<SelectablePart>();
-    if (mSelectableParts.testFlag(part))
-    {
+    if (mSelectableParts.testFlag(part)) {
         SelectableParts selBefore = mSelectedParts;
-        setSelectedParts(additive ? mSelectedParts^part : part);
+        setSelectedParts(additive ? mSelectedParts ^ part : part);
         if (selectionStateChanged)
             *selectionStateChanged = mSelectedParts != selBefore;
     }
 }
 
 /* inherits documentation from base class */
-void QCPAxis::deselectEvent(bool *selectionStateChanged)
-{
+void QCPAxis::deselectEvent(bool *selectionStateChanged) {
     SelectableParts selBefore = mSelectedParts;
     setSelectedParts(mSelectedParts & ~mSelectableParts);
     if (selectionStateChanged)
@@ -1449,23 +1332,19 @@ void QCPAxis::deselectEvent(bool *selectionStateChanged)
   \note The dragging of possibly multiple axes at once by starting the drag anywhere in the axis
   rect is handled by the axis rect's mouse event, e.g. \ref QCPAxisRect::mousePressEvent.
 */
-void QCPAxis::mousePressEvent(QMouseEvent *event, const QVariant &details)
-{
+void QCPAxis::mousePressEvent(QMouseEvent *event, const QVariant &details) {
     Q_UNUSED(details)
     if (!mParentPlot->interactions().testFlag(QCP::iRangeDrag) ||
         !mAxisRect->rangeDrag().testFlag(orientation()) ||
-        !mAxisRect->rangeDragAxes(orientation()).contains(this))
-    {
+        !mAxisRect->rangeDragAxes(orientation()).contains(this)) {
         event->ignore();
         return;
     }
 
-    if (event->buttons() & Qt::LeftButton)
-    {
+    if (event->buttons() & Qt::LeftButton) {
         mDragging = true;
 // initialize antialiasing backup in case we start dragging:
-        if (mParentPlot->noAntialiasingOnDrag())
-        {
+        if (mParentPlot->noAntialiasingOnDrag()) {
             mAADragBackup = mParentPlot->antialiasedElements();
             mNotAADragBackup = mParentPlot->notAntialiasedElements();
         }
@@ -1487,20 +1366,16 @@ void QCPAxis::mousePressEvent(QMouseEvent *event, const QVariant &details)
 
   \see QCPAxis::mousePressEvent
 */
-void QCPAxis::mouseMoveEvent(QMouseEvent *event, const QPointF &startPos)
-{
-    if (mDragging)
-    {
+void QCPAxis::mouseMoveEvent(QMouseEvent *event, const QPointF &startPos) {
+    if (mDragging) {
         const double startPixel = orientation() == Qt::Horizontal ? startPos.x() : startPos.y();
         const double currentPixel = orientation() == Qt::Horizontal ? event->pos().x() : event->pos().y();
-        if (mScaleType == QCPAxis::stLinear)
-        {
+        if (mScaleType == QCPAxis::stLinear) {
             const double diff = pixelToCoord(startPixel) - pixelToCoord(currentPixel);
-            setRange(mDragStartRange.lower+diff, mDragStartRange.upper+diff);
-        } else if (mScaleType == QCPAxis::stLogarithmic)
-        {
+            setRange(mDragStartRange.lower + diff, mDragStartRange.upper + diff);
+        } else if (mScaleType == QCPAxis::stLogarithmic) {
             const double diff = pixelToCoord(startPixel) / pixelToCoord(currentPixel);
-            setRange(mDragStartRange.lower*diff, mDragStartRange.upper*diff);
+            setRange(mDragStartRange.lower * diff, mDragStartRange.upper * diff);
         }
 
         if (mParentPlot->noAntialiasingOnDrag())
@@ -1521,13 +1396,11 @@ void QCPAxis::mouseMoveEvent(QMouseEvent *event, const QPointF &startPos)
 
   \see QCPAxis::mousePressEvent
 */
-void QCPAxis::mouseReleaseEvent(QMouseEvent *event, const QPointF &startPos)
-{
+void QCPAxis::mouseReleaseEvent(QMouseEvent *event, const QPointF &startPos) {
     Q_UNUSED(event)
     Q_UNUSED(startPos)
     mDragging = false;
-    if (mParentPlot->noAntialiasingOnDrag())
-    {
+    if (mParentPlot->noAntialiasingOnDrag()) {
         mParentPlot->setAntialiasedElements(mAADragBackup);
         mParentPlot->setNotAntialiasedElements(mNotAADragBackup);
     }
@@ -1548,13 +1421,11 @@ void QCPAxis::mouseReleaseEvent(QMouseEvent *event, const QPointF &startPos)
   \note The zooming of possibly multiple axes at once by performing the wheel event anywhere in the
   axis rect is handled by the axis rect's mouse event, e.g. \ref QCPAxisRect::wheelEvent.
 */
-void QCPAxis::wheelEvent(QWheelEvent *event)
-{
+void QCPAxis::wheelEvent(QWheelEvent *event) {
 // Mouse range zooming interaction:
     if (!mParentPlot->interactions().testFlag(QCP::iRangeZoom) ||
         !mAxisRect->rangeZoom().testFlag(orientation()) ||
-        !mAxisRect->rangeZoomAxes(orientation()).contains(this))
-    {
+        !mAxisRect->rangeZoomAxes(orientation()).contains(this)) {
         event->ignore();
         return;
     }
@@ -1571,7 +1442,7 @@ void QCPAxis::wheelEvent(QWheelEvent *event)
     const QPointF pos = event->position();
 #endif
 
-    const double wheelSteps = delta/120.0; // a single step delta is +/-120 usually
+    const double wheelSteps = delta / 120.0; // a single step delta is +/-120 usually
     const double factor = qPow(mAxisRect->rangeZoomFactor(orientation()), wheelSteps);
     scaleRange(factor, pixelToCoord(orientation() == Qt::Horizontal ? pos.x() : pos.y()));
     mParentPlot->replot();
@@ -1592,8 +1463,7 @@ void QCPAxis::wheelEvent(QWheelEvent *event)
 
   \see setAntialiased
 */
-void QCPAxis::applyDefaultAntialiasingHint(QCPPainter *painter) const
-{
+void QCPAxis::applyDefaultAntialiasingHint(QCPPainter *painter) const {
     applyAntialiasingHint(painter, mAntialiased, QCP::aeAxes);
 }
 
@@ -1603,8 +1473,7 @@ void QCPAxis::applyDefaultAntialiasingHint(QCPPainter *painter) const
 
   \seebaseclassmethod
 */
-void QCPAxis::draw(QCPPainter *painter)
-{
+void QCPAxis::draw(QCPPainter *painter) {
     QVector<double> subTickPositions; // the final coordToPixel transformed vector passed to QCPAxisPainter
     QVector<double> tickPositions; // the final coordToPixel transformed vector passed to QCPAxisPainter
     QVector<QString> tickLabels; // the final vector passed to QCPAxisPainter
@@ -1612,19 +1481,16 @@ void QCPAxis::draw(QCPPainter *painter)
     tickLabels.reserve(mTickVector.size());
     subTickPositions.reserve(mSubTickVector.size());
 
-    if (mTicks)
-    {
-        for (int i=0; i<mTickVector.size(); ++i)
-        {
+    if (mTicks) {
+        for (int i = 0; i < mTickVector.size(); ++i) {
             tickPositions.append(coordToPixel(mTickVector.at(i)));
             if (mTickLabels)
                 tickLabels.append(mTickVectorLabels.at(i));
         }
 
-        if (mSubTicks)
-        {
+        if (mSubTicks) {
             const int subTickCount = mSubTickVector.size();
-            for (int i=0; i<subTickCount; ++i)
+            for (int i = 0; i < subTickCount; ++i)
                 subTickPositions.append(coordToPixel(mSubTickVector.at(i)));
         }
     }
@@ -1641,7 +1507,7 @@ void QCPAxis::draw(QCPPainter *painter)
     mAxisPainter->subTickPen = getSubTickPen();
     mAxisPainter->tickLabelFont = getTickLabelFont();
     mAxisPainter->tickLabelColor = getTickLabelColor();
-    mAxisPainter->axisRect = mAxisRect->rect();
+    mAxisPainter->axisRect = reinterpret_cast<QCPLayoutElement *>(mAxisRect)->rect();
     mAxisPainter->viewportRect = mParentPlot->viewport();
     mAxisPainter->abbreviateDecimalPowers = mScaleType == stLogarithmic;
     mAxisPainter->reversedEndings = mRangeReversed;
@@ -1659,13 +1525,14 @@ void QCPAxis::draw(QCPPainter *painter)
   If a change in the label text/count is detected, the cached axis margin is invalidated to make
   sure the next margin calculation recalculates the label sizes and returns an up-to-date value.
 */
-void QCPAxis::setupTickVectors()
-{
+void QCPAxis::setupTickVectors() {
     if (!mParentPlot) return;
     if ((!mTicks && !mTickLabels && !mGrid->visible()) || mRange.size() <= 0) return;
 
     QVector<QString> oldLabels = mTickVectorLabels;
-    mTicker->generate(mRange, mParentPlot->locale(), mNumberFormatChar, mNumberPrecision, mTickVector, mSubTicks ? &mSubTickVector : nullptr, mTickLabels ? &mTickVectorLabels : nullptr);
+    mTicker->generate(mRange, reinterpret_cast<QWidget *>(mParentPlot)->locale(), mNumberFormatChar, mNumberPrecision,
+                      mTickVector,
+                      mSubTicks ? &mSubTickVector : nullptr, mTickLabels ? &mTickVectorLabels : nullptr);
     mCachedMarginValid &= mTickVectorLabels == oldLabels; // if labels have changed, margin might have changed, too
 }
 
@@ -1674,8 +1541,7 @@ void QCPAxis::setupTickVectors()
   Returns the pen that is used to draw the axis base line. Depending on the selection state, this
   is either mSelectedBasePen or mBasePen.
 */
-QPen QCPAxis::getBasePen() const
-{
+QPen QCPAxis::getBasePen() const {
     return mSelectedParts.testFlag(spAxis) ? mSelectedBasePen : mBasePen;
 }
 
@@ -1684,8 +1550,7 @@ QPen QCPAxis::getBasePen() const
   Returns the pen that is used to draw the (major) ticks. Depending on the selection state, this
   is either mSelectedTickPen or mTickPen.
 */
-QPen QCPAxis::getTickPen() const
-{
+QPen QCPAxis::getTickPen() const {
     return mSelectedParts.testFlag(spAxis) ? mSelectedTickPen : mTickPen;
 }
 
@@ -1694,8 +1559,7 @@ QPen QCPAxis::getTickPen() const
   Returns the pen that is used to draw the subticks. Depending on the selection state, this
   is either mSelectedSubTickPen or mSubTickPen.
 */
-QPen QCPAxis::getSubTickPen() const
-{
+QPen QCPAxis::getSubTickPen() const {
     return mSelectedParts.testFlag(spAxis) ? mSelectedSubTickPen : mSubTickPen;
 }
 
@@ -1704,8 +1568,7 @@ QPen QCPAxis::getSubTickPen() const
   Returns the font that is used to draw the tick labels. Depending on the selection state, this
   is either mSelectedTickLabelFont or mTickLabelFont.
 */
-QFont QCPAxis::getTickLabelFont() const
-{
+QFont QCPAxis::getTickLabelFont() const {
     return mSelectedParts.testFlag(spTickLabels) ? mSelectedTickLabelFont : mTickLabelFont;
 }
 
@@ -1714,8 +1577,7 @@ QFont QCPAxis::getTickLabelFont() const
   Returns the font that is used to draw the axis label. Depending on the selection state, this
   is either mSelectedLabelFont or mLabelFont.
 */
-QFont QCPAxis::getLabelFont() const
-{
+QFont QCPAxis::getLabelFont() const {
     return mSelectedParts.testFlag(spAxisLabel) ? mSelectedLabelFont : mLabelFont;
 }
 
@@ -1724,8 +1586,7 @@ QFont QCPAxis::getLabelFont() const
   Returns the color that is used to draw the tick labels. Depending on the selection state, this
   is either mSelectedTickLabelColor or mTickLabelColor.
 */
-QColor QCPAxis::getTickLabelColor() const
-{
+QColor QCPAxis::getTickLabelColor() const {
     return mSelectedParts.testFlag(spTickLabels) ? mSelectedTickLabelColor : mTickLabelColor;
 }
 
@@ -1734,8 +1595,7 @@ QColor QCPAxis::getTickLabelColor() const
   Returns the color that is used to draw the axis label. Depending on the selection state, this
   is either mSelectedLabelColor or mLabelColor.
 */
-QColor QCPAxis::getLabelColor() const
-{
+QColor QCPAxis::getLabelColor() const {
     return mSelectedParts.testFlag(spAxisLabel) ? mSelectedLabelColor : mLabelColor;
 }
 
@@ -1753,8 +1613,7 @@ QColor QCPAxis::getLabelColor() const
   The margin is cached internally, so repeated calls while leaving the axis range, fonts, etc.
   unchanged are very fast.
 */
-int QCPAxis::calculateMargin()
-{
+int QCPAxis::calculateMargin() {
     if (!mVisible) // if not visible, directly return 0, don't cache 0 because we can't react to setVisible in QCPAxis
         return 0;
 
@@ -1769,10 +1628,8 @@ int QCPAxis::calculateMargin()
     tickPositions.reserve(mTickVector.size());
     tickLabels.reserve(mTickVector.size());
 
-    if (mTicks)
-    {
-        for (int i=0; i<mTickVector.size(); ++i)
-        {
+    if (mTicks) {
+        for (int i = 0; i < mTickVector.size(); ++i) {
             tickPositions.append(coordToPixel(mTickVector.at(i)));
             if (mTickLabels)
                 tickLabels.append(mTickVectorLabels.at(i));
@@ -1784,7 +1641,7 @@ int QCPAxis::calculateMargin()
     mAxisPainter->labelFont = getLabelFont();
     mAxisPainter->label = mLabel;
     mAxisPainter->tickLabelFont = mTickLabelFont;
-    mAxisPainter->axisRect = mAxisRect->rect();
+    mAxisPainter->axisRect = reinterpret_cast<QCPLayoutElement *>(mAxisRect)->rect();
     mAxisPainter->viewportRect = mParentPlot->viewport();
     mAxisPainter->tickPositions = tickPositions;
     mAxisPainter->tickLabels = tickLabels;
@@ -1797,7 +1654,6 @@ int QCPAxis::calculateMargin()
 }
 
 /* inherits documentation from base class */
-Interaction QCPAxis::selectionCategory() const
-{
+Interaction QCPAxis::selectionCategory() const {
     return iSelectAxes;
 }

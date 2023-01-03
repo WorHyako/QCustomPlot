@@ -1,4 +1,4 @@
-#include "include/QCPScatterStyle.hpp"
+#include "QCPScatterStyle.hpp"
 
 using namespace QCP;
 
@@ -52,8 +52,6 @@ using namespace QCP;
   Note that \ref setSize does not influence the appearance of the pixmap.
 */
 
-/* start documentation of inline functions */
-
 /*! \fn bool QCPScatterStyle::isNone() const
 
   Returns whether the scatter shape is \ref ssNone.
@@ -75,8 +73,6 @@ using namespace QCP;
   \see setPen
 */
 
-/* end documentation of inline functions */
-
 /*!
   Creates a new QCPScatterStyle instance with size set to 6. No shape, pen or brush is defined.
 
@@ -88,8 +84,7 @@ QCPScatterStyle::QCPScatterStyle() :
         mShape(ssNone),
         mPen(Qt::NoPen),
         mBrush(Qt::NoBrush),
-        mPenDefined(false)
-{
+        mPenDefined(false) {
 }
 
 /*!
@@ -104,8 +99,7 @@ QCPScatterStyle::QCPScatterStyle(ScatterShape shape, double size) :
         mShape(shape),
         mPen(Qt::NoPen),
         mBrush(Qt::NoBrush),
-        mPenDefined(false)
-{
+        mPenDefined(false) {
 }
 
 /*!
@@ -117,8 +111,7 @@ QCPScatterStyle::QCPScatterStyle(ScatterShape shape, const QColor &color, double
         mShape(shape),
         mPen(QPen(color)),
         mBrush(Qt::NoBrush),
-        mPenDefined(true)
-{
+        mPenDefined(true) {
 }
 
 /*!
@@ -130,8 +123,7 @@ QCPScatterStyle::QCPScatterStyle(ScatterShape shape, const QColor &color, const 
         mShape(shape),
         mPen(QPen(color)),
         mBrush(QBrush(fill)),
-        mPenDefined(true)
-{
+        mPenDefined(true) {
 }
 
 /*!
@@ -154,8 +146,7 @@ QCPScatterStyle::QCPScatterStyle(ScatterShape shape, const QPen &pen, const QBru
         mShape(shape),
         mPen(pen),
         mBrush(brush),
-        mPenDefined(pen.style() != Qt::NoPen)
-{
+        mPenDefined(pen.style() != Qt::NoPen) {
 }
 
 /*!
@@ -168,8 +159,7 @@ QCPScatterStyle::QCPScatterStyle(const QPixmap &pixmap) :
         mPen(Qt::NoPen),
         mBrush(Qt::NoBrush),
         mPixmap(pixmap),
-        mPenDefined(false)
-{
+        mPenDefined(false) {
 }
 
 /*!
@@ -187,17 +177,14 @@ QCPScatterStyle::QCPScatterStyle(const QPainterPath &customPath, const QPen &pen
         mPen(pen),
         mBrush(brush),
         mCustomPath(customPath),
-        mPenDefined(pen.style() != Qt::NoPen)
-{
+        mPenDefined(pen.style() != Qt::NoPen) {
 }
 
 /*!
   Copies the specified \a properties from the \a other scatter style to this scatter style.
 */
-void QCPScatterStyle::setFromOther(const QCPScatterStyle &other, ScatterProperties properties)
-{
-    if (properties.testFlag(spPen))
-    {
+void QCPScatterStyle::setFromOther(const QCPScatterStyle &other, ScatterProperties properties) {
+    if (properties.testFlag(spPen)) {
         setPen(other.pen());
         if (!other.isPenDefined())
             undefinePen();
@@ -206,8 +193,7 @@ void QCPScatterStyle::setFromOther(const QCPScatterStyle &other, ScatterProperti
         setBrush(other.brush());
     if (properties.testFlag(spSize))
         setSize(other.size());
-    if (properties.testFlag(spShape))
-    {
+    if (properties.testFlag(spShape)) {
         setShape(other.shape());
         if (other.shape() == ssPixmap)
             setPixmap(other.pixmap());
@@ -221,8 +207,7 @@ void QCPScatterStyle::setFromOther(const QCPScatterStyle &other, ScatterProperti
 
   \see setShape
 */
-void QCPScatterStyle::setSize(double size)
-{
+void QCPScatterStyle::setSize(double size) {
     mSize = size;
 }
 
@@ -234,8 +219,7 @@ void QCPScatterStyle::setSize(double size)
 
   \see setSize
 */
-void QCPScatterStyle::setShape(QCPScatterStyle::ScatterShape shape)
-{
+void QCPScatterStyle::setShape(QCPScatterStyle::ScatterShape shape) {
     mShape = shape;
 }
 
@@ -248,8 +232,7 @@ void QCPScatterStyle::setShape(QCPScatterStyle::ScatterShape shape)
 
   \see setBrush
 */
-void QCPScatterStyle::setPen(const QPen &pen)
-{
+void QCPScatterStyle::setPen(const QPen &pen) {
     mPenDefined = true;
     mPen = pen;
 }
@@ -260,8 +243,7 @@ void QCPScatterStyle::setPen(const QPen &pen)
 
   \see setPen
 */
-void QCPScatterStyle::setBrush(const QBrush &brush)
-{
+void QCPScatterStyle::setBrush(const QBrush &brush) {
     mBrush = brush;
 }
 
@@ -272,8 +254,7 @@ void QCPScatterStyle::setBrush(const QBrush &brush)
 
   The scatter shape is automatically set to \ref ssPixmap.
 */
-void QCPScatterStyle::setPixmap(const QPixmap &pixmap)
-{
+void QCPScatterStyle::setPixmap(const QPixmap &pixmap) {
     setShape(ssPixmap);
     mPixmap = pixmap;
 }
@@ -283,8 +264,7 @@ void QCPScatterStyle::setPixmap(const QPixmap &pixmap)
 
   The scatter shape is automatically set to \ref ssCustom.
 */
-void QCPScatterStyle::setCustomPath(const QPainterPath &customPath)
-{
+void QCPScatterStyle::setCustomPath(const QPainterPath &customPath) {
     setShape(ssCustom);
     mCustomPath = customPath;
 }
@@ -295,8 +275,7 @@ void QCPScatterStyle::setCustomPath(const QPainterPath &customPath)
 
   A call to \ref setPen will define a pen.
 */
-void QCPScatterStyle::undefinePen()
-{
+void QCPScatterStyle::undefinePen() {
     mPenDefined = false;
 }
 
@@ -309,8 +288,7 @@ void QCPScatterStyle::undefinePen()
 
   \see drawShape
 */
-void QCPScatterStyle::applyTo(QCPPainter *painter, const QPen &defaultPen) const
-{
+void QCPScatterStyle::applyTo(QCPPainter *painter, const QPen &defaultPen) const {
     painter->setPen(mPenDefined ? mPen : defaultPen);
     painter->setBrush(mBrush);
 }
@@ -323,142 +301,121 @@ void QCPScatterStyle::applyTo(QCPPainter *painter, const QPen &defaultPen) const
 
   \see applyTo
 */
-void QCPScatterStyle::drawShape(QCPPainter *painter, const QPointF &pos) const
-{
+void QCPScatterStyle::drawShape(QCPPainter *painter, const QPointF &pos) const {
     drawShape(painter, pos.x(), pos.y());
 }
 
 /*! \overload
   Draws the scatter shape with \a painter at position \a x and \a y.
 */
-void QCPScatterStyle::drawShape(QCPPainter *painter, double x, double y) const
-{
-    double w = mSize/2.0;
-    switch (mShape)
-    {
-        case ssNone: break;
-        case ssDot:
-        {
-            painter->drawLine(QPointF(x, y), QPointF(x+0.0001, y));
+void QCPScatterStyle::drawShape(QCPPainter *painter, double x, double y) const {
+    double w = mSize / 2.0;
+    switch (mShape) {
+        case ssNone:
+            break;
+        case ssDot: {
+            painter->drawLine(QPointF(x, y), QPointF(x + 0.0001, y));
             break;
         }
-        case ssCross:
-        {
-            painter->drawLine(QLineF(x-w, y-w, x+w, y+w));
-            painter->drawLine(QLineF(x-w, y+w, x+w, y-w));
+        case ssCross: {
+            painter->drawLine(QLineF(x - w, y - w, x + w, y + w));
+            painter->drawLine(QLineF(x - w, y + w, x + w, y - w));
             break;
         }
-        case ssPlus:
-        {
-            painter->drawLine(QLineF(x-w,   y, x+w,   y));
-            painter->drawLine(QLineF(  x, y+w,   x, y-w));
+        case ssPlus: {
+            painter->drawLine(QLineF(x - w, y, x + w, y));
+            painter->drawLine(QLineF(x, y + w, x, y - w));
             break;
         }
-        case ssCircle:
-        {
-            painter->drawEllipse(QPointF(x , y), w, w);
+        case ssCircle: {
+            painter->drawEllipse(QPointF(x, y), w, w);
             break;
         }
-        case ssDisc:
-        {
+        case ssDisc: {
             QBrush b = painter->brush();
             painter->setBrush(painter->pen().color());
-            painter->drawEllipse(QPointF(x , y), w, w);
+            painter->drawEllipse(QPointF(x, y), w, w);
             painter->setBrush(b);
             break;
         }
-        case ssSquare:
-        {
-            painter->drawRect(QRectF(x-w, y-w, mSize, mSize));
+        case ssSquare: {
+            painter->drawRect(QRectF(x - w, y - w, mSize, mSize));
             break;
         }
-        case ssDiamond:
-        {
-            QPointF lineArray[4] = {QPointF(x-w,   y),
-                                    QPointF(  x, y-w),
-                                    QPointF(x+w,   y),
-                                    QPointF(  x, y+w)};
+        case ssDiamond: {
+            QPointF lineArray[4] = {QPointF(x - w, y), QPointF(x, y - w), QPointF(x + w, y), QPointF(x, y + w)};
             painter->drawPolygon(lineArray, 4);
             break;
         }
-        case ssStar:
-        {
-            painter->drawLine(QLineF(x-w,   y, x+w,   y));
-            painter->drawLine(QLineF(  x, y+w,   x, y-w));
-            painter->drawLine(QLineF(x-w*0.707, y-w*0.707, x+w*0.707, y+w*0.707));
-            painter->drawLine(QLineF(x-w*0.707, y+w*0.707, x+w*0.707, y-w*0.707));
+        case ssStar: {
+            painter->drawLine(QLineF(x - w, y, x + w, y));
+            painter->drawLine(QLineF(x, y + w, x, y - w));
+            painter->drawLine(QLineF(x - w * 0.707, y - w * 0.707, x + w * 0.707, y + w * 0.707));
+            painter->drawLine(QLineF(x - w * 0.707, y + w * 0.707, x + w * 0.707, y - w * 0.707));
             break;
         }
-        case ssTriangle:
-        {
-            QPointF lineArray[3] = {QPointF(x-w, y+0.755*w),
-                                    QPointF(x+w, y+0.755*w),
-                                    QPointF(  x, y-0.977*w)};
+        case ssTriangle: {
+            QPointF lineArray[3] = {QPointF(x - w, y + 0.755 * w),
+                                    QPointF(x + w, y + 0.755 * w),
+                                    QPointF(x, y - 0.977 * w)};
             painter->drawPolygon(lineArray, 3);
             break;
         }
-        case ssTriangleInverted:
-        {
-            QPointF lineArray[3] = {QPointF(x-w, y-0.755*w),
-                                    QPointF(x+w, y-0.755*w),
-                                    QPointF(  x, y+0.977*w)};
+        case ssTriangleInverted: {
+            QPointF lineArray[3] = {QPointF(x - w, y - 0.755 * w),
+                                    QPointF(x + w, y - 0.755 * w),
+                                    QPointF(x, y + 0.977 * w)};
             painter->drawPolygon(lineArray, 3);
             break;
         }
-        case ssCrossSquare:
-        {
-            painter->drawRect(QRectF(x-w, y-w, mSize, mSize));
-            painter->drawLine(QLineF(x-w, y-w, x+w*0.95, y+w*0.95));
-            painter->drawLine(QLineF(x-w, y+w*0.95, x+w*0.95, y-w));
+        case ssCrossSquare: {
+            painter->drawRect(QRectF(x - w, y - w, mSize, mSize));
+            painter->drawLine(QLineF(x - w, y - w, x + w * 0.95, y + w * 0.95));
+            painter->drawLine(QLineF(x - w, y + w * 0.95, x + w * 0.95, y - w));
             break;
         }
-        case ssPlusSquare:
-        {
-            painter->drawRect(QRectF(x-w, y-w, mSize, mSize));
-            painter->drawLine(QLineF(x-w,   y, x+w*0.95,   y));
-            painter->drawLine(QLineF(  x, y+w,        x, y-w));
+        case ssPlusSquare: {
+            painter->drawRect(QRectF(x - w, y - w, mSize, mSize));
+            painter->drawLine(QLineF(x - w, y, x + w * 0.95, y));
+            painter->drawLine(QLineF(x, y + w, x, y - w));
             break;
         }
-        case ssCrossCircle:
-        {
+        case ssCrossCircle: {
             painter->drawEllipse(QPointF(x, y), w, w);
-            painter->drawLine(QLineF(x-w*0.707, y-w*0.707, x+w*0.670, y+w*0.670));
-            painter->drawLine(QLineF(x-w*0.707, y+w*0.670, x+w*0.670, y-w*0.707));
+            painter->drawLine(QLineF(x - w * 0.707, y - w * 0.707, x + w * 0.670, y + w * 0.670));
+            painter->drawLine(QLineF(x - w * 0.707, y + w * 0.670, x + w * 0.670, y - w * 0.707));
             break;
         }
-        case ssPlusCircle:
-        {
+        case ssPlusCircle: {
             painter->drawEllipse(QPointF(x, y), w, w);
-            painter->drawLine(QLineF(x-w,   y, x+w,   y));
-            painter->drawLine(QLineF(  x, y+w,   x, y-w));
+            painter->drawLine(QLineF(x - w, y, x + w, y));
+            painter->drawLine(QLineF(x, y + w, x, y - w));
             break;
         }
-        case ssPeace:
-        {
+        case ssPeace: {
             painter->drawEllipse(QPointF(x, y), w, w);
-            painter->drawLine(QLineF(x, y-w,         x,       y+w));
-            painter->drawLine(QLineF(x,   y, x-w*0.707, y+w*0.707));
-            painter->drawLine(QLineF(x,   y, x+w*0.707, y+w*0.707));
+            painter->drawLine(QLineF(x, y - w, x, y + w));
+            painter->drawLine(QLineF(x, y, x - w * 0.707, y + w * 0.707));
+            painter->drawLine(QLineF(x, y, x + w * 0.707, y + w * 0.707));
             break;
         }
-        case ssPixmap:
-        {
-            const double widthHalf = mPixmap.width()*0.5;
-            const double heightHalf = mPixmap.height()*0.5;
+        case ssPixmap: {
+            const double widthHalf = mPixmap.width() * 0.5;
+            const double heightHalf = mPixmap.height() * 0.5;
 #if QT_VERSION < QT_VERSION_CHECK(4, 8, 0)
             const QRectF clipRect = painter->clipRegion().boundingRect().adjusted(-widthHalf, -heightHalf, widthHalf, heightHalf);
 #else
-            const QRectF clipRect = painter->clipBoundingRect().adjusted(-widthHalf, -heightHalf, widthHalf, heightHalf);
+            const QRectF clipRect = painter->clipBoundingRect().adjusted(-widthHalf, -heightHalf, widthHalf,
+                                                                         heightHalf);
 #endif
             if (clipRect.contains(x, y))
-                painter->drawPixmap(qRound(x-widthHalf), qRound(y-heightHalf), mPixmap);
+                painter->drawPixmap(qRound(x - widthHalf), qRound(y - heightHalf), mPixmap);
             break;
         }
-        case ssCustom:
-        {
+        case ssCustom: {
             QTransform oldTransform = painter->transform();
             painter->translate(x, y);
-            painter->scale(mSize/6.0, mSize/6.0);
+            painter->scale(mSize / 6.0, mSize / 6.0);
             painter->drawPath(mCustomPath);
             painter->setTransform(oldTransform);
             break;

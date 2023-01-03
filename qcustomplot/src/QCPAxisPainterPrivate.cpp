@@ -1,4 +1,4 @@
-#include "include/QCPAxisPainterPrivate.hpp"
+#include "QCPAxisPainterPrivate.hpp"
 
 using namespace QCP;
 
@@ -41,9 +41,6 @@ QCPAxisPainterPrivate::QCPAxisPainterPrivate(QCustomPlot *parentPlot) :
         mParentPlot(parentPlot),
         mLabelCache(16) // cache at most 16 (tick) labels
 {
-}
-
-QCPAxisPainterPrivate::~QCPAxisPainterPrivate() {
 }
 
 /*! \internal
@@ -106,11 +103,13 @@ void QCPAxisPainterPrivate::draw(QCPPainter *painter) {
         int tickDir = (type == QCPAxis::atBottom || type == QCPAxis::atRight) ? -1
                                                                               : 1; // direction of ticks ("inward" is right for left axis and left for right axis)
         if (QCPAxis::orientation(type) == Qt::Horizontal) {
-                    foreach (double tickPos, tickPositions)painter->drawLine(
+                    foreach (double tickPos, tickPositions)
+                    painter->drawLine(
                             QLineF(tickPos + xCor, origin.y() - tickLengthOut * tickDir + yCor, tickPos + xCor,
                                    origin.y() + tickLengthIn * tickDir + yCor));
         } else {
-                    foreach (double tickPos, tickPositions)painter->drawLine(
+                    foreach (double tickPos, tickPositions)
+                    painter->drawLine(
                             QLineF(origin.x() - tickLengthOut * tickDir + xCor, tickPos + yCor,
                                    origin.x() + tickLengthIn * tickDir + xCor, tickPos + yCor));
         }
@@ -122,11 +121,13 @@ void QCPAxisPainterPrivate::draw(QCPPainter *painter) {
 // direction of ticks ("inward" is right for left axis and left for right axis)
         int tickDir = (type == QCPAxis::atBottom || type == QCPAxis::atRight) ? -1 : 1;
         if (QCPAxis::orientation(type) == Qt::Horizontal) {
-                    foreach (double subTickPos, subTickPositions)painter->drawLine(
+                    foreach (double subTickPos, subTickPositions)
+                    painter->drawLine(
                             QLineF(subTickPos + xCor, origin.y() - subTickLengthOut * tickDir + yCor, subTickPos + xCor,
                                    origin.y() + subTickLengthIn * tickDir + yCor));
         } else {
-                    foreach (double subTickPos, subTickPositions)painter->drawLine(
+                    foreach (double subTickPos, subTickPositions)
+                    painter->drawLine(
                             QLineF(origin.x() - subTickLengthOut * tickDir + xCor, subTickPos + yCor,
                                    origin.x() + subTickLengthIn * tickDir + xCor, subTickPos + yCor));
         }
@@ -281,8 +282,9 @@ int QCPAxisPainterPrivate::size() {
     if (tickLabelSide == QCPAxis::lsOutside) {
         QSize tickLabelsSize(0, 0);
         if (!tickLabels.isEmpty()) {
-                    foreach (const QString &tickLabel, tickLabels)getMaxTickLabelSize(tickLabelFont, tickLabel,
-                                                                                      &tickLabelsSize);
+                    foreach (const QString &tickLabel, tickLabels)
+                    getMaxTickLabelSize(tickLabelFont, tickLabel,
+                                        &tickLabelsSize);
             result += QCPAxis::orientation(type) == Qt::Horizontal ? tickLabelsSize.height() : tickLabelsSize.width();
             result += tickLabelPadding;
         }
@@ -504,7 +506,7 @@ QCPAxisPainterPrivate::getTickLabelData(const QFont &font, const QString &text) 
     int ePos = -1; // first index of exponent part, text before that will be basePart, text until eLast will be expPart
     int eLast = -1; // last index of exponent part, rest of text after this will be suffixPart
     if (substituteExponent) {
-        ePos = text.indexOf(QString(mParentPlot->locale().exponential()));
+        ePos = text.indexOf(QString(reinterpret_cast<QWidget *>(mParentPlot)->locale().exponential()));
         if (ePos > 0 && text.at(ePos - 1).isDigit()) {
             eLast = ePos;
             while (eLast + 1 < text.size() &&
